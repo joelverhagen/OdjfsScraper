@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ManyConsole;
-using Ninject;
-using Ninject.Extensions.Conventions;
-using Ninject.Parameters;
-using OdjfsScraper.Scraper.Scrapers;
-using OdjfsScraper.Scraper.Support;
 
 namespace OdjfsScraper.DataChecker
 {
