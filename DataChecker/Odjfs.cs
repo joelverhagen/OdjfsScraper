@@ -319,6 +319,15 @@ namespace OdjfsScraper.DataChecker
             await GeocodeChildCare(ctx, childCare);
         }
 
+        public async Task<bool> NeedsGeocoding(Entities ctx)
+        {
+            int count = await ctx
+                .ChildCares
+                .Where(c => c.Address != null && (!c.Latitude.HasValue || !c.Longitude.HasValue) && !c.LastGeocodedOn.HasValue)
+                .CountAsync();
+            return count > 0;
+        }
+
         public async Task GeocodeNextChildCare(Entities ctx)
         {
             ChildCare childCare = await ctx
