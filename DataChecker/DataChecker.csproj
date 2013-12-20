@@ -70,6 +70,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\BackupCommand.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Support\DaemonEventLoop.cs" />
