@@ -312,7 +312,7 @@ namespace OdjfsScraper.DataChecker
         public async Task GeocodeChildCare(Entities ctx, string externalUrlId, string mapQuestKey)
         {
             // get the child care in question
-            Logger.Trace("Fecthing child care with ExternalUrlId '{0}' to geocode.", externalUrlId);
+            Logger.Trace("Fetching child care with ExternalUrlId '{0}' to geocode.", externalUrlId);
             externalUrlId = (externalUrlId ?? string.Empty).Trim();
             ChildCare childCare = await ctx
                 .ChildCares
