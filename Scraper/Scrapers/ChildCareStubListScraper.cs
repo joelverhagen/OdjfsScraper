@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using NLog;
 using OdjfsScraper.Model;
@@ -46,8 +47,8 @@ namespace OdjfsScraper.Scraper.Scrapers
         {
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                var exception = new ScraperException("A status code that is not 200 was returned when getting the list document.");
-                Logger.ErrorException(string.Format("RequestUri: '{0}', StatusCode: '{1}'", response.RequestUri, response.StatusCode), exception);
+                var exception = new HttpRequestException("A status code that is not 200 was returned when getting the list document.");
+                Logger.DebugException(string.Format("RequestUri: '{0}', StatusCode: '{1}'", response.RequestUri, response.StatusCode), exception);
                 throw exception;
             }
         }

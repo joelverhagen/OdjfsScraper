@@ -1,4 +1,8 @@
-﻿using OdjfsScraper.Database;
+﻿using System;
+using System.Net.Http;
+using System.Threading;
+using NLog;
+using OdjfsScraper.Database;
 using OdjfsScraper.DataChecker.Options;
 using OdjfsScraper.DataChecker.Support;
 
@@ -6,6 +10,8 @@ namespace OdjfsScraper.DataChecker.Commands
 {
     public class DaemonCommand : OdfjsSleepCommand
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly SleepOption _geocodeSleepOption;
 
         public DaemonCommand() : base(2000)
@@ -55,11 +61,11 @@ namespace OdjfsScraper.DataChecker.Commands
                     odjfsSleeper.Sleep();
                     if (state.IsCountyStep)
                     {
-                        odjfs.UpdateNextCounty(ctx).Wait();
+                        IgnoreHttpRequestException(() => odjfs.UpdateNextCounty(ctx).Wait());
                     }
                     else
                     {
-                        odjfs.UpdateNextChildCare(ctx).Wait();
+                        IgnoreHttpRequestException(() => odjfs.UpdateNextChildCare(ctx).Wait());
 
                         // geocode everything that needs geocoding...
                         var geocodeSleeper = new Sleeper(GeocodeSleep.Value);
@@ -73,6 +79,31 @@ namespace OdjfsScraper.DataChecker.Commands
             }
 
             return 0;
+        }
+
+        private void IgnoreHttpRequestException(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (AggregateException ae)
+            {
+                foreach (Exception e in ae.InnerExceptions)
+                {
+                    var he = e as HttpRequestException;
+                    if (he != null)
+                    {
+                        Logger.Trace("An unexpected HTTP status code was returned by ODJFS.");
+                        Logger.Trace("OdjfsScraper.DataChecker will now sleep for 10 minutes.");
+                        Thread.Sleep(10*60*1000);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
         }
     }
 }

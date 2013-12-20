@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using NLog;
 using OdjfsScraper.Model.ChildCares;
@@ -78,8 +79,8 @@ namespace OdjfsScraper.Scraper.Scrapers
                 response.StatusCode != HttpStatusCode.NotFound && // the record will be deleted
                 response.StatusCode != HttpStatusCode.InternalServerError) // the record will be deleted
             {
-                var exception = new ScraperException("A status code that is not 200 or 404 was returned when getting a child care document.");
-                Logger.ErrorException(string.Format(
+                var exception = new HttpRequestException("A status code that is not 200 or 404 was returned when getting a child care document.");
+                Logger.DebugException(string.Format(
                     "RequestUri: '{0}', StatusCode: '{1}'",
                     response.RequestUri,
                     response.StatusCode), exception);
