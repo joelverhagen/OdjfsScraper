@@ -13,7 +13,7 @@ namespace OdjfsScraper.DataChecker.Commands
 
         public GeocodeCommand()
         {
-            _geocodeSleepOption = new SleepOption("geocode", 0);
+            _geocodeSleepOption = new SleepOption("geocode", 1000);
             _nextOption = new NextOption("geocode", "child cares");
 
             IsCommand("geocode", "geocode child care locations using the MapQuest API");
@@ -65,7 +65,7 @@ namespace OdjfsScraper.DataChecker.Commands
                 Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
-                    odjfs.UpdateChildCare(ctx, ExternalUrlId).Wait();
+                    odjfs.GeocodeChildCare(ctx, ExternalUrlId, mapQuestKey).Wait();
                 }
             }
             else
