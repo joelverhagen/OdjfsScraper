@@ -70,6 +70,8 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Support\DaemonEventLoop.cs" />
     <Compile Include="Commands\OdfjsSleepNextCommand.cs" />
     <Compile Include="Commands\OdfjsSleepCommand.cs" />

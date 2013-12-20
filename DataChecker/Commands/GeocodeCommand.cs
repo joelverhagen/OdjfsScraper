@@ -50,15 +50,19 @@ namespace OdjfsScraper.DataChecker.Commands
                 throw new ConsoleHelpAsException("You must either use the --url-id, --next, or --all option.");
             }
 
+            this.GetMapQuestKey();
+
             return null;
         }
 
         public override int Run(string[] remainingArguments)
         {
+            string mapQuestKey = this.GetMapQuestKey();
+
             // execute the command
             if (ExternalUrlId != null)
             {
-                Odjfs odjfs = Program.GetOdjfs();
+                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
                     odjfs.UpdateChildCare(ctx, ExternalUrlId).Wait();
@@ -66,7 +70,7 @@ namespace OdjfsScraper.DataChecker.Commands
             }
             else
             {
-                Odjfs odjfs = Program.GetOdjfs();
+                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
                     int i = 0;
@@ -74,7 +78,7 @@ namespace OdjfsScraper.DataChecker.Commands
                     while (odjfs.NeedsGeocoding(ctx).Result && (All || i < Next))
                     {
                         sleeper.Sleep();
-                        odjfs.GeocodeNextChildCare(ctx).Wait();
+                        odjfs.GeocodeNextChildCare(ctx, mapQuestKey).Wait();
                         i++;
                     }
                 }

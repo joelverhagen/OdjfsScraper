@@ -20,11 +20,11 @@ namespace OdjfsScraper.DataChecker.Commands
 
             if (ExternalUrlId != null && Next.HasValue)
             {
-                throw new ConsoleHelpAsException("the --url-id and --next options are mutually exclusive");
+                throw new ConsoleHelpAsException("The --url-id and --next options are mutually exclusive.");
             }
             if (ExternalUrlId == null && !Next.HasValue)
             {
-                throw new ConsoleHelpAsException("you must either use the --url-id or --next option");
+                throw new ConsoleHelpAsException("You must either use the --url-id or --next option.");
             }
 
             return null;
@@ -34,7 +34,7 @@ namespace OdjfsScraper.DataChecker.Commands
         {
             if (ExternalUrlId != null)
             {
-                Odjfs odjfs = Program.GetOdjfs();
+                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
                     odjfs.UpdateChildCare(ctx, ExternalUrlId).Wait();
@@ -42,7 +42,7 @@ namespace OdjfsScraper.DataChecker.Commands
             }
             else
             {
-                Odjfs odjfs = Program.GetOdjfs();
+                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
                     var sleeper = new Sleeper(OdjfsSleep.Value);

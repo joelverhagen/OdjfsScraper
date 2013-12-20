@@ -16,19 +16,5 @@ namespace OdjfsScraper.DataChecker
             IEnumerable<ConsoleCommand> commands = ConsoleCommandDispatcher.FindCommandsInSameAssemblyAs(typeof (Program));
             return ConsoleCommandDispatcher.DispatchCommand(commands, args, Console.Out);
         }
-
-        public static Odjfs GetOdjfs()
-        {
-            IKernel kernel = new StandardKernel();
-            kernel.Bind(c => c
-                .FromAssemblyContaining(typeof (IChildCareStubListScraper))
-                .SelectAllClasses()
-                .BindAllInterfaces());
-
-            var parameter = new ConstructorArgument("odjfsClient", new DownloadingOdjfsClient(@"Logs\HTML"));
-            var odjfs = new Odjfs(kernel.Get<IChildCareStubListScraper>(parameter), kernel.Get<IChildCareScraper>(parameter));
-
-            return odjfs;
-        }
     }
 }

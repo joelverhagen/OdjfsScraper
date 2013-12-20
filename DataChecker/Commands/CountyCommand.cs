@@ -20,11 +20,11 @@ namespace OdjfsScraper.DataChecker.Commands
 
             if (Name != null && Next.HasValue)
             {
-                throw new ConsoleHelpAsException("the --name and --next options are mutually exclusive");
+                throw new ConsoleHelpAsException("The --name and --next options are mutually exclusive.");
             }
             if (Name == null && !Next.HasValue)
             {
-                throw new ConsoleHelpAsException("you must either use the --name or --next option");
+                throw new ConsoleHelpAsException("You must either use the --name or --next option.");
             }
 
             return null;
@@ -34,7 +34,7 @@ namespace OdjfsScraper.DataChecker.Commands
         {
             if (Name != null)
             {
-                Odjfs odjfs = Program.GetOdjfs();
+                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
                     odjfs.UpdateCounty(ctx, Name).Wait();
@@ -42,7 +42,7 @@ namespace OdjfsScraper.DataChecker.Commands
             }
             else
             {
-                Odjfs odjfs = Program.GetOdjfs();
+                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
                     var sleeper = new Sleeper(OdjfsSleep.Value);

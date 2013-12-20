@@ -301,7 +301,16 @@ namespace OdjfsScraper.DataChecker
             }
         }
 
-        public async Task GeocodeChildCare(Entities ctx, string externalUrlId)
+        public async Task<bool> NeedsGeocoding(Entities ctx)
+        {
+            int count = await ctx
+                .ChildCares
+                .Where(c => c.Address != null && (!c.Latitude.HasValue || !c.Longitude.HasValue) && !c.LastGeocodedOn.HasValue)
+                .CountAsync();
+            return count > 0;
+        }
+
+        public async Task GeocodeChildCare(Entities ctx, string externalUrlId, string mapQuestKey)
         {
             // get the child care in question
             Logger.Trace("Fecthing child care with ExternalUrlId '{0}' to geocode.", externalUrlId);
@@ -316,19 +325,11 @@ namespace OdjfsScraper.DataChecker
                 return;
             }
 
-            await GeocodeChildCare(ctx, childCare);
+            await GeocodeChildCare(ctx, childCare, mapQuestKey);
         }
 
-        public async Task<bool> NeedsGeocoding(Entities ctx)
-        {
-            int count = await ctx
-                .ChildCares
-                .Where(c => c.Address != null && (!c.Latitude.HasValue || !c.Longitude.HasValue) && !c.LastGeocodedOn.HasValue)
-                .CountAsync();
-            return count > 0;
-        }
 
-        public async Task GeocodeNextChildCare(Entities ctx)
+        public async Task GeocodeNextChildCare(Entities ctx, string mapQuestKey)
         {
             ChildCare childCare = await ctx
                 .ChildCares
@@ -340,11 +341,16 @@ namespace OdjfsScraper.DataChecker
                 return;
             }
 
-            await GeocodeChildCare(ctx, childCare);
+            await GeocodeChildCare(ctx, childCare, mapQuestKey);
         }
 
-        private async Task GeocodeChildCare(Entities ctx, ChildCare childCare)
+        private async Task GeocodeChildCare(Entities ctx, ChildCare childCare, string mapQuestKey)
         {
+            if (string.IsNullOrWhiteSpace(mapQuestKey))
+            {
+                throw new ArgumentException("The MapQuest key is required.", "mapQuestKey");
+            }
+
             Logger.Trace("Geocoding child care '{0}'.", childCare.ExternalUrlId);
 
             if (childCare.Address == null)
@@ -359,11 +365,6 @@ namespace OdjfsScraper.DataChecker
 
             // create the geocoder
             IClient geocoderClient = new Client(ScraperClient.GetUserAgent());
-            string mapQuestKey = ConfigurationManager.AppSettings["MapQuestKey"];
-            if (string.IsNullOrWhiteSpace(mapQuestKey))
-            {
-                throw new ConfigurationErrorsException("The MapQuestKey configuration key is not specified.");
-            }
             ISimpleGeocoder geocoder = new MapQuestGeocoder(geocoderClient, MapQuestGeocoder.LicensedEndpoint, mapQuestKey);
 
             // geocode based off the full address

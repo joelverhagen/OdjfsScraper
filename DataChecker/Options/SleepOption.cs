@@ -28,7 +28,7 @@ namespace OdjfsScraper.DataChecker.Options
         {
             if (Value.HasValue && Value < _minimum)
             {
-                throw new ConsoleHelpAsException(string.Format("the minimum sleep time between {0} requests is {1} milliseconds", _requestName, _minimum));
+                throw new ConsoleHelpAsException(string.Format("The minimum sleep time between {0} requests is {1} milliseconds.", _requestName, _minimum));
             }
         }
 

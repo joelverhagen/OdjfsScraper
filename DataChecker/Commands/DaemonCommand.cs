@@ -25,11 +25,29 @@ namespace OdjfsScraper.DataChecker.Commands
             get { return _geocodeSleepOption.Value; }
         }
 
+        public override int? OverrideAfterHandlingArgumentsBeforeRun(string[] remainingArguments)
+        {
+            base.OverrideAfterHandlingArgumentsBeforeRun(remainingArguments);
+
+            if (Geocode)
+            {
+                this.GetMapQuestKey();
+            }
+
+            return null;
+        }
+
         public override int Run(string[] remainingArguments)
         {
+            string mapQuestKey = null;
+            if (Geocode)
+            {
+                mapQuestKey = this.GetMapQuestKey();
+            }
+
             using (var ctx = new Entities())
             {
-                Odjfs odjfs = Program.GetOdjfs();
+                Odjfs odjfs = this.GetOdjfs();
                 var state = new DaemonEventLoop(ctx);
                 var odjfsSleeper = new Sleeper(OdjfsSleep.Value);
                 while (state.NextStep())
@@ -48,7 +66,7 @@ namespace OdjfsScraper.DataChecker.Commands
                         while (Geocode && odjfs.NeedsGeocoding(ctx).Result)
                         {
                             geocodeSleeper.Sleep();
-                            odjfs.GeocodeNextChildCare(ctx).Wait();
+                            odjfs.GeocodeNextChildCare(ctx, mapQuestKey).Wait();
                         }
                     }
                 }

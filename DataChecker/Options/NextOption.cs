@@ -27,7 +27,7 @@ namespace OdjfsScraper.DataChecker.Options
         {
             if (Value.HasValue && Value < 0)
             {
-                throw new ConsoleHelpAsException("the --next value you specify must be a non-negative integer");
+                throw new ConsoleHelpAsException("The --next value you specify must be a non-negative integer.");
             }
         }
 
