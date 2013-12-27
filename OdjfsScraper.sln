@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{DBEC3A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{174CE395-9EA2-4CFF-B0E0-A34164E476C4}"
 	ProjectSection(SolutionItems) = preProject
+		Build.proj = Build.proj
 		.build\MSBuild.Community.Tasks.dll = .build\MSBuild.Community.Tasks.dll
 		.build\MSBuild.Community.Tasks.targets = .build\MSBuild.Community.Tasks.targets
 		.build\Version.targets = .build\Version.targets
@@ -26,6 +27,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scraper.UnitTests", "Scraper.UnitTests\Scraper.UnitTests.csproj", "{CC50EB03-A13A-4551-A2F9-E433E3F6CB18}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataChecker", "DataChecker\DataChecker.csproj", "{F7F33810-6765-442B-82F8-A442875013CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exporter", "Exporter\Exporter.csproj", "{0DEA1ABE-79C3-40A6-9878-CE8F3B147155}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +56,10 @@ Global
 		{F7F33810-6765-442B-82F8-A442875013CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7F33810-6765-442B-82F8-A442875013CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7F33810-6765-442B-82F8-A442875013CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DEA1ABE-79C3-40A6-9878-CE8F3B147155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DEA1ABE-79C3-40A6-9878-CE8F3B147155}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DEA1ABE-79C3-40A6-9878-CE8F3B147155}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DEA1ABE-79C3-40A6-9878-CE8F3B147155}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
