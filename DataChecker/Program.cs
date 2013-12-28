@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using ManyConsole;
+using Ninject;
+using Ninject.Extensions.Conventions;
 using NLog;
+using OdjfsScraper.DataChecker.Commands;
+using OdjfsScraper.Scraper.Support;
 
 namespace OdjfsScraper.DataChecker
 {
@@ -14,7 +19,25 @@ namespace OdjfsScraper.DataChecker
         {
             try
             {
-                IEnumerable<ConsoleCommand> commands = ConsoleCommandDispatcher.FindCommandsInSameAssemblyAs(typeof (Program));
+                IKernel kernel = new StandardKernel();
+
+                // discover... everything
+                kernel.Bind(c => c
+                    .From("OdjfsScraper.DataChecker.exe", "OdjfsScraper.Exporter.dll", "OdjfsScraper.Scraper.dll")
+                    .SelectAllClasses()
+                    .BindAllInterfaces());
+
+                // clear up one ambiguity; we want to save ALL fetched HTML
+                kernel.Unbind<IOdjfsClient>();
+                kernel.Bind<IOdjfsClient>()
+                    .To<DownloadingOdjfsClient>()
+                    .WithConstructorArgument("directory", @"Logs\HTML");
+
+                // activate all commands
+                IEnumerable<ConsoleCommand> commands = kernel
+                    .GetAll<ICommand>()
+                    .OfType<ConsoleCommand>();
+
                 return ConsoleCommandDispatcher.DispatchCommand(commands, args, Console.Out);
             }
             catch (Exception e)

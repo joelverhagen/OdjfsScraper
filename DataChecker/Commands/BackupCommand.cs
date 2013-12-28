@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Data.SqlClient;
+using NLog;
 using OdjfsScraper.Database;
 
 namespace OdjfsScraper.DataChecker.Commands
 {
     public class BackupCommand : Command
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private const string BackupDatabaseQuery = "BACKUP DATABASE @Database TO DISK = @Path WITH COPY_ONLY, INIT";
 
         public BackupCommand()
@@ -20,8 +22,7 @@ namespace OdjfsScraper.DataChecker.Commands
         public override int Run(string[] remainingArguments)
         {
             string fullPath = System.IO.Path.GetFullPath(Path);
-            Console.WriteLine("Backing up to:");
-            Console.WriteLine("  {0}", fullPath);
+            Logger.Trace("Backing up to:{0}  {1}", Environment.NewLine, fullPath);
 
             using (var ctx = new Entities())
             {

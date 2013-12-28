@@ -4,7 +4,7 @@ using OdjfsScraper.DataChecker.Options;
 
 namespace OdjfsScraper.DataChecker.Commands
 {
-    public abstract class Command : ConsoleCommand
+    public abstract class Command : ConsoleCommand, ICommand
     {
         private readonly IList<IOption> _options = new List<IOption>();
 

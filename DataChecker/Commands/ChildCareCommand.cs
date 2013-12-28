@@ -6,8 +6,11 @@ namespace OdjfsScraper.DataChecker.Commands
 {
     public class ChildCareCommand : OdfjsSleepNextCommand
     {
-        public ChildCareCommand() : base(2000, "scrape", "child cares")
+        private readonly IOdjfsSynchronizer _odjfsSynchronizer;
+
+        public ChildCareCommand(IOdjfsSynchronizer odjfsSynchronizer) : base(2000, "scrape", "child cares")
         {
+            _odjfsSynchronizer = odjfsSynchronizer;
             IsCommand("childcare", "scrape a child care page");
             HasOption("url-id=", "scrape the child care with the specified URL ID (e.g. CDCSFJQMQINKNININI)", v => ExternalUrlId = v);
         }
@@ -34,22 +37,20 @@ namespace OdjfsScraper.DataChecker.Commands
         {
             if (ExternalUrlId != null)
             {
-                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
-                    odjfs.UpdateChildCare(ctx, ExternalUrlId).Wait();
+                    _odjfsSynchronizer.UpdateChildCare(ctx, ExternalUrlId).Wait();
                 }
             }
             else
             {
-                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
                     var sleeper = new Sleeper(OdjfsSleep.Value);
                     for (int i = 0; i < Next; i++)
                     {
                         sleeper.Sleep();
-                        odjfs.UpdateNextChildCare(ctx).Wait();
+                        _odjfsSynchronizer.UpdateNextChildCare(ctx).Wait();
                     }
                 }
             }

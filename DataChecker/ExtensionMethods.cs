@@ -1,13 +1,7 @@
 ﻿using System;
 using System.IO;
 using ManyConsole;
-using Ninject;
-using Ninject.Extensions.Conventions;
-using Ninject.Parameters;
 using OdjfsScraper.DataChecker.Commands;
-using OdjfsScraper.Exporter.Exporters;
-using OdjfsScraper.Scraper.Scrapers;
-using OdjfsScraper.Scraper.Support;
 
 namespace OdjfsScraper.DataChecker
 {
@@ -23,31 +17,6 @@ namespace OdjfsScraper.DataChecker
             }
 
             return mapQuestKey;
-        }
-
-        public static Odjfs GetOdjfs(this Command command)
-        {
-            IKernel kernel = new StandardKernel();
-            kernel.Bind(c => c
-                .From("OdjfsScraper.Scraper.dll")
-                .SelectAllClasses()
-                .BindAllInterfaces());
-
-            var parameter = new ConstructorArgument("odjfsClient", new DownloadingOdjfsClient(@"Logs\HTML"));
-            var odjfs = new Odjfs(kernel.Get<IChildCareStubListScraper>(parameter), kernel.Get<IChildCareScraper>(parameter));
-
-            return odjfs;
-        }
-
-        public static ISrdsExporter<T> GetSrdsExporter<T>(this Command command)
-        {
-            IKernel kernel = new StandardKernel();
-            kernel.Bind(c => c
-                .From("OdjfsScraper.Exporter.dll")
-                .SelectAllClasses()
-                .BindAllInterfaces());
-
-            return kernel.Get<ISrdsExporter<T>>();
         }
     }
 }

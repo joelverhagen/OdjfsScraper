@@ -15,16 +15,16 @@ using OdjfsScraper.Scraper.Support;
 using PolyGeocoder.Geocoders;
 using PolyGeocoder.Support;
 
-namespace OdjfsScraper.DataChecker
+namespace OdjfsScraper.DataChecker.Support
 {
-    public class Odjfs
+    public class OdjfsSynchronizer : IOdjfsSynchronizer
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly IChildCareScraper _childCareScraper;
         private readonly IChildCareStubListScraper _listScraper;
 
-        public Odjfs(IChildCareStubListScraper listScraper, IChildCareScraper childCareScraper)
+        public OdjfsSynchronizer(IChildCareStubListScraper listScraper, IChildCareScraper childCareScraper)
         {
             _listScraper = listScraper;
             _childCareScraper = childCareScraper;

@@ -8,11 +8,13 @@ namespace OdjfsScraper.DataChecker.Commands
 {
     public class GeocodeCommand : Command
     {
+        private readonly IOdjfsSynchronizer _odjfsSynchronizer;
         private readonly SleepOption _geocodeSleepOption;
         private readonly NextOption _nextOption;
 
-        public GeocodeCommand()
+        public GeocodeCommand(IOdjfsSynchronizer odjfsSynchronizer)
         {
+            _odjfsSynchronizer = odjfsSynchronizer;
             _geocodeSleepOption = new SleepOption("geocode", 1000);
             _nextOption = new NextOption("geocode", "child cares");
 
@@ -62,23 +64,21 @@ namespace OdjfsScraper.DataChecker.Commands
             // execute the command
             if (ExternalUrlId != null)
             {
-                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
-                    odjfs.GeocodeChildCare(ctx, ExternalUrlId, mapQuestKey).Wait();
+                    _odjfsSynchronizer.GeocodeChildCare(ctx, ExternalUrlId, mapQuestKey).Wait();
                 }
             }
             else
             {
-                Odjfs odjfs = this.GetOdjfs();
                 using (var ctx = new Entities())
                 {
                     int i = 0;
                     var sleeper = new Sleeper(GeocodeSleep.Value);
-                    while (odjfs.NeedsGeocoding(ctx).Result && (All || i < Next))
+                    while (_odjfsSynchronizer.NeedsGeocoding(ctx).Result && (All || i < Next))
                     {
                         sleeper.Sleep();
-                        odjfs.GeocodeNextChildCare(ctx, mapQuestKey).Wait();
+                        _odjfsSynchronizer.GeocodeNextChildCare(ctx, mapQuestKey).Wait();
                         i++;
                     }
                 }
