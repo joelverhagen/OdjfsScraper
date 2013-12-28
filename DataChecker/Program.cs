@@ -8,6 +8,8 @@ using Ninject.Extensions.Conventions;
 using NLog;
 using OdjfsScraper.DataChecker.Commands;
 using OdjfsScraper.Scraper.Support;
+using PolyGeocoder.Geocoders;
+using PolyGeocoder.Support;
 
 namespace OdjfsScraper.DataChecker
 {
@@ -32,6 +34,19 @@ namespace OdjfsScraper.DataChecker
                 kernel.Bind<IOdjfsClient>()
                     .To<DownloadingOdjfsClient>()
                     .WithConstructorArgument("directory", @"Logs\HTML");
+
+                // set a user agent on the geocoder client
+                kernel.Unbind<IClient>();
+                kernel.Bind<IClient>()
+                    .To<Client>()
+                    .WithConstructorArgument("userAgent", ScraperClient.GetUserAgent());
+
+                // choose a geocoder
+                kernel.Unbind<ISimpleGeocoder>();
+                kernel.Bind<ISimpleGeocoder>()
+                    .To<MapQuestGeocoder>()
+                    .WithConstructorArgument("endpoint", MapQuestGeocoder.LicensedEndpoint)
+                    .WithConstructorArgument("key", Settings.MapQuestKey);
 
                 // activate all commands
                 IEnumerable<ConsoleCommand> commands = kernel

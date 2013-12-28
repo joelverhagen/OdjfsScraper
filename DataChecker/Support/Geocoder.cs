@@ -15,7 +15,13 @@ namespace OdjfsScraper.DataChecker.Support
 {
     public class Geocoder : IGeocoder
     {
+        private readonly ISimpleGeocoder _simpleGeocoder;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        public Geocoder(ISimpleGeocoder simpleGeocoder)
+        {
+            _simpleGeocoder = simpleGeocoder;
+        }
 
         public async Task<bool> NeedsGeocoding(Entities ctx)
         {
@@ -43,7 +49,6 @@ namespace OdjfsScraper.DataChecker.Support
 
             await GeocodeChildCare(ctx, childCare, mapQuestKey);
         }
-
 
         public async Task GeocodeNextChildCare(Entities ctx, string mapQuestKey)
         {
@@ -79,12 +84,8 @@ namespace OdjfsScraper.DataChecker.Support
             ctx.ChildCares.AddOrUpdate(childCare);
             ctx.SaveChanges();
 
-            // create the geocoder
-            IClient geocoderClient = new Client(ScraperClient.GetUserAgent());
-            ISimpleGeocoder geocoder = new MapQuestGeocoder(geocoderClient, MapQuestGeocoder.LicensedEndpoint, mapQuestKey);
-
             // geocode based off the full address
-            Location geocoderLocation = await GetGeocodedLocation(geocoder, string.Join(", ", new[]
+            Location geocoderLocation = await GetGeocodedLocation(string.Join(", ", new[]
             {
                 childCare.Address,
                 childCare.City,
@@ -93,7 +94,7 @@ namespace OdjfsScraper.DataChecker.Support
             }));
             if (geocoderLocation == null)
             {
-                geocoderLocation = await GetGeocodedLocation(geocoder, string.Join(", ", new[]
+                geocoderLocation = await GetGeocodedLocation(string.Join(", ", new[]
                 {
                     childCare.Address,
                     childCare.ZipCode.ToString(CultureInfo.InvariantCulture)
@@ -116,10 +117,10 @@ namespace OdjfsScraper.DataChecker.Support
             await ctx.SaveChangesAsync();
         }
 
-        private async Task<Location> GetGeocodedLocation(ISimpleGeocoder geocoder, string query)
+        private async Task<Location> GetGeocodedLocation(string query)
         {
             Logger.Trace("Geocoding address '{0}'.", query);
-            Response geocoderResponse = await geocoder.GeocodeAsync(query);
+            Response geocoderResponse = await _simpleGeocoder.GeocodeAsync(query);
 
             if (geocoderResponse.Locations.Length != 1)
             {
