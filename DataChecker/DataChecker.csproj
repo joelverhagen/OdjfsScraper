@@ -75,6 +75,9 @@
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Support\ChildCareSynchronizer.cs" />
+    <Compile Include="Support\Geocoder.cs" />
+    <Compile Include="Support\CountySynchronizer.cs" />
     <Compile Include="Support\DaemonEventLoop.cs" />
     <Compile Include="Commands\OdfjsSleepNextCommand.cs" />
     <Compile Include="Commands\OdfjsSleepCommand.cs" />
@@ -87,8 +90,9 @@
     <Compile Include="Commands\GeocodeCommand.cs" />
     <Compile Include="Commands\CountyCommand.cs" />
     <Compile Include="Commands\ChildCareCommand.cs" />
-    <Compile Include="Support\IOdjfsSynchronizer.cs" />
-    <Compile Include="Support\OdjfsSynchronizer.cs" />
+    <Compile Include="Support\IChildCareSynchronizer.cs" />
+    <Compile Include="Support\ICountySynchronizer.cs" />
+    <Compile Include="Support\IGeocoder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\Sleeper.cs" />

@@ -12,12 +12,17 @@ namespace OdjfsScraper.DataChecker.Commands
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        private readonly IChildCareSynchronizer _childCareSynchronizer;
+        private readonly ICountySynchronizer _countySynchronizer;
         private readonly SleepOption _geocodeSleepOption;
-        private readonly IOdjfsSynchronizer _odjfsSynchronizer;
+        private readonly IGeocoder _geocoder;
 
-        public DaemonCommand(IOdjfsSynchronizer odjfsSynchronizer) : base(2000)
+        public DaemonCommand(ICountySynchronizer countySynchronizer, IChildCareSynchronizer childCareSynchronizer, IGeocoder geocoder)
+            : base(2000)
         {
-            _odjfsSynchronizer = odjfsSynchronizer;
+            _countySynchronizer = countySynchronizer;
+            _childCareSynchronizer = childCareSynchronizer;
+            _geocoder = geocoder;
             _geocodeSleepOption = new SleepOption("geocode", 0);
             Geocode = false;
 
@@ -62,18 +67,18 @@ namespace OdjfsScraper.DataChecker.Commands
                     odjfsSleeper.Sleep();
                     if (state.IsCountyStep)
                     {
-                        IgnoreHttpRequestException(() => _odjfsSynchronizer.UpdateNextCounty(ctx).Wait());
+                        IgnoreHttpRequestException(() => _countySynchronizer.UpdateNextCounty(ctx).Wait());
                     }
                     else
                     {
-                        IgnoreHttpRequestException(() => _odjfsSynchronizer.UpdateNextChildCare(ctx).Wait());
+                        IgnoreHttpRequestException(() => _childCareSynchronizer.UpdateNextChildCare(ctx).Wait());
 
                         // geocode everything that needs geocoding...
                         var geocodeSleeper = new Sleeper(GeocodeSleep.Value);
-                        while (Geocode && _odjfsSynchronizer.NeedsGeocoding(ctx).Result)
+                        while (Geocode && _geocoder.NeedsGeocoding(ctx).Result)
                         {
                             geocodeSleeper.Sleep();
-                            _odjfsSynchronizer.GeocodeNextChildCare(ctx, mapQuestKey).Wait();
+                            _geocoder.GeocodeNextChildCare(ctx, mapQuestKey).Wait();
                         }
                     }
                 }

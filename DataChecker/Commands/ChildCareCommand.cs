@@ -6,11 +6,11 @@ namespace OdjfsScraper.DataChecker.Commands
 {
     public class ChildCareCommand : OdfjsSleepNextCommand
     {
-        private readonly IOdjfsSynchronizer _odjfsSynchronizer;
+        private readonly IChildCareSynchronizer _childCareSynchronizer;
 
-        public ChildCareCommand(IOdjfsSynchronizer odjfsSynchronizer) : base(2000, "scrape", "child cares")
+        public ChildCareCommand(IChildCareSynchronizer childCareSynchronizer) : base(2000, "scrape", "child cares")
         {
-            _odjfsSynchronizer = odjfsSynchronizer;
+            _childCareSynchronizer = childCareSynchronizer;
             IsCommand("childcare", "scrape a child care page");
             HasOption("url-id=", "scrape the child care with the specified URL ID (e.g. CDCSFJQMQINKNININI)", v => ExternalUrlId = v);
         }
@@ -39,7 +39,7 @@ namespace OdjfsScraper.DataChecker.Commands
             {
                 using (var ctx = new Entities())
                 {
-                    _odjfsSynchronizer.UpdateChildCare(ctx, ExternalUrlId).Wait();
+                    _childCareSynchronizer.UpdateChildCare(ctx, ExternalUrlId).Wait();
                 }
             }
             else
@@ -50,7 +50,7 @@ namespace OdjfsScraper.DataChecker.Commands
                     for (int i = 0; i < Next; i++)
                     {
                         sleeper.Sleep();
-                        _odjfsSynchronizer.UpdateNextChildCare(ctx).Wait();
+                        _childCareSynchronizer.UpdateNextChildCare(ctx).Wait();
                     }
                 }
             }

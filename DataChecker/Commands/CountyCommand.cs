@@ -6,11 +6,11 @@ namespace OdjfsScraper.DataChecker.Commands
 {
     public class CountyCommand : OdfjsSleepNextCommand
     {
-        private readonly IOdjfsSynchronizer _odjfsSynchronizer;
+        private readonly ICountySynchronizer _countySynchronizer;
 
-        public CountyCommand(IOdjfsSynchronizer odjfsSynchronizer) : base(2000, "scrape", "counties")
+        public CountyCommand(ICountySynchronizer countySynchronizer) : base(2000, "scrape", "counties")
         {
-            _odjfsSynchronizer = odjfsSynchronizer;
+            _countySynchronizer = countySynchronizer;
             IsCommand("county", "scrape a county listing page");
             HasOption("name=", "scrape the county with the specified name (e.g. Franklin)", v => Name = v);
         }
@@ -39,7 +39,7 @@ namespace OdjfsScraper.DataChecker.Commands
             {
                 using (var ctx = new Entities())
                 {
-                    _odjfsSynchronizer.UpdateCounty(ctx, Name).Wait();
+                    _countySynchronizer.UpdateCounty(ctx, Name).Wait();
                 }
             }
             else
@@ -50,7 +50,7 @@ namespace OdjfsScraper.DataChecker.Commands
                     for (int i = 0; i < Next; i++)
                     {
                         sleeper.Sleep();
-                        _odjfsSynchronizer.UpdateNextCounty(ctx).Wait();
+                        _countySynchronizer.UpdateNextCounty(ctx).Wait();
                     }
                 }
             }
