@@ -32,6 +32,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.3.0\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\packages\DotNetZip.1.9.1.8\lib\net20\Ionic.Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.2.1.0\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,7 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exporters\ISrdsExporter.cs" />
+    <Compile Include="Support\DetailedChildCareSrdsSchema.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Exporters\SrdsExporter.cs" />
+    <Compile Include="Support\SrdsAttribute.cs" />
+    <Compile Include="Support\SrdsSchema.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

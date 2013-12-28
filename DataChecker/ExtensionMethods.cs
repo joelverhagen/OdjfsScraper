@@ -5,6 +5,7 @@ using Ninject;
 using Ninject.Extensions.Conventions;
 using Ninject.Parameters;
 using OdjfsScraper.DataChecker.Commands;
+using OdjfsScraper.Exporter.Exporters;
 using OdjfsScraper.Scraper.Scrapers;
 using OdjfsScraper.Scraper.Support;
 
@@ -28,7 +29,7 @@ namespace OdjfsScraper.DataChecker
         {
             IKernel kernel = new StandardKernel();
             kernel.Bind(c => c
-                .FromAssemblyContaining(typeof (IChildCareStubListScraper))
+                .From("OdjfsScraper.Scraper.dll")
                 .SelectAllClasses()
                 .BindAllInterfaces());
 
@@ -36,6 +37,17 @@ namespace OdjfsScraper.DataChecker
             var odjfs = new Odjfs(kernel.Get<IChildCareStubListScraper>(parameter), kernel.Get<IChildCareScraper>(parameter));
 
             return odjfs;
+        }
+
+        public static ISrdsExporter<T> GetSrdsExporter<T>(this Command command)
+        {
+            IKernel kernel = new StandardKernel();
+            kernel.Bind(c => c
+                .From("OdjfsScraper.Exporter.dll")
+                .SelectAllClasses()
+                .BindAllInterfaces());
+
+            return kernel.Get<ISrdsExporter<T>>();
         }
     }
 }

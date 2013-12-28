@@ -70,6 +70,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ExportCommand.cs" />
     <Compile Include="Commands\BackupCommand.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Settings.cs" />
@@ -104,6 +105,10 @@
     <ProjectReference Include="..\Database\Database.csproj">
       <Project>{1e30e5fd-25b1-4f18-a2c2-5f8ac2b80683}</Project>
       <Name>Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Exporter\Exporter.csproj">
+      <Project>{0dea1abe-79c3-40a6-9878-ce8f3b147155}</Project>
+      <Name>Exporter</Name>
     </ProjectReference>
     <ProjectReference Include="..\Model\Model.csproj">
       <Project>{711cc508-53a8-4edb-bbca-b911935da4b0}</Project>
