@@ -58,11 +58,11 @@ namespace OdjfsScraper.Scraper.Support
         public async Task<ClientResponse> GetListDocument(County county, int zipCode)
         {
             // create the query parameter
-            string countyQueryParameter = county == null ? string.Empty : string.Format("County={0}&", county.Name);
+            string countyQueryParameter = county == null ? string.Empty : string.Format("county={0}&", county.Name);
             string zipCodeQueryParameter = zipCode == 0 ? string.Empty : string.Format("Zip={0}&", zipCode);
 
             // create the URL
-            var requestUri = new Uri(string.Format("http://www.odjfs.state.oh.us/cdc/results1.asp?{0}{1}Printable=Y&ShowAllPages=Y", countyQueryParameter, zipCodeQueryParameter));
+            var requestUri = new Uri(string.Format("http://www.odjfs.state.oh.us/cdc/results1.asp?{0}{1}rating=ALL&Printable=Y&ShowAllPages=Y", countyQueryParameter, zipCodeQueryParameter));
 
             // fetch the bytes
             ClientResponse response = await GetResponse(requestUri);
