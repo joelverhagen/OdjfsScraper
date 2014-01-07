@@ -8,7 +8,6 @@ using Ninject.Extensions.Conventions;
 using NLog;
 using OdjfsScraper.DataChecker.Commands;
 using OdjfsScraper.Exporter.Exporters;
-using OdjfsScraper.Scraper.Parsers;
 using OdjfsScraper.Scraper.Scrapers;
 using OdjfsScraper.Scraper.Support;
 using PolyGeocoder.Geocoders;
@@ -28,15 +27,18 @@ namespace OdjfsScraper.DataChecker
 
                 // discover... everything
                 kernel.Bind(c => c
-                    .FromAssemblyContaining(typeof(ICommand), typeof(SrdsExporter<>), typeof(IChildCareScraper))
+                    .FromAssemblyContaining(typeof (ICommand), typeof (SrdsExporter<>), typeof (IChildCareScraper))
                     .SelectAllClasses()
                     .BindAllInterfaces());
 
-                // clear up one ambiguity; we want to save ALL fetched HTML
+                // specify the HTML directory
                 kernel.Unbind<IOdjfsClient>();
                 kernel.Bind<IOdjfsClient>()
                     .To<DownloadingOdjfsClient>()
-                    .WithConstructorArgument("directory", @"Logs\HTML");
+                    .WithConstructorArgument("directory", Settings.HtmlDirectory);
+
+                // specify the logs directory
+                GlobalDiagnosticsContext.Set("LogsDirectory", Settings.LogsDirectory);
 
                 // set a user agent on the geocoder client
                 kernel.Unbind<IClient>();

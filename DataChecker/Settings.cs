@@ -10,6 +10,16 @@ namespace OdjfsScraper.DataChecker
             get { return GetAppSettingOrNull("MapQuestKey"); }
         }
 
+        public static string LogsDirectory
+        {
+            get { return GetAppSettingOrNull("LogsDirectory"); }
+        }
+
+        public static string HtmlDirectory
+        {
+            get { return GetAppSettingOrNull("HtmlDirectory"); }
+        }
+
         private static string GetAppSettingOrNull(string key)
         {
             if (!ConfigurationManager.AppSettings.AllKeys.Contains(key))
