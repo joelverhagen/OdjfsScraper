@@ -62,6 +62,11 @@ namespace OdjfsScraper.DataChecker.Commands
             using (var ctx = new Entities())
             {
                 var state = new DaemonEventLoop(ctx);
+                if (state.CountyCount == 0)
+                {
+                    throw new InvalidOperationException("There are not counties loaded in the database. This should never happen.");
+                }
+
                 var odjfsSleeper = new Sleeper(OdjfsSleep.Value);
                 while (state.NextStep())
                 {

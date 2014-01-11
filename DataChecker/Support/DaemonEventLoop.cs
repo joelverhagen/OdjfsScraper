@@ -27,12 +27,26 @@ namespace OdjfsScraper.DataChecker.Support
 
         public int ChildCaresPerCounty
         {
-            get { return ChildCareCount/CountyCount; }
+            get
+            {
+                if (CountyCount == 0)
+                {
+                    return 0;
+                }
+                return ChildCareCount/CountyCount;
+            }
         }
 
         public bool IsCountyStep
         {
-            get { return CurrentStep%ChildCaresPerCounty == 1; }
+            get
+            {
+                if (ChildCaresPerCounty == 0)
+                {
+                    return true;
+                }
+                return CurrentStep%ChildCaresPerCounty == 1;
+            }
         }
 
         public bool IsChildCareStep
