@@ -2,7 +2,7 @@
 
 namespace OdjfsScraper.Scraper.Support
 {
-    public class ClientResponseHeaders : Dictionary<string, string[]>
+    public class HttpResponseHeaders : Dictionary<string, string[]>
     {
     }
 }

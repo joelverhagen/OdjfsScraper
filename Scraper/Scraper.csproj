@@ -48,8 +48,8 @@
   <ItemGroup>
     <Compile Include="Readers\ChildCareStubListReader.cs" />
     <Compile Include="Readers\ChildCareReader.cs" />
-    <Compile Include="Support\ClientResponse.cs" />
-    <Compile Include="Support\ClientResponseHeaders.cs" />
+    <Compile Include="Support\HttpResponse.cs" />
+    <Compile Include="Support\HttpResponseHeaders.cs" />
     <Compile Include="Support\CsvStreamParser.cs" />
     <Compile Include="Support\ICsvStreamParser.cs" />
     <Compile Include="Support\ParserException.cs" />

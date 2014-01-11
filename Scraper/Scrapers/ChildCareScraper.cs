@@ -38,7 +38,7 @@ namespace OdjfsScraper.Scraper.Scrapers
             }
 
             // fetch the contents
-            ClientResponse response = await _httpReader.GetChildCareDocument(childCareStub);
+            HttpResponse response = await _httpReader.GetChildCareDocument(childCareStub);
             ValidateClientResponse(response);
             if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.InternalServerError)
             {
@@ -63,7 +63,7 @@ namespace OdjfsScraper.Scraper.Scrapers
             }
 
             // fetch the contents
-            ClientResponse response = await _httpReader.GetChildCareDocument(childCare);
+            HttpResponse response = await _httpReader.GetChildCareDocument(childCare);
             ValidateClientResponse(response);
             if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.InternalServerError)
             {
@@ -74,7 +74,7 @@ namespace OdjfsScraper.Scraper.Scrapers
             return _parser.Parse(childCare, response.Content);
         }
 
-        private void ValidateClientResponse(ClientResponse response)
+        private void ValidateClientResponse(HttpResponse response)
         {
             if (response.StatusCode != HttpStatusCode.OK && // the record will be updated (with new parse)
                 response.StatusCode != HttpStatusCode.NotFound && // the record will be deleted

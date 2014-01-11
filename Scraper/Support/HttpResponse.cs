@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace OdjfsScraper.Scraper.Support
 {
-    public class ClientResponse
+    public class HttpResponse
     {
         public Uri RequestUri { get; set; }
-        public ClientResponseHeaders Headers { get; set; }
+        public HttpResponseHeaders Headers { get; set; }
         public HttpStatusCode StatusCode { get; set; }
         public byte[] Content { get; set; }
 
-        public static async Task<ClientResponse> Create(Uri requestUri, HttpResponseMessage response)
+        public static async Task<HttpResponse> Create(Uri requestUri, HttpResponseMessage response)
         {
-            var output = new ClientResponse();
+            var output = new HttpResponse();
 
             // download the body
             output.Content = await response.Content.ReadAsByteArrayAsync();
 
             // copy over the headers
-            output.Headers = new ClientResponseHeaders();
+            output.Headers = new HttpResponseHeaders();
             foreach (var group in response.Headers.GroupBy(p => p.Key, p => p.Value))
             {
                 output.Headers[group.Key] = group.SelectMany(v => v).ToArray();

@@ -27,14 +27,14 @@ namespace OdjfsScraper.Scraper.Scrapers
         public async Task<IEnumerable<ChildCareStub>> Fetch(County county)
         {
             // fetch the contents
-            ClientResponse response = await _httpReader.GetListDocument(county);
+            HttpResponse response = await _httpReader.GetListDocument(county);
             ValidateClientResponse(response);
 
             // extract the information from the HTML
             return _parser.Parse(response.Content, county);
         }
 
-        private void ValidateClientResponse(ClientResponse response)
+        private void ValidateClientResponse(HttpResponse response)
         {
             if (response.StatusCode != HttpStatusCode.OK)
             {

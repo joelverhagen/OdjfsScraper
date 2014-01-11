@@ -7,11 +7,11 @@ namespace OdjfsScraper.Scraper.Support
 {
     public interface IHttpReader
     {
-        Task<ClientResponse> GetChildCareDocument(ChildCareStub childCareStub);
-        Task<ClientResponse> GetChildCareDocument(ChildCare childCare);
-        Task<ClientResponse> GetListDocument();
-        Task<ClientResponse> GetListDocument(int zipCode);
-        Task<ClientResponse> GetListDocument(County county);
-        Task<ClientResponse> GetListDocument(County county, int zipCode);
+        Task<HttpResponse> GetChildCareDocument(ChildCareStub childCareStub);
+        Task<HttpResponse> GetChildCareDocument(ChildCare childCare);
+        Task<HttpResponse> GetListDocument();
+        Task<HttpResponse> GetListDocument(int zipCode);
+        Task<HttpResponse> GetListDocument(County county);
+        Task<HttpResponse> GetListDocument(County county, int zipCode);
     }
 }

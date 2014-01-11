@@ -23,29 +23,29 @@ namespace OdjfsScraper.Scraper.Support
             _hasDirectoryBeenChecked = false;
         }
 
-        protected override async Task HandleChildCareDocumentResponse(ChildCare childCare, ClientResponse response)
+        protected override async Task HandleChildCareDocumentResponse(ChildCare childCare, HttpResponse response)
         {
             await WriteChildCareBytes(childCare.ExternalUrlId, response);
         }
 
-        protected override async Task HandleListDocumentResponse(County county, ClientResponse response)
+        protected override async Task HandleListDocumentResponse(County county, HttpResponse response)
         {
             string countyName = county == null ? "all" : county.Name;
             await WriteBytes("County_" + countyName, response);
         }
 
         protected override async Task HandleChildCareDocumentResponse(ChildCareStub childCareStub,
-            ClientResponse response)
+            HttpResponse response)
         {
             await WriteChildCareBytes(childCareStub.ExternalUrlId, response);
         }
 
-        private async Task WriteChildCareBytes(string externalUrlId, ClientResponse response)
+        private async Task WriteChildCareBytes(string externalUrlId, HttpResponse response)
         {
             await WriteBytes("ChildCare_" + externalUrlId, response);
         }
 
-        private async Task WriteBytes(string fileNamePrefix, ClientResponse response)
+        private async Task WriteBytes(string fileNamePrefix, HttpResponse response)
         {
             // make sure the directory exists before writing to it...
             if (!_hasDirectoryBeenChecked)
