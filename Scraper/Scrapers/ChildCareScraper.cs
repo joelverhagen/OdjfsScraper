@@ -15,12 +15,12 @@ namespace OdjfsScraper.Scraper.Scrapers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IOdjfsClient _odjfsClient;
+        private readonly IHttpReader _httpReader;
         private readonly IChildCareParser _parser;
 
-        public ChildCareScraper(IOdjfsClient odjfsClient, IChildCareParser parser)
+        public ChildCareScraper(IHttpReader httpReader, IChildCareParser parser)
         {
-            _odjfsClient = odjfsClient;
+            _httpReader = httpReader;
             _parser = parser;
         }
 
@@ -38,7 +38,7 @@ namespace OdjfsScraper.Scraper.Scrapers
             }
 
             // fetch the contents
-            ClientResponse response = await _odjfsClient.GetChildCareDocument(childCareStub);
+            ClientResponse response = await _httpReader.GetChildCareDocument(childCareStub);
             ValidateClientResponse(response);
             if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.InternalServerError)
             {
@@ -63,7 +63,7 @@ namespace OdjfsScraper.Scraper.Scrapers
             }
 
             // fetch the contents
-            ClientResponse response = await _odjfsClient.GetChildCareDocument(childCare);
+            ClientResponse response = await _httpReader.GetChildCareDocument(childCare);
             ValidateClientResponse(response);
             if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.InternalServerError)
             {

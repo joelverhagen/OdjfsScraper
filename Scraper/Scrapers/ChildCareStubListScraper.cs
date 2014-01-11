@@ -15,19 +15,19 @@ namespace OdjfsScraper.Scraper.Scrapers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IOdjfsClient _odjfsClient;
+        private readonly IHttpReader _httpReader;
         private readonly IListParser _parser;
 
-        public ChildCareStubListScraper(IOdjfsClient odjfsClient, IListParser parser)
+        public ChildCareStubListScraper(IHttpReader httpReader, IListParser parser)
         {
-            _odjfsClient = odjfsClient;
+            _httpReader = httpReader;
             _parser = parser;
         }
 
         public async Task<IEnumerable<ChildCareStub>> Fetch(County county)
         {
             // fetch the contents
-            ClientResponse response = await _odjfsClient.GetListDocument(county);
+            ClientResponse response = await _httpReader.GetListDocument(county);
             ValidateClientResponse(response);
 
             // extract the information from the HTML

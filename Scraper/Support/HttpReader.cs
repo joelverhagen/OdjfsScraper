@@ -9,11 +9,11 @@ using OdjfsScraper.Model.ChildCareStubs;
 
 namespace OdjfsScraper.Scraper.Support
 {
-    public class OdjfsClient : IOdjfsClient
+    public class HttpReader : IHttpReader
     {
         private readonly ScraperClient _scraperClient;
 
-        public OdjfsClient()
+        public HttpReader()
         {
             _scraperClient = new ScraperClient();
         }

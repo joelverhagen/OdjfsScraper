@@ -5,7 +5,7 @@ using OdjfsScraper.Model.ChildCareStubs;
 
 namespace OdjfsScraper.Scraper.Support
 {
-    public interface IOdjfsClient
+    public interface IHttpReader
     {
         Task<ClientResponse> GetChildCareDocument(ChildCareStub childCareStub);
         Task<ClientResponse> GetChildCareDocument(ChildCare childCare);

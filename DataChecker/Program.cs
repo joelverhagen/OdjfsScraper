@@ -33,9 +33,9 @@ namespace OdjfsScraper.DataChecker
                     .BindAllInterfaces());
 
                 // specify the HTML directory
-                kernel.Unbind<IOdjfsClient>();
-                kernel.Bind<IOdjfsClient>()
-                    .To<DownloadingOdjfsClient>()
+                kernel.Unbind<IHttpReader>();
+                kernel.Bind<IHttpReader>()
+                    .To<DownloadingHttpReader>()
                     .WithConstructorArgument("directory", Settings.HtmlDirectory);
 
                 // specify the logs directory

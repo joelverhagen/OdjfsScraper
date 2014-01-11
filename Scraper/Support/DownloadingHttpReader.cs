@@ -10,14 +10,14 @@ using OdjfsScraper.Model.ChildCareStubs;
 
 namespace OdjfsScraper.Scraper.Support
 {
-    public class DownloadingOdjfsClient : OdjfsClient
+    public class DownloadingHttpReader : HttpReader
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly string _directory;
         private bool _hasDirectoryBeenChecked;
 
-        public DownloadingOdjfsClient(string directory)
+        public DownloadingHttpReader(string directory)
         {
             _directory = directory;
             _hasDirectoryBeenChecked = false;

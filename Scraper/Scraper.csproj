@@ -70,10 +70,10 @@
     <Compile Include="Support\ScraperException.cs" />
     <Compile Include="Scrapers\ChildCareScraper.cs" />
     <Compile Include="Scrapers\ChildCareStubListScraper.cs" />
-    <Compile Include="Support\OdjfsClient.cs" />
-    <Compile Include="Support\DownloadingOdjfsClient.cs" />
+    <Compile Include="Support\HttpReader.cs" />
+    <Compile Include="Support\DownloadingHttpReader.cs" />
     <Compile Include="Support\ExtensionMethods.cs" />
-    <Compile Include="Support\IOdjfsClient.cs" />
+    <Compile Include="Support\IHttpReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.csproj">
