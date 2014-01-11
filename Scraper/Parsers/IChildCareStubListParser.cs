@@ -4,7 +4,7 @@ using OdjfsScraper.Model.ChildCareStubs;
 
 namespace OdjfsScraper.Scraper.Parsers
 {
-    public interface IListParser
+    public interface IChildCareStubListParser
     {
         IEnumerable<ChildCareStub> Parse(byte[] bytes);
         IEnumerable<ChildCareStub> Parse(byte[] bytes, County county);

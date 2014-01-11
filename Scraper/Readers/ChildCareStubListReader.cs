@@ -10,9 +10,9 @@ namespace OdjfsScraper.Scraper.Readers
 {
     public class ChildCareStubListReader : IChildCareStubListFetcher
     {
-        private readonly IListParser _parser;
+        private readonly IChildCareStubListParser _parser;
 
-        public ChildCareStubListReader(IListParser parser)
+        public ChildCareStubListReader(IChildCareStubListParser parser)
         {
             _parser = parser;
         }

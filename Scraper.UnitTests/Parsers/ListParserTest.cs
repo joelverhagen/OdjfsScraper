@@ -15,7 +15,7 @@ namespace OdjfsScraper.Scraper.UnitTests.Parsers
         {
             // ARRANGE
             var template = new ListTemplate();
-            var parser = new ListParser();
+            var parser = new ChildCareStubListParser();
 
             // ACT
             IEnumerable<ChildCareStub> actual = parser.Parse(template.GetDocument());

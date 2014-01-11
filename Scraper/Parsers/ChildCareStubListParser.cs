@@ -11,7 +11,7 @@ using OdjfsScraper.Scraper.Support;
 
 namespace OdjfsScraper.Scraper.Parsers
 {
-    public class ListParser : IListParser
+    public class ChildCareStubListParser : IChildCareStubListParser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

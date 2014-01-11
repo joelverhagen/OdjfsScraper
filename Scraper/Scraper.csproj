@@ -57,13 +57,13 @@
     <Compile Include="Parsers\ChildCareParser.cs" />
     <Compile Include="Parsers\IChildCareParser.cs" />
     <Compile Include="Parsers\IChildCareParserT.cs" />
-    <Compile Include="Parsers\IListParser.cs" />
+    <Compile Include="Parsers\IChildCareStubListParser.cs" />
     <Compile Include="Parsers\TypeAHomeParser.cs" />
     <Compile Include="Parsers\LicensedCenterParser.cs" />
     <Compile Include="Parsers\BaseDetailedChildCareParser.cs" />
     <Compile Include="Parsers\TypeBHomeParser.cs" />
     <Compile Include="Parsers\DayCampParser.cs" />
-    <Compile Include="Parsers\ListParser.cs" />
+    <Compile Include="Parsers\ChildCareStubListParser.cs" />
     <Compile Include="Parsers\BaseChildCareParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\ScraperClient.cs" />

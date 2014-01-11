@@ -16,9 +16,9 @@ namespace OdjfsScraper.Scraper.Scrapers
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly IHttpReader _httpReader;
-        private readonly IListParser _parser;
+        private readonly IChildCareStubListParser _parser;
 
-        public ChildCareStubListScraper(IHttpReader httpReader, IListParser parser)
+        public ChildCareStubListScraper(IHttpReader httpReader, IChildCareStubListParser parser)
         {
             _httpReader = httpReader;
             _parser = parser;
