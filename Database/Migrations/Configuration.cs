@@ -4,7 +4,7 @@ using OdjfsScraper.Model;
 
 namespace OdjfsScraper.Database.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<Entities>
+    public sealed class Configuration : DbMigrationsConfiguration<Entities>
     {
         private static readonly string[] CountyNames =
         {

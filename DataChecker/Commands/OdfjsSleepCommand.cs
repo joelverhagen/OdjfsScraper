@@ -2,7 +2,7 @@
 
 namespace OdjfsScraper.DataChecker.Commands
 {
-    public abstract class OdfjsSleepCommand : Command
+    public abstract class OdfjsSleepCommand : DatabaseCommand
     {
         private readonly SleepOption _odjfsSleepOption;
 

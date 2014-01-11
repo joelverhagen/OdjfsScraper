@@ -18,7 +18,7 @@ namespace OdjfsScraper.DataChecker.Commands
         Bak,
     };
 
-    public class ExportCommand : Command
+    public class ExportCommand : DatabaseCommand
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

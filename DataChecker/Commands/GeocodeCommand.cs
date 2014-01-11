@@ -6,10 +6,10 @@ using OdjfsScraper.DataChecker.Support;
 
 namespace OdjfsScraper.DataChecker.Commands
 {
-    public class GeocodeCommand : Command
+    public class GeocodeCommand : DatabaseCommand
     {
-        private readonly IGeocoder _geocoder;
         private readonly SleepOption _geocodeSleepOption;
+        private readonly IGeocoder _geocoder;
         private readonly NextOption _nextOption;
 
         public GeocodeCommand(IGeocoder geocoder)
