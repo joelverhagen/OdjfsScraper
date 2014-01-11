@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using NLog;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
+using OdjfsScraper.Model.Support;
 using OdjfsScraper.Scraper.Parsers;
 using OdjfsScraper.Scraper.Support;
 
 namespace OdjfsScraper.Scraper.Scrapers
 {
-    public class ChildCareScraper : IChildCareScraper
+    public class ChildCareScraper : IChildCareFetcher
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -23,7 +24,7 @@ namespace OdjfsScraper.Scraper.Scrapers
             _parser = parser;
         }
 
-        public async Task<ChildCare> Scrape(ChildCareStub childCareStub)
+        public async Task<ChildCare> Fetch(ChildCareStub childCareStub)
         {
             // make sure we have a URL ID
             if (string.IsNullOrWhiteSpace(childCareStub.ExternalUrlId))
@@ -48,7 +49,7 @@ namespace OdjfsScraper.Scraper.Scrapers
             return _parser.Parse(childCareStub, response.Content);
         }
 
-        public async Task<ChildCare> Scrape(ChildCare childCare)
+        public async Task<ChildCare> Fetch(ChildCare childCare)
         {
             // make sure we have a URL ID
             if (string.IsNullOrWhiteSpace(childCare.ExternalUrlId))

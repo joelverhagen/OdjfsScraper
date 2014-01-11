@@ -8,8 +8,9 @@ using Ninject.Extensions.Conventions;
 using NLog;
 using OdjfsScraper.DataChecker.Commands;
 using OdjfsScraper.Exporter.Exporters;
-using OdjfsScraper.Scraper.Scrapers;
+using OdjfsScraper.Scraper.Parsers;
 using OdjfsScraper.Scraper.Support;
+using OdjfsScraper.Synchronizer.Synchronizers;
 using PolyGeocoder.Geocoders;
 using PolyGeocoder.Support;
 
@@ -27,7 +28,7 @@ namespace OdjfsScraper.DataChecker
 
                 // discover... everything
                 kernel.Bind(c => c
-                    .FromAssemblyContaining(typeof (ICommand), typeof (SrdsExporter<>), typeof (IChildCareScraper))
+                    .FromAssemblyContaining(typeof (ICommand), typeof (SrdsExporter<>), typeof (IChildCareParser), typeof (IChildCareSynchronizer))
                     .SelectAllClasses()
                     .BindAllInterfaces());
 

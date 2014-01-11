@@ -67,8 +67,6 @@
     <Compile Include="Support\ScraperClient.cs" />
     <Compile Include="Support\ScraperException.cs" />
     <Compile Include="Scrapers\ChildCareScraper.cs" />
-    <Compile Include="Scrapers\IChildCareScraper.cs" />
-    <Compile Include="Scrapers\IChildCareStubListScraper.cs" />
     <Compile Include="Scrapers\ChildCareStubListScraper.cs" />
     <Compile Include="Support\OdjfsClient.cs" />
     <Compile Include="Support\DownloadingOdjfsClient.cs" />

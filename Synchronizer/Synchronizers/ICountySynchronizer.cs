@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using OdjfsScraper.Database;
 
-namespace OdjfsScraper.DataChecker.Support
+namespace OdjfsScraper.Synchronizer.Synchronizers
 {
     public interface ICountySynchronizer
     {

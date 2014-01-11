@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Version;Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Version;Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{711CC508-53A8-4EDB-BBCA-B911935DA4B0}</ProjectGuid>
+    <ProjectGuid>{54DA86D9-BAD6-4FFC-9AF7-3BBFE533AA23}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OdjfsScraper.Model</RootNamespace>
+    <RootNamespace>OdjfsScraper.Synchronizer</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -32,29 +32,44 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.2.1.0\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChildCareStubs\TypeBHomeStub.cs" />
-    <Compile Include="ChildCareStubs\TypeAHomeStub.cs" />
-    <Compile Include="ChildCareStubs\LicensedCenterStub.cs" />
-    <Compile Include="ChildCareStubs\DayCampStub.cs" />
-    <Compile Include="ChildCareStubs\ChildCareStub.cs" />
-    <Compile Include="ChildCares\ChildCare.cs" />
-    <Compile Include="ChildCares\LicensedCenter.cs" />
-    <Compile Include="ChildCares\TypeAHome.cs" />
-    <Compile Include="ChildCares\DayCamp.cs" />
-    <Compile Include="ChildCares\DetailedChildCare.cs" />
-    <Compile Include="ChildCares\TypeBHome.cs" />
-    <Compile Include="County.cs" />
+    <Compile Include="Support\SynchronizerException.cs" />
+    <Compile Include="Synchronizers\ChildCareSynchronizer.cs" />
+    <Compile Include="Synchronizers\CountySynchronizer.cs" />
+    <Compile Include="Synchronizers\IChildCareSynchronizer.cs" />
+    <Compile Include="Synchronizers\ICountySynchronizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Support\IChildCareFetcher.cs" />
-    <Compile Include="Support\IChildCareStubListFetcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Database\Database.csproj">
+      <Project>{1e30e5fd-25b1-4f18-a2c2-5f8ac2b80683}</Project>
+      <Name>Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{711cc508-53a8-4edb-bbca-b911935da4b0}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

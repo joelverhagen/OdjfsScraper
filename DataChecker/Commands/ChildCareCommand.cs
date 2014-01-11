@@ -1,6 +1,7 @@
 ﻿using ManyConsole;
 using OdjfsScraper.Database;
 using OdjfsScraper.DataChecker.Support;
+using OdjfsScraper.Synchronizer.Synchronizers;
 
 namespace OdjfsScraper.DataChecker.Commands
 {

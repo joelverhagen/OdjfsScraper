@@ -9,20 +9,20 @@ using OdjfsScraper.Database;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
-using OdjfsScraper.Scraper.Scrapers;
-using OdjfsScraper.Scraper.Support;
+using OdjfsScraper.Model.Support;
+using OdjfsScraper.Synchronizer.Support;
 
-namespace OdjfsScraper.DataChecker.Support
+namespace OdjfsScraper.Synchronizer.Synchronizers
 {
     public class CountySynchronizer : ICountySynchronizer
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IChildCareStubListScraper _listScraper;
+        private readonly IChildCareStubListFetcher _listFetcher;
 
-        public CountySynchronizer(IChildCareStubListScraper listScraper)
+        public CountySynchronizer(IChildCareStubListFetcher listFetcher)
         {
-            _listScraper = listScraper;
+            _listFetcher = listFetcher;
         }
 
         public async Task UpdateNextCounty(Entities ctx)
@@ -67,7 +67,7 @@ namespace OdjfsScraper.DataChecker.Support
 
             // get the stubs from the web
             Logger.Trace("Scraping stubs for county '{0}'.", county.Name);
-            ChildCareStub[] webStubs = (await _listScraper.Scrape(county)).ToArray();
+            ChildCareStub[] webStubs = (await _listFetcher.Fetch(county)).ToArray();
             Logger.Trace("{0} stubs were scraped.", webStubs.Length);
 
             // get the IDs
@@ -82,7 +82,7 @@ namespace OdjfsScraper.DataChecker.Support
                     .Where(g => g.Length > 0)
                     .Select(g => g[0]);
 
-                var exception = new ScraperException("One more more duplicate child cares were found in the list.");
+                var exception = new SynchronizerException("One more more duplicate child cares were found in the list.");
                 Logger.ErrorException(string.Format(
                     "County: '{0}', HasDuplicates: '{1}', TotalCount: {2}, UniqueCount: {3}",
                     county.Name,
@@ -114,7 +114,7 @@ namespace OdjfsScraper.DataChecker.Support
             {
                 dbStubIds.IntersectWith(dbIds);
 
-                var exception = new ScraperException("There are child cares that exist in both the ChildCare and ChildCareStub tables.");
+                var exception = new SynchronizerException("There are child cares that exist in both the ChildCare and ChildCareStub tables.");
                 Logger.ErrorException(string.Format("County: '{0}', Overlapping: '{1}'", county.Name, string.Join(", ", dbStubIds)), exception);
                 throw exception;
             }

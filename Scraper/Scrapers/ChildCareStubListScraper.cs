@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using NLog;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCareStubs;
+using OdjfsScraper.Model.Support;
 using OdjfsScraper.Scraper.Parsers;
 using OdjfsScraper.Scraper.Support;
 
 namespace OdjfsScraper.Scraper.Scrapers
 {
-    public class ChildCareStubListScraper : IChildCareStubListScraper
+    public class ChildCareStubListScraper : IChildCareStubListFetcher
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -23,17 +24,7 @@ namespace OdjfsScraper.Scraper.Scrapers
             _parser = parser;
         }
 
-        public async Task<IEnumerable<ChildCareStub>> Scrape()
-        {
-            // fetch the contents
-            ClientResponse response = await _odjfsClient.GetListDocument();
-            ValidateClientResponse(response);
-
-            // extract the information from the HTML
-            return _parser.Parse(response.Content);
-        }
-
-        public async Task<IEnumerable<ChildCareStub>> Scrape(County county)
+        public async Task<IEnumerable<ChildCareStub>> Fetch(County county)
         {
             // fetch the contents
             ClientResponse response = await _odjfsClient.GetListDocument(county);

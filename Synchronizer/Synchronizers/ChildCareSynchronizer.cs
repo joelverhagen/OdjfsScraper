@@ -7,19 +7,44 @@ using NLog;
 using OdjfsScraper.Database;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
-using OdjfsScraper.Scraper.Scrapers;
+using OdjfsScraper.Model.Support;
 
-namespace OdjfsScraper.DataChecker.Support
+namespace OdjfsScraper.Synchronizer.Synchronizers
 {
     public class ChildCareSynchronizer : IChildCareSynchronizer
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-       
-        private readonly IChildCareScraper _childCareScraper;
 
-        public ChildCareSynchronizer(IChildCareScraper childCareScraper)
+        private readonly IChildCareFetcher _childCareFetcher;
+
+        public ChildCareSynchronizer(IChildCareFetcher childCareFetcher)
         {
-            _childCareScraper = childCareScraper;
+            _childCareFetcher = childCareFetcher;
+        }
+
+        public async Task UpdateNextChildCare(Entities ctx)
+        {
+            Logger.Trace("Fetching the next stub or child care to scrape.");
+            await UpdateChildCareOrStub(
+                ctx,
+                childCareStubs => childCareStubs
+                    .OrderBy(c => c.LastScrapedOn.HasValue)
+                    .ThenBy(c => c.LastScrapedOn)
+                    .FirstOrDefaultAsync(),
+                childCares => childCares
+                    .OrderBy(c => c.LastScrapedOn)
+                    .FirstOrDefaultAsync());
+        }
+
+        public async Task UpdateChildCare(Entities ctx, string externalUrlId)
+        {
+            Logger.Trace("Fetching the stub or child care with ExternalUrlId '{0}' to scrape.", externalUrlId);
+            await UpdateChildCareOrStub(
+                ctx,
+                childCareStubs => childCareStubs
+                    .FirstOrDefaultAsync(c => c.ExternalUrlId == externalUrlId),
+                childCares => childCares
+                    .FirstOrDefaultAsync(c => c.ExternalUrlId == externalUrlId));
         }
 
         private async Task SetAttachedCountyAsync(Entities ctx, ChildCare childCare)
@@ -38,7 +63,7 @@ namespace OdjfsScraper.DataChecker.Support
             await ctx.SaveChangesAsync();
 
             Logger.Trace("Stub with ID '{0}' will be scraped.", stub.ExternalUrlId);
-            ChildCare newChildCare = await _childCareScraper.Scrape(stub);
+            ChildCare newChildCare = await _childCareFetcher.Fetch(stub);
             ctx.ChildCareStubs.Remove(stub);
             if (newChildCare != null)
             {
@@ -70,7 +95,7 @@ namespace OdjfsScraper.DataChecker.Support
             await ctx.SaveChangesAsync();
 
             Logger.Trace("Child care with ID '{0}' will be scraped.", oldChildCare.ExternalUrlId);
-            ChildCare newChildCare = await _childCareScraper.Scrape(oldChildCare);
+            ChildCare newChildCare = await _childCareFetcher.Fetch(oldChildCare);
             if (newChildCare != null)
             {
                 await SetAttachedCountyAsync(ctx, newChildCare);
@@ -118,31 +143,6 @@ namespace OdjfsScraper.DataChecker.Support
             }
 
             await UpdateChildCare(ctx, childCare);
-        }
-
-        public async Task UpdateNextChildCare(Entities ctx)
-        {
-            Logger.Trace("Fetching the next stub or child care to scrape.");
-            await UpdateChildCareOrStub(
-                ctx,
-                childCareStubs => childCareStubs
-                    .OrderBy(c => c.LastScrapedOn.HasValue)
-                    .ThenBy(c => c.LastScrapedOn)
-                    .FirstOrDefaultAsync(),
-                childCares => childCares
-                    .OrderBy(c => c.LastScrapedOn)
-                    .FirstOrDefaultAsync());
-        }
-
-        public async Task UpdateChildCare(Entities ctx, string externalUrlId)
-        {
-            Logger.Trace("Fetching the stub or child care with ExternalUrlId '{0}' to scrape.", externalUrlId);
-            await UpdateChildCareOrStub(
-                ctx,
-                childCareStubs => childCareStubs
-                    .FirstOrDefaultAsync(c => c.ExternalUrlId == externalUrlId),
-                childCares => childCares
-                    .FirstOrDefaultAsync(c => c.ExternalUrlId == externalUrlId));
         }
     }
 }

@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 using NLog;
 using OdjfsScraper.Database;
 using OdjfsScraper.Model.ChildCares;
-using OdjfsScraper.Scraper.Support;
-using PolyGeocoder.Geocoders;
 using PolyGeocoder.Support;
 
 namespace OdjfsScraper.DataChecker.Support
 {
     public class Geocoder : IGeocoder
     {
-        private readonly ISimpleGeocoder _simpleGeocoder;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly ISimpleGeocoder _simpleGeocoder;
 
         public Geocoder(ISimpleGeocoder simpleGeocoder)
         {
