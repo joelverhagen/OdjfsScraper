@@ -46,6 +46,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Readers\ChildCareStubListReader.cs" />
+    <Compile Include="Readers\ChildCareReader.cs" />
     <Compile Include="Support\ClientResponse.cs" />
     <Compile Include="Support\ClientResponseHeaders.cs" />
     <Compile Include="Support\CsvStreamParser.cs" />
