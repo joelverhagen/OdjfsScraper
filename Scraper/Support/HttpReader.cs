@@ -40,29 +40,13 @@ namespace OdjfsScraper.Scraper.Support
             return response;
         }
 
-        public async Task<HttpResponse> GetListDocument()
-        {
-            return await GetListDocument(null, 0);
-        }
-
-        public async Task<HttpResponse> GetListDocument(int zipCode)
-        {
-            return await GetListDocument(null, zipCode);
-        }
-
         public async Task<HttpResponse> GetListDocument(County county)
-        {
-            return await GetListDocument(county, 0);
-        }
-
-        public async Task<HttpResponse> GetListDocument(County county, int zipCode)
         {
             // create the query parameter
             string countyQueryParameter = county == null ? string.Empty : string.Format("county={0}&", county.Name);
-            string zipCodeQueryParameter = zipCode == 0 ? string.Empty : string.Format("Zip={0}&", zipCode);
 
             // create the URL
-            var requestUri = new Uri(string.Format("http://www.odjfs.state.oh.us/cdc/results1.asp?{0}{1}rating=ALL&Printable=Y&ShowAllPages=Y", countyQueryParameter, zipCodeQueryParameter));
+            var requestUri = new Uri(string.Format("http://www.odjfs.state.oh.us/cdc/results1.asp?{0}rating=ALL&Printable=Y&ShowAllPages=Y", countyQueryParameter));
 
             // fetch the bytes
             HttpResponse response = await GetResponse(requestUri);
