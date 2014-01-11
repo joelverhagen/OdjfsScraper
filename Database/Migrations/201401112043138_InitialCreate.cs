@@ -117,10 +117,31 @@ namespace OdjfsScraper.Database.Migrations
                     SundayReported = c.Boolean(false),
                     SundayBegin = c.DateTime(),
                     SundayEnd = c.DateTime(),
-                    DetailedChildCareType = c.String(false, 128),
                 })
                 .PrimaryKey(t => t.ChildCareId)
                 .ForeignKey("dbo.ChildCare", t => t.ChildCareId)
+                .Index(t => t.ChildCareId);
+
+            CreateTable(
+                "dbo.LicensedCenter",
+                c => new
+                {
+                    ChildCareId = c.Int(false),
+                    DetailedChildCareType = c.String(false, 128),
+                })
+                .PrimaryKey(t => t.ChildCareId)
+                .ForeignKey("dbo.DetailedChildCare", t => t.ChildCareId)
+                .Index(t => t.ChildCareId);
+
+            CreateTable(
+                "dbo.TypeAHome",
+                c => new
+                {
+                    ChildCareId = c.Int(false),
+                    DetailedChildCareType = c.String(false, 128),
+                })
+                .PrimaryKey(t => t.ChildCareId)
+                .ForeignKey("dbo.DetailedChildCare", t => t.ChildCareId)
                 .Index(t => t.ChildCareId);
 
             CreateTable(
@@ -135,21 +156,37 @@ namespace OdjfsScraper.Database.Migrations
                 .PrimaryKey(t => t.ChildCareId)
                 .ForeignKey("dbo.ChildCare", t => t.ChildCareId)
                 .Index(t => t.ChildCareId);
+
+            // add some unique constraints
+            CreateIndex("dbo.County", new[] {"Name"}, true);
+            CreateIndex("dbo.ChildCare", new[] {"ExternalUrlId"}, true);
+            CreateIndex("dbo.ChildCareStub", new[] {"ExternalUrlId"}, true);
         }
 
         public override void Down()
         {
+            // drop some unique constraints
+            DropIndex("dbo.ChildCareStub", new[] {"ExternalUrlId"});
+            DropIndex("dbo.ChildCare", new[] {"ExternalUrlId"});
+            DropIndex("dbo.County", new[] {"Name"});
+
             DropForeignKey("dbo.TypeBHome", "ChildCareId", "dbo.ChildCare");
+            DropForeignKey("dbo.TypeAHome", "ChildCareId", "dbo.DetailedChildCare");
+            DropForeignKey("dbo.LicensedCenter", "ChildCareId", "dbo.DetailedChildCare");
             DropForeignKey("dbo.DetailedChildCare", "ChildCareId", "dbo.ChildCare");
             DropForeignKey("dbo.DayCamp", "ChildCareId", "dbo.ChildCare");
             DropForeignKey("dbo.ChildCareStub", "CountyId", "dbo.County");
             DropForeignKey("dbo.ChildCare", "CountyId", "dbo.County");
             DropIndex("dbo.TypeBHome", new[] {"ChildCareId"});
+            DropIndex("dbo.TypeAHome", new[] {"ChildCareId"});
+            DropIndex("dbo.LicensedCenter", new[] {"ChildCareId"});
             DropIndex("dbo.DetailedChildCare", new[] {"ChildCareId"});
             DropIndex("dbo.DayCamp", new[] {"ChildCareId"});
             DropIndex("dbo.ChildCareStub", new[] {"CountyId"});
             DropIndex("dbo.ChildCare", new[] {"CountyId"});
             DropTable("dbo.TypeBHome");
+            DropTable("dbo.TypeAHome");
+            DropTable("dbo.LicensedCenter");
             DropTable("dbo.DetailedChildCare");
             DropTable("dbo.DayCamp");
             DropTable("dbo.ChildCareStub");

@@ -7,18 +7,13 @@ namespace OdjfsScraper.Database
 {
     public class Entities : DbContext
     {
-        public Entities() : base("Odjfs")
-        {
-        }
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // put all of the tables in the same table schema ("odjfs.<table name>")
+            // name all tables
             modelBuilder.Types()
                 .Where(t => !typeof (ChildCareStub).IsAssignableFrom(t) || t == typeof (ChildCareStub))
-                .Where(t => !typeof (DetailedChildCare).IsAssignableFrom(t) || t == typeof (DetailedChildCare))
                 .Configure(c => c.ToTable(c.ClrType.Name));
 
             // set up some columns to have unique constraints
@@ -31,49 +26,38 @@ namespace OdjfsScraper.Database
             modelBuilder.Entity<County>()
                 .Property(c => c.Name).IsRequired().HasMaxLength(10);
 
-            // inheritance: table-per-hierarchy
+            // inheritance
             modelBuilder.Entity<ChildCareStub>()
                 .Map<TypeAHomeStub>(x => x.Requires("ChildCareType").HasValue(TypeAHomeStub.Discriminator))
                 .Map<TypeBHomeStub>(x => x.Requires("ChildCareType").HasValue(TypeBHomeStub.Discriminator))
                 .Map<LicensedCenterStub>(x => x.Requires("ChildCareType").HasValue(LicensedCenterStub.Discriminator))
                 .Map<DayCampStub>(x => x.Requires("ChildCareType").HasValue(DayCampStub.Discriminator));
 
-            // inheritance: table-per-hierarchy
+            // inheritance
             modelBuilder.Entity<DetailedChildCare>()
                 .Ignore(e => e.DetailedChildCareType)
                 .Map<TypeAHome>(x => x.Requires("DetailedChildCareType").HasValue(TypeAHome.DetailedDiscriminator))
                 .Map<LicensedCenter>(x => x.Requires("DetailedChildCareType").HasValue(LicensedCenter.DetailedDiscriminator));
 
-            // inheritance: table-per-type
+            // inheritance
             modelBuilder.Entity<ChildCare>()
                 .Map<TypeBHome>(x => x.Requires("ChildCareType").HasValue(TypeBHome.Discriminator))
                 .Map<DayCamp>(x => x.Requires("ChildCareType").HasValue(DayCamp.Discriminator))
                 .Map<DetailedChildCare>(x => x.Requires("ChildCareType").HasValue(DetailedChildCare.Discriminator));
 
-            // name the ID name columns unique per hierarchy
-            modelBuilder
-                .Properties()
-                .Where(p => p.Name == "Id")
-                .Where(p => typeof (ChildCareStub).IsAssignableFrom(p.DeclaringType))
-                .Configure(c => c.HasColumnName("ChildCareStubId"));
-
-            modelBuilder
-                .Properties()
-                .Where(p => p.Name == "Id")
-                .Where(p => typeof (ChildCare).IsAssignableFrom(p.DeclaringType))
-                .Configure(c => c.HasColumnName("ChildCareId"));
-
-            modelBuilder.Entity<County>()
-                .Property(c => c.Id).HasColumnName("CountyId");
+            // name the identity columns in a sane fashion
+            modelBuilder.Entity<County>().Property(c => c.Id).HasColumnName("CountyId");
+            modelBuilder.Entity<ChildCare>().Property(c => c.Id).HasColumnName("ChildCareId");
+            modelBuilder.Entity<ChildCareStub>().Property(c => c.Id).HasColumnName("ChildCareStubId");
         }
 
-        #region Dependent Entites
+        #region County Entities
 
         public IDbSet<County> Counties { get; set; }
 
         #endregion
 
-        #region ChildCareStubs
+        #region ChildCareStub Entities
 
         public IDbSet<ChildCareStub> ChildCareStubs { get; set; }
         public IDbSet<TypeAHomeStub> TypeAHomeStubs { get; set; }
@@ -83,7 +67,7 @@ namespace OdjfsScraper.Database
 
         #endregion
 
-        #region ChildCares
+        #region ChildCare Entities
 
         public IDbSet<ChildCare> ChildCares { get; set; }
         public IDbSet<DetailedChildCare> DetailedChildCares { get; set; }

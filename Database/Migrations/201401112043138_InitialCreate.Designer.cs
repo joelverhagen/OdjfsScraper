@@ -13,7 +13,7 @@ namespace OdjfsScraper.Database.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201312191832366_InitialCreate"; }
+            get { return "201401112043138_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source
