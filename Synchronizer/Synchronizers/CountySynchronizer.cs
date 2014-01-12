@@ -9,7 +9,7 @@ using OdjfsScraper.Database;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
-using OdjfsScraper.Model.Support;
+using OdjfsScraper.Model.Fetchers;
 using OdjfsScraper.Synchronizer.Support;
 
 namespace OdjfsScraper.Synchronizer.Synchronizers

@@ -7,7 +7,7 @@ using NLog;
 using OdjfsScraper.Database;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
-using OdjfsScraper.Model.Support;
+using OdjfsScraper.Model.Fetchers;
 
 namespace OdjfsScraper.Synchronizer.Synchronizers
 {

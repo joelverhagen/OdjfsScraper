@@ -120,9 +120,13 @@
       <Project>{711cc508-53a8-4edb-bbca-b911935da4b0}</Project>
       <Name>Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Scraper\Scraper.csproj">
+    <ProjectReference Include="..\Fetcher\Fetcher.csproj">
       <Project>{393f1b81-3f51-45dc-976c-3bd31d2a71de}</Project>
-      <Name>Scraper</Name>
+      <Name>Fetcher</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Parser\Parser.csproj">
+      <Project>{c86f6694-1fce-46d3-b9b7-69512d9d722b}</Project>
+      <Name>Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\Synchronizer\Synchronizer.csproj">
       <Project>{54da86d9-bad6-4ffc-9af7-3bbfe533aa23}</Project>
