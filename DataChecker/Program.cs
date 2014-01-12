@@ -8,6 +8,7 @@ using Ninject.Extensions.Conventions;
 using NLog;
 using OdjfsScraper.DataChecker.Commands;
 using OdjfsScraper.Exporter.Exporters;
+using OdjfsScraper.Scraper.Fetchers;
 using OdjfsScraper.Scraper.Parsers;
 using OdjfsScraper.Scraper.Support;
 using OdjfsScraper.Synchronizer.Synchronizers;
@@ -33,9 +34,9 @@ namespace OdjfsScraper.DataChecker
                     .BindAllInterfaces());
 
                 // specify the HTML directory
-                kernel.Unbind<IHttpReader>();
-                kernel.Bind<IHttpReader>()
-                    .To<DownloadingHttpReader>()
+                kernel.Unbind<IHttpStreamFetcher>();
+                kernel.Bind<IHttpStreamFetcher>()
+                    .To<DownloadingHttpStreamFetcher>()
                     .WithConstructorArgument("directory", Settings.HtmlDirectory);
 
                 // specify the logs directory

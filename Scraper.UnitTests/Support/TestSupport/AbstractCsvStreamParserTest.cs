@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OdjfsScraper.Scraper.Parsers;
 using OdjfsScraper.Scraper.Support;
 
 namespace OdjfsScraper.Scraper.UnitTests.Support.TestSupport

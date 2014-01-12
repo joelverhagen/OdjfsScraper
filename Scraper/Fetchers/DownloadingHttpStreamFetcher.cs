@@ -1,52 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NLog;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
+using OdjfsScraper.Scraper.Support;
 
-namespace OdjfsScraper.Scraper.Support
+namespace OdjfsScraper.Scraper.Fetchers
 {
-    public class DownloadingHttpReader : HttpReader
+    public class DownloadingHttpStreamFetcher : HttpStreamFetcher
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly string _directory;
         private bool _hasDirectoryBeenChecked;
 
-        public DownloadingHttpReader(string directory)
+        public DownloadingHttpStreamFetcher(string directory)
         {
             _directory = directory;
             _hasDirectoryBeenChecked = false;
         }
 
-        protected override async Task HandleChildCareDocumentResponse(ChildCare childCare, HttpResponse response)
+        protected override Task<Stream> GetChildCareDocumentStream(HttpResponseMessage response, ChildCare childCare)
         {
-            await WriteChildCareBytes(childCare.ExternalUrlId, response);
+            return GetChildCareDocumentStream(childCare.ExternalUrlId, response.StatusCode, () => base.GetChildCareDocumentStream(response, childCare));
         }
 
-        protected override async Task HandleListDocumentResponse(County county, HttpResponse response)
+        protected override Task<Stream> GetChildCareDocumentStream(HttpResponseMessage response, ChildCareStub childCareStub)
         {
-            string countyName = county == null ? "all" : county.Name;
-            await WriteBytes("County_" + countyName, response);
+            return GetChildCareDocumentStream(childCareStub.ExternalUrlId, response.StatusCode, () => base.GetChildCareDocumentStream(response, childCareStub));
         }
 
-        protected override async Task HandleChildCareDocumentResponse(ChildCareStub childCareStub,
-            HttpResponse response)
+        private async Task<Stream> GetChildCareDocumentStream(string externalUrlId, HttpStatusCode httpStatusCode, Func<Task<Stream>> getStream)
         {
-            await WriteChildCareBytes(childCareStub.ExternalUrlId, response);
+            // get the actual stream
+            Stream stream = await getStream();
+
+            // write the stream to disk and read then read from disk
+            return await WriteAndGetStream(string.Format("ChildCare_{0}", externalUrlId), httpStatusCode, stream);
         }
 
-        private async Task WriteChildCareBytes(string externalUrlId, HttpResponse response)
+        protected override async Task<Stream> GetChildCareStubListDocumentStream(HttpResponseMessage response, County county)
         {
-            await WriteBytes("ChildCare_" + externalUrlId, response);
+            // get the actual stream
+            Stream stream = await base.GetChildCareStubListDocumentStream(response, county);
+
+            // write the stream to disk and read then read from disk
+            return await WriteAndGetStream(string.Format("County_{0}", county.Name), response.StatusCode, stream);
         }
 
-        private async Task WriteBytes(string fileNamePrefix, HttpResponse response)
+        private async Task<Stream> WriteAndGetStream(string fileNamePrefix, HttpStatusCode httpStatusCode, Stream stream)
         {
+            // buffer the stream
+            byte[] bytes = await stream.ReadAsByteArrayAsync();
+
             // make sure the directory exists before writing to it...
             if (!_hasDirectoryBeenChecked)
             {
@@ -61,26 +73,26 @@ namespace OdjfsScraper.Scraper.Support
             string newCurrentPath = Path.Combine(_directory, string.Format(
                 "{0}_Current_{1}_{2}.html",
                 fileNamePrefix,
-                response.StatusCode,
-                response.Content.GetSha256Hash()));
+                httpStatusCode,
+                bytes.GetSha256Hash()));
 
-            if (File.Exists(newCurrentPath))
+            if (!File.Exists(newCurrentPath))
             {
-                return;
+                // make sure the old "Current" file is moved
+                MoveOldCurrentVersion(fileNamePrefix);
+
+                // write the new "Current" file
+                using (var outputStream = new FileStream(newCurrentPath, FileMode.Create, FileAccess.Write))
+                {
+                    // write to the file
+                    await outputStream.WriteAsync(bytes, 0, bytes.Length);
+                }
             }
 
-            // make sure the old "Current" file is moved
-            MoveOldCurrentVersion(fileNamePrefix, newCurrentPath);
-
-            // write the new "Current" file
-            using (var outputStream = new FileStream(newCurrentPath, FileMode.Create, FileAccess.Write))
-            {
-                // write to the file
-                await outputStream.WriteAsync(response.Content, 0, response.Content.Length);
-            }
+            return new FileStream(newCurrentPath, FileMode.Open);
         }
 
-        private void MoveOldCurrentVersion(string fileNamePrefix, string newCurrentPath)
+        private void MoveOldCurrentVersion(string fileNamePrefix)
         {
             // get all of the file names with the same prefix
             IEnumerable<string> filePaths = Directory.EnumerateFiles(_directory,

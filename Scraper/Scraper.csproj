@@ -46,12 +46,16 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Readers\ChildCareStubListReader.cs" />
-    <Compile Include="Readers\ChildCareReader.cs" />
-    <Compile Include="Support\HttpResponse.cs" />
-    <Compile Include="Support\HttpResponseHeaders.cs" />
-    <Compile Include="Support\CsvStreamParser.cs" />
-    <Compile Include="Support\ICsvStreamParser.cs" />
+    <Compile Include="Fetchers\DownloadingHttpStreamFetcher.cs" />
+    <Compile Include="Fetchers\FileSystemStreamFetcher.cs" />
+    <Compile Include="Fetchers\HttpStreamFetcher.cs" />
+    <Compile Include="Fetchers\IChildCareFetcher.cs" />
+    <Compile Include="Fetchers\IChildCareStubListFetcher.cs" />
+    <Compile Include="Fetchers\IFileSystemStreamFetcher.cs" />
+    <Compile Include="Fetchers\IHttpStreamFetcher.cs" />
+    <Compile Include="Fetchers\IStreamFetcher.cs" />
+    <Compile Include="Parsers\CsvStreamParser.cs" />
+    <Compile Include="Parsers\ICsvStreamParser.cs" />
     <Compile Include="Support\ParserException.cs" />
     <Compile Include="Parsers\AbstractChildCareParser.cs" />
     <Compile Include="Parsers\ChildCareParser.cs" />
@@ -68,12 +72,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\ScraperClient.cs" />
     <Compile Include="Support\ScraperException.cs" />
-    <Compile Include="Scrapers\ChildCareScraper.cs" />
-    <Compile Include="Scrapers\ChildCareStubListScraper.cs" />
-    <Compile Include="Support\HttpReader.cs" />
-    <Compile Include="Support\DownloadingHttpReader.cs" />
+    <Compile Include="Fetchers\ChildCareFetcher.cs" />
+    <Compile Include="Fetchers\ChildCareStubListFetcher.cs" />
     <Compile Include="Support\ExtensionMethods.cs" />
-    <Compile Include="Support\IHttpReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.csproj">

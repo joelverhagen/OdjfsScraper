@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using OdjfsScraper.Scraper.Parsers;
 using OdjfsScraper.Scraper.Support;
 
 namespace OdjfsScraper.Scraper.UnitTests.Support.TestSupport

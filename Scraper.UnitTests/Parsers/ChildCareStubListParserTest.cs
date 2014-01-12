@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCareStubs;
 using OdjfsScraper.Scraper.Parsers;
 using OdjfsScraper.Scraper.UnitTests.Parsers.TestSupport;
@@ -8,7 +9,7 @@ using OdjfsScraper.Scraper.UnitTests.Parsers.TestSupport;
 namespace OdjfsScraper.Scraper.UnitTests.Parsers
 {
     [TestClass]
-    public class ListParserTest
+    public class ChildCareStubListParserTest
     {
         [TestMethod]
         public void HappyPath()
@@ -18,7 +19,7 @@ namespace OdjfsScraper.Scraper.UnitTests.Parsers
             var parser = new ChildCareStubListParser();
 
             // ACT
-            IEnumerable<ChildCareStub> actual = parser.Parse(template.GetDocument());
+            IEnumerable<ChildCareStub> actual = parser.Parse(new County(), template.GetDocument());
 
             // ASSERT
             VerifyAreEqual(template.Model, actual);

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace OdjfsScraper.Scraper.Support
+namespace OdjfsScraper.Scraper.Parsers
 {
     public interface ICsvStreamParser<out TOut>
     {

@@ -63,7 +63,7 @@
     <Compile Include="Parsers\TypeAHomeParserTest.cs" />
     <Compile Include="Parsers\LicensedCenterParserTest.cs" />
     <Compile Include="Parsers\DayCampParserTest.cs" />
-    <Compile Include="Parsers\ListParserTest.cs" />
+    <Compile Include="Parsers\ChildCareStubListParserTest.cs" />
     <Compile Include="Parsers\TypeBHomeParserTest.cs" />
     <Compile Include="Parsers\TestSupport\ChildCareTemplate.cs" />
     <Compile Include="Parsers\TestSupport\DetailedChildCareHomeTemplate.cs" />

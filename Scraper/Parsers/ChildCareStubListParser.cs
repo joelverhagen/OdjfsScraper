@@ -15,12 +15,7 @@ namespace OdjfsScraper.Scraper.Parsers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public IEnumerable<ChildCareStub> Parse(byte[] bytes)
-        {
-            return Parse(bytes, null);
-        }
-
-        public IEnumerable<ChildCareStub> Parse(byte[] bytes, County county)
+        public IEnumerable<ChildCareStub> Parse(County county, byte[] bytes)
         {
             // parse the HTML
             CQ document = CQ.Create(new MemoryStream(bytes));
@@ -45,10 +40,7 @@ namespace OdjfsScraper.Scraper.Parsers
 
             // parse the rows using the child parser
             IEnumerable<ChildCareStub> stubs = rows.Select(r => ParseRow(r, county));
-            if (county != null)
-            {
-                county.LastScrapedOn = DateTime.Now;
-            }
+            county.LastScrapedOn = DateTime.Now;
 
             return stubs;
         }

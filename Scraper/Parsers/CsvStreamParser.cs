@@ -3,8 +3,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualBasic.FileIO;
 using NLog;
+using OdjfsScraper.Scraper.Support;
 
-namespace OdjfsScraper.Scraper.Support
+namespace OdjfsScraper.Scraper.Parsers
 {
     public abstract class CsvStreamParser<TOut> : ICsvStreamParser<TOut>
     {

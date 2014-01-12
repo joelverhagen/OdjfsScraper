@@ -2,7 +2,7 @@
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
 
-namespace OdjfsScraper.Model.Support
+namespace OdjfsScraper.Scraper.Fetchers
 {
     public interface IChildCareFetcher
     {

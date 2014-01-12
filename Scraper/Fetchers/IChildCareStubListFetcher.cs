@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCareStubs;
 
-namespace OdjfsScraper.Model.Support
+namespace OdjfsScraper.Scraper.Fetchers
 {
     public interface IChildCareStubListFetcher
     {

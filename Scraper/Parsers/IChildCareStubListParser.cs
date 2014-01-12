@@ -6,7 +6,6 @@ namespace OdjfsScraper.Scraper.Parsers
 {
     public interface IChildCareStubListParser
     {
-        IEnumerable<ChildCareStub> Parse(byte[] bytes);
-        IEnumerable<ChildCareStub> Parse(byte[] bytes, County county);
+        IEnumerable<ChildCareStub> Parse(County county, byte[] bytes);
     }
 }

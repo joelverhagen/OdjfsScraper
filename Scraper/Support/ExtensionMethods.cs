@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using CsQuery;
 
 namespace OdjfsScraper.Scraper.Support
@@ -54,6 +56,21 @@ namespace OdjfsScraper.Scraper.Support
             return ((AssemblyInformationalVersionAttribute) assembly
                 .GetCustomAttributes(typeof (AssemblyInformationalVersionAttribute), false)[0])
                 .InformationalVersion;
+        }
+
+        public static async Task<byte[]> ReadAsByteArrayAsync(this Stream stream)
+        {
+            var outputStream = new MemoryStream();
+            await stream.CopyToAsync(outputStream);
+            return outputStream.ToArray();
+        }
+
+        public static async Task<string> ReadAsStringAsync(this Stream stream)
+        {
+            using (var reader = new StreamReader(stream))
+            {
+                return await reader.ReadToEndAsync();
+            }
         }
     }
 }
