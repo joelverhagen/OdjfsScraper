@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using OdjfsScraper.Fetcher.Support;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
@@ -10,9 +11,15 @@ namespace OdjfsScraper.Fetcher.Fetchers
 {
     public class FileSystemStreamFetcher : IFileSystemStreamFetcher
     {
+        private readonly IFileSystem _fileSystem;
         private IDictionary<string, string> _childCarePaths;
         private IDictionary<string, string> _countyPaths;
         private string _directory;
+
+        public FileSystemStreamFetcher(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
 
         public Task<Stream> GetChildCareDocument(ChildCareStub childCareStub)
         {
@@ -91,7 +98,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
 
         private Task<Stream> GetFileStream(string path)
         {
-            return Task.FromResult((Stream) new FileStream(path, FileMode.Open));
+            return Task.FromResult(_fileSystem.FileOpen(path, FileMode.Open));
         }
 
         private void ExploreDirectory()
@@ -106,7 +113,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 throw new InvalidOperationException("The directory has not been set.");
             }
 
-            IEnumerable<string> paths = Directory.EnumerateFiles(_directory, "*.html", SearchOption.TopDirectoryOnly);
+            IEnumerable<string> paths = _fileSystem.DirectoryEnumerateFiles(_directory, "*.html", SearchOption.TopDirectoryOnly);
             IDictionary<string, string> childCarePaths = new Dictionary<string, string>();
             IDictionary<string, string> countyPaths = new Dictionary<string, string>();
 

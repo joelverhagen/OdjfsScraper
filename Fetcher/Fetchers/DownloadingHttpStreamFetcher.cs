@@ -18,10 +18,12 @@ namespace OdjfsScraper.Fetcher.Fetchers
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly string _directory;
+        private readonly IFileSystem _fileSystem;
         private bool _hasDirectoryBeenChecked;
 
-        public DownloadingHttpStreamFetcher(string directory)
+        public DownloadingHttpStreamFetcher(IFileSystem fileSystem, string directory)
         {
+            _fileSystem = fileSystem;
             _directory = directory;
             _hasDirectoryBeenChecked = false;
         }
@@ -62,9 +64,9 @@ namespace OdjfsScraper.Fetcher.Fetchers
             // make sure the directory exists before writing to it...
             if (!_hasDirectoryBeenChecked)
             {
-                if (!Directory.Exists(_directory))
+                if (!_fileSystem.DirectoryExists(_directory))
                 {
-                    Directory.CreateDirectory(_directory);
+                    _fileSystem.DirectoryCreateDirectory(_directory);
                 }
                 _hasDirectoryBeenChecked = true;
             }
@@ -76,7 +78,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 httpStatusCode,
                 bytes.GetSha256Hash()));
 
-            if (!File.Exists(newCurrentPath))
+            if (!_fileSystem.FileExists(newCurrentPath))
             {
                 // make sure the old "Current" file is moved
                 MoveOldCurrentVersion(fileNamePrefix);
@@ -95,7 +97,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
         private void MoveOldCurrentVersion(string fileNamePrefix)
         {
             // get all of the file names with the same prefix
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(_directory,
+            IEnumerable<string> filePaths = _fileSystem.DirectoryEnumerateFiles(_directory,
                 string.Format("{0}*.html", fileNamePrefix), SearchOption.TopDirectoryOnly);
 
             int largestVersionNumber = -1;
@@ -147,7 +149,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 string fromPath = Path.Combine(_directory, oldCurrentFileName);
                 string toPath = Path.Combine(_directory, newIndexFileName);
 
-                File.Move(fromPath, toPath);
+                _fileSystem.FileMove(fromPath, toPath);
             }
         }
     }

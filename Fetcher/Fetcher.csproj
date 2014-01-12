@@ -49,6 +49,8 @@
     <Compile Include="Fetchers\IHttpStreamFetcher.cs" />
     <Compile Include="Fetchers\IStreamFetcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Support\FileSystem.cs" />
+    <Compile Include="Support\IFileSystem.cs" />
     <Compile Include="Support\ScraperClient.cs" />
     <Compile Include="Support\ScraperException.cs" />
     <Compile Include="Fetchers\ChildCareFetcher.cs" />
