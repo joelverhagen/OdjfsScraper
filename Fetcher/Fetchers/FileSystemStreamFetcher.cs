@@ -88,9 +88,9 @@ namespace OdjfsScraper.Fetcher.Fetchers
 
             // get the path
             string path;
-            if (!_countyPaths.TryGetValue(name, out path))
+            if (!_countyPaths.TryGetValue(name.ToUpper(), out path))
             {
-                return null;
+                return Task.FromResult((Stream)null);
             }
 
             return GetFileStream(path);
@@ -155,7 +155,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 }
 
                 // load the path
-                dictionary[tokens[1]] = path;
+                dictionary[tokens[1].ToUpper()] = path;
             }
 
             // we're done

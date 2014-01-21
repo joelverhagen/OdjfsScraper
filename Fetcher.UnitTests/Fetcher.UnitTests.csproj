@@ -37,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1312.1622\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -52,13 +55,21 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Fetchers\FileSystemStreamFetcherTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Fetchers\" />
+    <ProjectReference Include="..\Fetcher\Fetcher.csproj">
+      <Project>{393f1b81-3f51-45dc-976c-3bd31d2a71de}</Project>
+      <Name>Fetcher</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{711cc508-53a8-4edb-bbca-b911935da4b0}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
