@@ -15,13 +15,6 @@ namespace OdjfsScraper.Fetcher.Support
             return BitConverter.ToString(hashBytes).Replace("-", "");
         }
 
-        public static string GetInformationalVersion(this Assembly assembly)
-        {
-            return ((AssemblyInformationalVersionAttribute) assembly
-                .GetCustomAttributes(typeof (AssemblyInformationalVersionAttribute), false)[0])
-                .InformationalVersion;
-        }
-
         public static async Task<byte[]> ReadAsByteArrayAsync(this Stream stream)
         {
             var outputStream = new MemoryStream();

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using NLog;
 using OdjfsScraper.Fetcher.Support;
@@ -33,11 +34,29 @@ namespace OdjfsScraper.Fetcher.Fetchers
             new[] {"OraOLEDB", "error '80004005'", "ORA-01033: ORACLE initialization or shutdown in progress"}
         };
 
-        private readonly ScraperClient _scraperClient;
+        private readonly HttpClient _httpClient;
+        private readonly string _userAgent;
 
-        public HttpStreamFetcher()
+        public HttpStreamFetcher(HttpMessageHandler httpMessageHandler, string userAgent)
         {
-            _scraperClient = new ScraperClient();
+            // configure HttpClientHandler
+            var httpClientHandler = httpMessageHandler as HttpClientHandler;
+            if (httpClientHandler != null)
+            {
+                httpClientHandler.AllowAutoRedirect = false;
+                httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                httpClientHandler.UseCookies = false;
+            }
+
+            // configure WebRequestHandler
+            var webRequestHandler = httpMessageHandler as WebRequestHandler;
+            if (webRequestHandler != null)
+            {
+                webRequestHandler.AllowPipelining = true;
+            }
+
+            _httpClient = new HttpClient(httpMessageHandler);
+            _userAgent = userAgent;
         }
 
         public Task<Stream> GetChildCareDocument(ChildCareStub childCareStub)
@@ -174,7 +193,9 @@ namespace OdjfsScraper.Fetcher.Fetchers
         private async Task<HttpResponseMessage> GetHttpResponseMessage(Uri requestUri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            HttpResponseMessage response = await _scraperClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            request.Headers.Add("User-Agent", _userAgent);
+
+            HttpResponseMessage response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             return response;
         }
     }

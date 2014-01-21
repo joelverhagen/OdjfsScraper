@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using ManyConsole;
 using Ninject;
@@ -33,10 +35,13 @@ namespace OdjfsScraper.DataChecker
                     .SelectAllClasses()
                     .BindAllInterfaces());
 
-                // specify the HTML directory
+                // configure the HTTP stream fetcher
                 kernel.Unbind<IHttpStreamFetcher>();
                 kernel.Bind<IHttpStreamFetcher>()
                     .To<DownloadingHttpStreamFetcher>()
+                    .WithConstructorArgument("httpMessageHandler", new WebRequestHandler())
+                    .WithConstructorArgument("userAgent", GetUserAgent())
+                    .WithConstructorArgument("fileSystem", new FileSystem())
                     .WithConstructorArgument("directory", Settings.HtmlDirectory);
 
                 // specify the logs directory
@@ -46,7 +51,7 @@ namespace OdjfsScraper.DataChecker
                 kernel.Unbind<IClient>();
                 kernel.Bind<IClient>()
                     .To<Client>()
-                    .WithConstructorArgument("userAgent", ScraperClient.GetUserAgent());
+                    .WithConstructorArgument("userAgent", GetUserAgent());
 
                 // choose a geocoder
                 kernel.Unbind<ISimpleGeocoder>();
@@ -70,6 +75,12 @@ namespace OdjfsScraper.DataChecker
                 Logger.Error(sb.ToString().Trim());
                 return 1;
             }
+        }
+
+        private static string GetUserAgent()
+        {
+            string version = Assembly.GetExecutingAssembly().GetInformationalVersion();
+            return string.Format("OdjfsScraper/{0}", version);
         }
 
         private static void TraceExceptionMessages(StringBuilder sb, Exception e, int level)

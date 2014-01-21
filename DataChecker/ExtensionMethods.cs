@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using ManyConsole;
 using OdjfsScraper.DataChecker.Commands;
 
@@ -17,6 +18,13 @@ namespace OdjfsScraper.DataChecker
             }
 
             return mapQuestKey;
+        }
+
+        public static string GetInformationalVersion(this Assembly assembly)
+        {
+            return ((AssemblyInformationalVersionAttribute)assembly
+                .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false)[0])
+                .InformationalVersion;
         }
     }
 }

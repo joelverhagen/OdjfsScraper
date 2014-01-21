@@ -21,7 +21,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
         private readonly IFileSystem _fileSystem;
         private bool _hasDirectoryBeenChecked;
 
-        public DownloadingHttpStreamFetcher(IFileSystem fileSystem, string directory)
+        public DownloadingHttpStreamFetcher(HttpMessageHandler httpMessageHandler, string userAgent, IFileSystem fileSystem, string directory) : base(httpMessageHandler, userAgent)
         {
             _fileSystem = fileSystem;
             _directory = directory;
