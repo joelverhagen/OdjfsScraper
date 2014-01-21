@@ -70,9 +70,9 @@ namespace OdjfsScraper.Fetcher.Fetchers
 
             // get the path
             string path;
-            if (!_childCarePaths.TryGetValue(externalUrlId, out path))
+            if (!_childCarePaths.TryGetValue(externalUrlId.ToUpper(), out path))
             {
-                return null;
+                return Task.FromResult((Stream)null);
             }
 
             return GetFileStream(path);
