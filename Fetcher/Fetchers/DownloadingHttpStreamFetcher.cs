@@ -91,7 +91,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 }
             }
 
-            return new FileStream(newCurrentPath, FileMode.Open);
+            return _fileSystem.FileOpen(newCurrentPath, FileMode.Open);
         }
 
         private void MoveOldCurrentVersion(string fileNamePrefix)
