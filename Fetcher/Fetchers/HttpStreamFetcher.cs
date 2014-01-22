@@ -108,12 +108,12 @@ namespace OdjfsScraper.Fetcher.Fetchers
             HttpResponseMessage response = await GetHttpResponseMessage(requestUri);
 
             // get the stream
-            Stream stream = await GetChildCareStubListDocumentStream(response, county);
+            Stream responseStream = await GetChildCareStubListDocumentStream(response, county);
 
             // search to body from some error strings, indicating specific errors
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                string responseString = await stream.ReadAsStringAsync();
+                string responseString = await responseStream.ReadAsStringAsync();
 
                 if (HasTemporaryError(response, responseString))
                 {
@@ -123,7 +123,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 ThrowScraperException(requestUri, response);
             }
 
-            return await response.Content.ReadAsStreamAsync();
+            return responseStream;
         }
 
         private async Task<Stream> GetChildCareDocumentWithoutValidation(string externalUrlId, Func<HttpResponseMessage, Task<Stream>> getStream)
