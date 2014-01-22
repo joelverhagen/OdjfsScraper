@@ -128,11 +128,6 @@ namespace OdjfsScraper.Fetcher.Fetchers
 
         private async Task<Stream> GetChildCareDocumentWithoutValidation(string externalUrlId, Func<HttpResponseMessage, Task<Stream>> getStream)
         {
-            if (externalUrlId == null)
-            {
-                throw new ArgumentNullException("externalUrlId");
-            }
-
             // create the URL
             string encodedExternalUrlId = HttpUtility.UrlEncode(externalUrlId);
             var requestUri = new Uri(string.Format("http://www.odjfs.state.oh.us/cdc/results2.asp?provider_number={0}&Printable=Y", encodedExternalUrlId));

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -11,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using OdjfsScraper.Fetcher.Fetchers;
+using OdjfsScraper.Fetcher.Support;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
@@ -33,12 +36,73 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         }
 
         [TestMethod]
+        public void PermanentErrors()
+        {
+            foreach (var pattern in HttpStreamFetcher.PermanentErrorPatterns)
+            {
+                string content = string.Join(" ", pattern);
+
+                var childCare = new LicensedCenter { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" };
+                VerifyRequest(
+                    HttpStatusCode.InternalServerError,
+                    content,
+                    fetcher => fetcher.GetChildCareDocument(childCare),
+                    (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
+                    Assert.IsNull);
+                Trace.WriteLine("GetChildCareDocument(ChildCare) error matched: {0}", content);
+
+                var childCareStub = new LicensedCenterStub { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" };
+                VerifyRequest(
+                    HttpStatusCode.InternalServerError,
+                    content,
+                    fetcher => fetcher.GetChildCareDocument(childCareStub),
+                    (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
+                    Assert.IsNull);
+                Trace.WriteLine("GetChildCareDocument(ChildCareStub) error matched: {0}", content);
+            }
+        }
+
+        [TestMethod]
+        public void TemporaryErrors()
+        {
+            foreach (var pattern in HttpStreamFetcher.TemporaryErrorPatterns)
+            {
+                string content = string.Join(" ", pattern);
+                const string expectedMessage = "The response body has indicated that the document is temporarily unavailable.";
+
+                VerifyAsyncException<HttpRequestException>(
+                    HttpStatusCode.InternalServerError,
+                    content,
+                    f => f.GetChildCareStubListDocument(new County { Name = "FRANKLIN" }).Wait(),
+                    e => Assert.AreEqual(e.Message, expectedMessage));
+                Trace.WriteLine("GetChildCareStubListDocument(County) error matched: {0}", content);
+
+                VerifyAsyncException<HttpRequestException>(
+                    HttpStatusCode.InternalServerError,
+                    content,
+                    f => f.GetChildCareDocument(new LicensedCenter {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}).Wait(),
+                    e => Assert.AreEqual(e.Message, expectedMessage));
+                Trace.WriteLine("GetChildCareDocument(ChildCare) error matched: {0}", content);
+
+                VerifyAsyncException<HttpRequestException>(
+                    HttpStatusCode.InternalServerError,
+                    content,
+                    f => f.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}).Wait(),
+                    e => Assert.AreEqual(e.Message, expectedMessage));
+                Trace.WriteLine("GetChildCareDocument(ChildCareStub) error matched: {0}", content);
+            }
+        }
+
+        [TestMethod]
         public void GetChildCareStubListDocument_HappyPath()
         {
-            var county = new County {Name = "FRANKLIN"};
-            VerifyHappyPathRequest(
+            var county = new County { Name = "FRANKLIN" };
+            VerifyRequest(
+                HttpStatusCode.OK,
+                string.Empty,
                 fetcher => fetcher.GetChildCareStubListDocument(county),
-                (request, userAgent) => VerifyCountyRequest(request, county.Name, userAgent));
+                (request, userAgent) => VerifyCountyRequest(request, county.Name, userAgent),
+                Assert.IsNotNull);
         }
 
         [TestMethod]
@@ -105,18 +169,24 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         public void GetChildCareDocument_ChildCare_HappyPath()
         {
             var childCare = new LicensedCenter {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
-            VerifyHappyPathRequest(
+            VerifyRequest(
+                HttpStatusCode.OK,
+                string.Empty,
                 fetcher => fetcher.GetChildCareDocument(childCare),
-                (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent));
+                (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
+                Assert.IsNotNull);
         }
 
         [TestMethod]
         public void GetChildCareDocument_ChildCareStub_HappyPath()
         {
-            var childCare = new LicensedCenterStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
-            VerifyHappyPathRequest(
-                fetcher => fetcher.GetChildCareDocument(childCare),
-                (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent));
+            var childCareStub = new LicensedCenterStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
+            VerifyRequest(
+                HttpStatusCode.OK,
+                string.Empty,
+                fetcher => fetcher.GetChildCareDocument(childCareStub),
+                (request, userAgent) => VerifyChildCareRequest(request, childCareStub.ExternalUrlId, userAgent),
+                Assert.IsNotNull);
         }
 
         private static void VerifyException<T>(HttpStatusCode httpStatusCode, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
@@ -143,6 +213,36 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             }
         }
 
+        private static void VerifyAsyncException<T>(HttpStatusCode httpStatusCode, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
+        {
+            // ARRANGE
+            var mock = new Mock<HttpMessageHandler>();
+            mock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns(GetHttpResponseMessage(httpStatusCode, content));
+
+            var fetcher = new HttpStreamFetcher(mock.Object, "Foo user agent");
+
+            // ACT
+            try
+            {
+                act(fetcher);
+                Assert.Fail();
+            }
+            catch (AggregateException ae)
+            {
+                T e = ae.Flatten().InnerExceptions.Take(1).OfType<T>().FirstOrDefault();
+                if (e == null)
+                {
+                    Assert.Fail();
+                }
+
+                // ASSERT
+                verify(e);
+            }
+        }
+
         private static void VerifyHttpMessageHandler(HttpMessageHandler handler)
         {
             var fetcher = new HttpStreamFetcher(handler, "Foo");
@@ -162,7 +262,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             Assert.IsTrue(handler.AllowPipelining);
         }
 
-        private static void VerifyHappyPathRequest(Func<HttpStreamFetcher, Task<Stream>> getStreamTask, Action<HttpRequestMessage, string> verifyRequest)
+        private static void VerifyRequest(HttpStatusCode httpStatusCode, string content, Func<HttpStreamFetcher, Task<Stream>> getStreamTask, Action<HttpRequestMessage, string> verifyRequest, Action<Stream> verifyStream)
         {
             // ARRANGE
             const string userAgent = "Foo user agent";
@@ -170,7 +270,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             mock
                 .Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .Returns(GetHttpResponseMessage(HttpStatusCode.OK, string.Empty))
+                .Returns(GetHttpResponseMessage(httpStatusCode, content))
                 .Callback<HttpRequestMessage, CancellationToken>((request, ct) => verifyRequest(request, userAgent));
 
             var fetcher = new HttpStreamFetcher(mock.Object, userAgent);
@@ -180,7 +280,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
 
             // ASSERT
             Stream result = task.Result;
-            Assert.IsNotNull(result);
+            verifyStream(result);
         }
 
         private static Task<HttpResponseMessage> GetHttpResponseMessage(HttpStatusCode httpStatusCode, string content)
