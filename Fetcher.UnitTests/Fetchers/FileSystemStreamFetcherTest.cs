@@ -157,7 +157,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyException<ArgumentNullException>(
                 true,
                 f => f.GetChildCareStubListDocument(new County {Name = null}),
-                e => Assert.AreEqual(e.ParamName, "name"));
+                e => Assert.AreEqual(e.ParamName, "county.Name"));
         }
 
         [TestMethod]
@@ -166,7 +166,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyException<ArgumentNullException>(
                 true,
                 f => f.GetChildCareDocument(new LicensedCenter {ExternalUrlId = null}),
-                e => Assert.AreEqual(e.ParamName, "externalUrlId"));
+                e => Assert.AreEqual(e.ParamName, "childCare.ExternalUrlId"));
         }
 
         [TestMethod]
@@ -193,7 +193,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyException<ArgumentNullException>(
                 true,
                 f => f.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = null}),
-                e => Assert.AreEqual(e.ParamName, "externalUrlId"));
+                e => Assert.AreEqual(e.ParamName, "childCareStub.ExternalUrlId"));
         }
 
         [TestMethod]

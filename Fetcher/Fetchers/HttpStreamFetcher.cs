@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
+using System.Web;
 using NLog;
 using OdjfsScraper.Fetcher.Support;
 using OdjfsScraper.Model;
@@ -18,21 +18,21 @@ namespace OdjfsScraper.Fetcher.Fetchers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private static readonly IEnumerable<IEnumerable<string>> PermanentErrorPatterns = new[]
+        public static readonly IEnumerable<IEnumerable<string>> PermanentErrorPatterns = new[]
         {
             new[] {"OraOLEDB", "error '80040e14'", "ORA-01850: hour must be between 0 and 23"},
             new[] {"OraOLEDB", "error '80040e14'", "ORA-01858: a non-numeric character was found where a numeric was expected"},
             new[] {"ADODB.Field", "error '800a0bcd'", "Either BOF or EOF is True, or the current record has been deleted. Requested operation requires a current record."}
-        };
+        }.ToList().AsReadOnly();
 
-        private static readonly IEnumerable<IEnumerable<string>> TemporaryErrorPatterns = new[]
+        public static readonly IEnumerable<IEnumerable<string>> TemporaryErrorPatterns = new[]
         {
             new[] {"Provider", "error '80004005'", "Unspecified error"},
             new[] {"OraOLEDB", "error '80040e14'", "ORA-03114: not connected to ORACLE"},
             new[] {"OraOLEDB", "error '80004005'", "ORA-01034: ORACLE not available", "ORA-27101: shared memory realm does not exist", "IBM AIX RISC System/6000 Error: 2: No such file or directory"},
             new[] {"OraOLEDB", "error '80004005'", "ORA-01089: immediate shutdown in progress - no operations are permitted"},
             new[] {"OraOLEDB", "error '80004005'", "ORA-01033: ORACLE initialization or shutdown in progress"}
-        };
+        }.ToList().AsReadOnly();
 
         private readonly HttpClient _httpClient;
         private readonly string _userAgent;
@@ -65,8 +65,11 @@ namespace OdjfsScraper.Fetcher.Fetchers
             {
                 throw new ArgumentNullException("childCareStub");
             }
-
-            return GetChildCareDocument(childCareStub.ExternalUrlId, r => GetChildCareDocumentStream(r, childCareStub));
+            if (childCareStub.ExternalUrlId == null)
+            {
+                throw new ArgumentNullException("childCareStub.ExternalUrlId");
+            }
+            return GetChildCareDocumentWithoutValidation(childCareStub.ExternalUrlId, r => GetChildCareDocumentStream(r, childCareStub));
         }
 
         public Task<Stream> GetChildCareDocument(ChildCare childCare)
@@ -75,19 +78,31 @@ namespace OdjfsScraper.Fetcher.Fetchers
             {
                 throw new ArgumentNullException("childCare");
             }
-
-            return GetChildCareDocument(childCare.ExternalUrlId, r => GetChildCareDocumentStream(r, childCare));
+            if (childCare.ExternalUrlId == null)
+            {
+                throw new ArgumentNullException("childCare.ExternalUrlId");
+            }
+            return GetChildCareDocumentWithoutValidation(childCare.ExternalUrlId, r => GetChildCareDocumentStream(r, childCare));
         }
 
-        public async Task<Stream> GetChildCareStubListDocument(County county)
+        public Task<Stream> GetChildCareStubListDocument(County county)
         {
             if (county == null)
             {
                 throw new ArgumentNullException("county");
             }
+            if (county.Name == null)
+            {
+                throw new ArgumentNullException("county.Name");
+            }
+            return GetChildCareStubListDocumentWithoutValidation(county);
+        }
 
+        private async Task<Stream> GetChildCareStubListDocumentWithoutValidation(County county)
+        {
             // create the URL
-            var requestUri = new Uri(string.Format("http://www.odjfs.state.oh.us/cdc/results1.asp?county={0}&rating=ALL&Printable=Y&ShowAllPages=Y", county.Name));
+            string encodedCountyName = HttpUtility.UrlEncode(county.Name);
+            var requestUri = new Uri(string.Format("http://www.odjfs.state.oh.us/cdc/results1.asp?county={0}&rating=ALL&Printable=Y&ShowAllPages=Y", encodedCountyName));
 
             // get the response
             HttpResponseMessage response = await GetHttpResponseMessage(requestUri);
@@ -111,10 +126,16 @@ namespace OdjfsScraper.Fetcher.Fetchers
             return await response.Content.ReadAsStreamAsync();
         }
 
-        private async Task<Stream> GetChildCareDocument(string externalUrlId, Func<HttpResponseMessage, Task<Stream>> getStream)
+        private async Task<Stream> GetChildCareDocumentWithoutValidation(string externalUrlId, Func<HttpResponseMessage, Task<Stream>> getStream)
         {
+            if (externalUrlId == null)
+            {
+                throw new ArgumentNullException("externalUrlId");
+            }
+
             // create the URL
-            var requestUri = new Uri(string.Format("http://www.odjfs.state.oh.us/cdc/results2.asp?provider_number={0}&Printable=Y", externalUrlId));
+            string encodedExternalUrlId = HttpUtility.UrlEncode(externalUrlId);
+            var requestUri = new Uri(string.Format("http://www.odjfs.state.oh.us/cdc/results2.asp?provider_number={0}&Printable=Y", encodedExternalUrlId));
 
             // get the response
             HttpResponseMessage response = await GetHttpResponseMessage(requestUri);

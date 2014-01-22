@@ -27,7 +27,11 @@ namespace OdjfsScraper.Fetcher.Fetchers
             {
                 throw new ArgumentNullException("childCareStub");
             }
-            return GetChildCareDocument(childCareStub.ExternalUrlId);
+            if (childCareStub.ExternalUrlId == null)
+            {
+                throw new ArgumentNullException("childCareStub.ExternalUrlId");
+            }
+            return GetChildCareDocumentWithoutValidation(childCareStub.ExternalUrlId);
         }
 
         public Task<Stream> GetChildCareDocument(ChildCare childCare)
@@ -36,7 +40,11 @@ namespace OdjfsScraper.Fetcher.Fetchers
             {
                 throw new ArgumentNullException("childCare");
             }
-            return GetChildCareDocument(childCare.ExternalUrlId);
+            if (childCare.ExternalUrlId == null)
+            {
+                throw new ArgumentNullException("childCare.ExternalUrlId");
+            }
+            return GetChildCareDocumentWithoutValidation(childCare.ExternalUrlId);
         }
 
         public Task<Stream> GetChildCareStubListDocument(County county)
@@ -44,6 +52,10 @@ namespace OdjfsScraper.Fetcher.Fetchers
             if (county == null)
             {
                 throw new ArgumentNullException("county");
+            }
+            if (county.Name == null)
+            {
+                throw new ArgumentNullException("county.Name");
             }
             return GetChildCareStubListDocument(county.Name);
         }
@@ -60,12 +72,8 @@ namespace OdjfsScraper.Fetcher.Fetchers
             _countyPaths = null;
         }
 
-        private Task<Stream> GetChildCareDocument(string externalUrlId)
+        private Task<Stream> GetChildCareDocumentWithoutValidation(string externalUrlId)
         {
-            if (externalUrlId == null)
-            {
-                throw new ArgumentNullException("externalUrlId");
-            }
             ExploreDirectory();
 
             // get the path
@@ -80,10 +88,6 @@ namespace OdjfsScraper.Fetcher.Fetchers
 
         private Task<Stream> GetChildCareStubListDocument(string name)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException("name");
-            }
             ExploreDirectory();
 
             // get the path
