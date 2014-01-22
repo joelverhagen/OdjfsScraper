@@ -58,8 +58,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Fetchers\FileSystemStreamFetcherTest.cs" />
     <Compile Include="Fetchers\HttpStreamFetcherTest.cs" />
+    <Compile Include="Fetchers\DownloadingHttpStreamFetcherTest.cs" />
+    <Compile Include="Fetchers\FileSystemStreamFetcherTest.cs" />
+    <Compile Include="Fetchers\BaseHttpStreamFetcherTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

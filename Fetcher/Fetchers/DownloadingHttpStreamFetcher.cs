@@ -84,7 +84,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 MoveOldCurrentVersion(fileNamePrefix);
 
                 // write the new "Current" file
-                using (var outputStream = new FileStream(newCurrentPath, FileMode.Create, FileAccess.Write))
+                using (var outputStream = _fileSystem.FileOpen(newCurrentPath, FileMode.Create))
                 {
                     // write to the file
                     await outputStream.WriteAsync(bytes, 0, bytes.Length);
