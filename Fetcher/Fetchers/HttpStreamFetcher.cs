@@ -209,7 +209,10 @@ namespace OdjfsScraper.Fetcher.Fetchers
         private async Task<HttpResponseMessage> GetHttpResponseMessage(Uri requestUri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            request.Headers.Add("User-Agent", _userAgent);
+            if (_userAgent != null)
+            {
+                request.Headers.Add("User-Agent", _userAgent);
+            }
 
             HttpResponseMessage response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             return response;
