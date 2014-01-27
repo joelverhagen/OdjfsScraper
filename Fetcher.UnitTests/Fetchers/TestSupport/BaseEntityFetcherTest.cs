@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Moq;
 using OdjfsScraper.Fetcher.Fetchers;
@@ -19,13 +15,13 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             var mock = new Mock<IStreamFetcher>();
             mock
                 .Setup(s => s.GetChildCareDocument(It.IsAny<ChildCare>()))
-                .Returns(() => Task.FromResult((Stream)new MemoryStream(bytes)));
+                .Returns(() => Task.FromResult((Stream) new MemoryStream(bytes)));
             mock
                 .Setup(s => s.GetChildCareDocument(It.IsAny<ChildCareStub>()))
-                .Returns(() => Task.FromResult((Stream)new MemoryStream(bytes)));
+                .Returns(() => Task.FromResult((Stream) new MemoryStream(bytes)));
             mock
                 .Setup(s => s.GetChildCareStubListDocument(It.IsAny<County>()))
-                .Returns(() => Task.FromResult((Stream)new MemoryStream(bytes)));
+                .Returns(() => Task.FromResult((Stream) new MemoryStream(bytes)));
             return mock.Object;
         }
 
@@ -34,13 +30,13 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             var mock = new Mock<IStreamFetcher>();
             mock
                 .Setup(s => s.GetChildCareDocument(It.IsAny<ChildCare>()))
-                .Returns(Task.FromResult((Stream)null));
+                .Returns(Task.FromResult((Stream) null));
             mock
                 .Setup(s => s.GetChildCareDocument(It.IsAny<ChildCareStub>()))
-                .Returns(Task.FromResult((Stream)null));
+                .Returns(Task.FromResult((Stream) null));
             mock
                 .Setup(s => s.GetChildCareStubListDocument(It.IsAny<County>()))
-                .Returns(Task.FromResult((Stream)null));
+                .Returns(Task.FromResult((Stream) null));
             return mock.Object;
         }
     }

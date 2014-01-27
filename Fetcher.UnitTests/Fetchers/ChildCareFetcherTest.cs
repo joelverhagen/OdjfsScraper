@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.UI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OdjfsScraper.Fetcher.Fetchers;
 using OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport;
-using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
-using OdjfsScraper.Model.Fetchers;
 using OdjfsScraper.Parser.Parsers;
 
 namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
@@ -52,7 +44,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         {
             // ARRANGE
             var expectedChildCare = new LicensedCenter();
-            var expectedBytes = Encoding.UTF8.GetBytes("This is the document");
+            byte[] expectedBytes = Encoding.UTF8.GetBytes("This is the document");
 
             var parserMock = new Mock<IChildCareParser>();
             parserMock
@@ -74,7 +66,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         {
             // ARRANGE
             var expectedChildCare = new LicensedCenter();
-            var expectedBytes = Encoding.UTF8.GetBytes("This is the document");
+            byte[] expectedBytes = Encoding.UTF8.GetBytes("This is the document");
 
             var parserMock = new Mock<IChildCareParser>();
             parserMock

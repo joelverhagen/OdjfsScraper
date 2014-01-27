@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using OdjfsScraper.Parser.Parsers;
+using OdjfsScraper.Fetcher.Support;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
 using OdjfsScraper.Model.Fetchers;
-using OdjfsScraper.Fetcher.Support;
+using OdjfsScraper.Parser.Parsers;
 
 namespace OdjfsScraper.Fetcher.Fetchers
 {

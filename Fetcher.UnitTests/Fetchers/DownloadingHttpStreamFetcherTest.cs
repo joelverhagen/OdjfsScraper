@@ -25,7 +25,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyCorrectCalls(
                 HttpStatusCode.InternalServerError,
                 "ChildCare",
-                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenter { ExternalUrlId = externalUrlId }).Wait());
+                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenter {ExternalUrlId = externalUrlId}).Wait());
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyCorrectCalls(
                 HttpStatusCode.InternalServerError,
                 "ChildCare",
-                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenterStub { ExternalUrlId = externalUrlId }).Wait());
+                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = externalUrlId}).Wait());
         }
 
         [TestMethod]
@@ -43,14 +43,14 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyCorrectCalls(
                 HttpStatusCode.InternalServerError,
                 "County",
-                (fetcher, countyName) => fetcher.GetChildCareStubListDocument(new County { Name = countyName }).Wait());
+                (fetcher, countyName) => fetcher.GetChildCareStubListDocument(new County {Name = countyName}).Wait());
         }
 
         [TestMethod]
         public void GetChildCareDocument_ChildCare_CorrectStoreCallsWithValidResponse()
         {
             VerifyCorrectCalls(
-                HttpStatusCode.OK, 
+                HttpStatusCode.OK,
                 "ChildCare",
                 (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenter {ExternalUrlId = externalUrlId}).Wait());
         }
@@ -59,7 +59,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         public void GetChildCareDocument_ChildCareStub_CorrectStoreCallsWithValidResponse()
         {
             VerifyCorrectCalls(
-                HttpStatusCode.OK, 
+                HttpStatusCode.OK,
                 "ChildCare",
                 (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = externalUrlId}).Wait());
         }
@@ -68,7 +68,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         public void GetChildCareStubListDocument_CorrectStoreCallsWithValidResponse()
         {
             VerifyCorrectCalls(
-                HttpStatusCode.OK, 
+                HttpStatusCode.OK,
                 "County",
                 (fetcher, countyName) => fetcher.GetChildCareStubListDocument(new County {Name = countyName}).Wait());
         }
@@ -88,7 +88,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             catch (Exception)
             {
             }
-            
+
 
             // ASSERT
             string name = string.Format("{0}-{1}", prefix, "Foo");
