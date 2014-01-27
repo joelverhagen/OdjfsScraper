@@ -12,6 +12,7 @@ using OdjfsScraper.DataChecker.Commands;
 using OdjfsScraper.Exporter.Exporters;
 using OdjfsScraper.Fetcher.Fetchers;
 using OdjfsScraper.Fetcher.Support;
+using OdjfsScraper.Model.Fetchers;
 using OdjfsScraper.Parser.Parsers;
 using OdjfsScraper.Synchronizer.Synchronizers;
 using PolyGeocoder.Geocoders;
@@ -27,22 +28,37 @@ namespace OdjfsScraper.DataChecker
         {
             try
             {
+                args = new[] {"daemon"};
+
                 IKernel kernel = new StandardKernel();
 
                 // discover... everything
                 kernel.Bind(c => c
-                    .FromAssemblyContaining(typeof (ICommand), typeof (SrdsExporter<>), typeof (IChildCareParser), typeof (IChildCareSynchronizer))
+                    .FromAssemblyContaining(new[]
+                    {
+                        typeof (IChildCareFetcher),
+                        typeof (ICommand),
+                        typeof (SrdsExporter<>),
+                        typeof (IChildCareParser),
+                        typeof (IHttpStreamFetcher),
+                        typeof (IChildCareSynchronizer)
+                    })
                     .SelectAllClasses()
                     .BindAllInterfaces());
 
                 // configure the HTTP stream fetcher
-                kernel.Unbind<IHttpStreamFetcher>();
-                kernel.Bind<IHttpStreamFetcher>()
+                kernel.Unbind<IStreamFetcher>();
+                kernel.Bind<IStreamFetcher>()
                     .To<DownloadingHttpStreamFetcher>()
                     .WithConstructorArgument("httpMessageHandler", new WebRequestHandler())
-                    .WithConstructorArgument("userAgent", GetUserAgent())
-                    .WithConstructorArgument("fileSystem", new FileSystem())
-                    .WithConstructorArgument("directory", Settings.HtmlDirectory);
+                    .WithConstructorArgument("userAgent", GetUserAgent());
+
+                // configure the file system blob store
+                kernel.Unbind<IFileSystemBlobStore>();
+                kernel.Bind<IFileSystemBlobStore>()
+                    .To<FileSystemBlobStore>()
+                    .WithPropertyValue("Directory", Settings.HtmlDirectory)
+                    .WithPropertyValue("FileExtension", ".html");
 
                 // specify the logs directory
                 GlobalDiagnosticsContext.Set("LogsDirectory", Settings.LogsDirectory);
