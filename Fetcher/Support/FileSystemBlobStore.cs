@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using NLog;
 
@@ -13,17 +14,20 @@ namespace OdjfsScraper.Fetcher.Support
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        private readonly IHashAlgorithm _hashAlgorithm;
         private readonly IFileSystem _fileSystem;
         private string _directory;
         private string _fieldSeperator;
         private string _fileExtension;
         private bool _isDirectoryChecked;
 
-        public FileSystemBlobStore(IFileSystem fileSystem)
+        public FileSystemBlobStore(IHashAlgorithm hashAlgorithm, IFileSystem fileSystem)
         {
+            _hashAlgorithm = hashAlgorithm;
             _fileSystem = fileSystem;
             _isDirectoryChecked = false;
             FieldSeperator = "_";
+            FileExtension = ".blob";
         }
 
         public string FileExtension
@@ -31,10 +35,9 @@ namespace OdjfsScraper.Fetcher.Support
             get { return _fileExtension; }
             set
             {
-                if (string.IsNullOrEmpty(_fileExtension))
+                if (string.IsNullOrEmpty(value))
                 {
-                    _fileExtension = string.Empty;
-                    return;
+                    throw new ArgumentException(string.Format("The file extension '{0}' must not be null or empty.", value));
                 }
 
                 // make sure all of the characters can be in a file name
@@ -65,7 +68,7 @@ namespace OdjfsScraper.Fetcher.Support
             get { return _fieldSeperator; }
             set
             {
-                if (string.IsNullOrEmpty(_fileExtension))
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new ArgumentException(string.Format("The field seperator '{0}' must not be null or empty.", value));
                 }
@@ -78,7 +81,7 @@ namespace OdjfsScraper.Fetcher.Support
                 }
 
                 // make sure the file extension does not contain the field seperator
-                if (FileExtension.Contains(value))
+                if (FileExtension != null && FileExtension.Contains(value))
                 {
                     throw new ArgumentException(string.Format("The file extension '{0}' must not contain the field seperator '{1}'.", FileExtension, value));
                 }
@@ -96,12 +99,8 @@ namespace OdjfsScraper.Fetcher.Support
             }
         }
 
-        public async Task Write(string name, string tag, Stream stream)
+        public void VerifyDirectory()
         {
-            if (name.Contains(FieldSeperator))
-            {
-                throw new ArgumentException(string.Format("The name '{0}' must not contain the field seperator '{1}'.", name, FieldSeperator), "name");
-            }
             if (_directory == null)
             {
                 throw new InvalidOperationException("The directory must be set before using the blob store.");
@@ -114,7 +113,21 @@ namespace OdjfsScraper.Fetcher.Support
                 }
                 _isDirectoryChecked = true;
             }
+        }
 
+        public Task Write(string name, string tag, Stream stream)
+        {
+            if (name.Contains(FieldSeperator))
+            {
+                throw new ArgumentException(string.Format("The name '{0}' must not contain the field seperator '{1}'.", name, FieldSeperator), "name");
+            }
+            VerifyDirectory();
+
+            return WriteWithoutValidation(name, tag, stream);
+        }
+
+        private async Task WriteWithoutValidation(string name, string tag, Stream stream)
+        {
             // fully buffer the stream if it is not seekable
             if (!stream.CanSeek)
             {
@@ -124,34 +137,36 @@ namespace OdjfsScraper.Fetcher.Support
             }
 
             // get the hash, and reset the stream
-            HashAlgorithm hashAlgorithm = new SHA256Managed();
-            string hash = BitConverter.ToString(hashAlgorithm.ComputeHash(stream)).Replace("-", "");
+            string hash = _hashAlgorithm.ComputeHashToString(stream);
             if (hash.Contains(FieldSeperator))
             {
                 throw new InvalidOperationException(string.Format(
-                    "The hash '{0}' must not contain the field seperator '{1}'. Try making the field seperator non-hexadecimal!",
+                    "The hash '{0}' must not contain the field seperator '{1}'.",
                     hash,
                     FieldSeperator));
             }
             stream.Position = 0;
 
             // get the two most recent versions
-            BlobEntry[] blobEntries = GetBlobEntries(name).Reverse().Take(2).ToArray();
+            BlobEntry[] blobEntries = GetBlobEntries(name)
+                .OrderByDescending(b => b.Version)
+                .Take(2)
+                .ToArray();
 
             // have there been any changes?
-            if (blobEntries[0].Version == "Current" && blobEntries[0].Hash == hash && blobEntries[0].Tag == tag)
+            if (blobEntries.Length > 0 && blobEntries[0].Version == "Current")
             {
-                return;
-            }
+                if (blobEntries[0].Hash == hash && blobEntries[0].Tag == tag)
+                {
+                    return;
+                }
 
-            if (blobEntries[0].Version == "Current")
-            {
                 string oldCurrentPath = blobEntries[0].FilePath;
                 string newVersionPath = GetPath(
-                    blobEntries[1].Name,
+                    blobEntries[0].Name,
                     blobEntries.Length == 2 ? (int.Parse(blobEntries[1].Version) + 1).ToString(CultureInfo.InvariantCulture) : "0",
-                    blobEntries[1].Tag,
-                    blobEntries[1].Hash);
+                    blobEntries[0].Tag,
+                    blobEntries[0].Hash);
 
                 _fileSystem.FileMove(oldCurrentPath, newVersionPath);
             }
@@ -166,6 +181,8 @@ namespace OdjfsScraper.Fetcher.Support
 
         public Task<Stream> Read(string name, int versionIndex)
         {
+            VerifyDirectory();
+
             BlobEntry[] blobEntries = GetBlobEntries(name).ToArray();
             if (blobEntries.Length == 0)
             {
@@ -173,7 +190,10 @@ namespace OdjfsScraper.Fetcher.Support
             }
 
             // convert the version index to a real index
-            versionIndex = versionIndex%blobEntries.Length;
+            if (versionIndex < 0)
+            {
+                versionIndex += blobEntries.Length;
+            }
             if (versionIndex < 0 || versionIndex >= blobEntries.Length)
             {
                 return Task.FromResult((Stream) null);
@@ -209,7 +229,7 @@ namespace OdjfsScraper.Fetcher.Support
         /// <returns>A sequence of <see cref="BlobEntry" /> instances.</returns>
         private IEnumerable<BlobEntry> GetBlobEntries(string searchName)
         {
-            string searchPattern = string.Format("{0}{1}*{2}", searchName, FieldSeperator, FileExtension);
+            string searchPattern = string.Format("{0}{1}*", searchName, FieldSeperator);
             IOrderedEnumerable<string> filePaths = _fileSystem
                 .DirectoryEnumerateFiles(_directory, searchPattern, SearchOption.TopDirectoryOnly)
                 .OrderBy(s => s);
@@ -217,12 +237,15 @@ namespace OdjfsScraper.Fetcher.Support
             ISet<string> versions = new HashSet<string>();
             foreach (string filePath in filePaths)
             {
-                // get the file name
-                string fileName = Path.GetFileNameWithoutExtension(filePath);
-                if (fileName == null)
+                // make sure the file extension matches
+                string fileExtension = Path.GetExtension(filePath);
+                if (fileExtension != FileExtension)
                 {
                     continue;
                 }
+
+                // get the file name
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
 
                 // split the fields
                 string[] pieces = fileName.Split(new[] {FieldSeperator}, StringSplitOptions.None);
@@ -242,35 +265,31 @@ namespace OdjfsScraper.Fetcher.Support
                 }
                 if (versions.Contains(version))
                 {
-                    var exception = new ArgumentException("There must not be files with name '{0}' and version '{1}'.");
+                    var exception = new ArgumentException("There must not be multiple files with name '{0}' and version '{1}'.");
                     Logger.ErrorException(string.Format("Name: '{0}', Version: '{1}', FilePath: '{2}'", name, version, filePath), exception);
                     throw exception;
                 }
                 versions.Add(version);
 
                 // get the tag
-                string tag = string.Join(FieldSeperator, pieces.Skip(2).TakeWhile((s, i) => i < pieces.Length - 1));
+                const int skip = 2;
+                var tagPieces = pieces
+                    .Skip(skip)
+                    .TakeWhile((s, i) => i < pieces.Length - (skip + 1))
+                    .ToArray();
+                string tag = tagPieces.Length == 0 ? null : string.Join(FieldSeperator, tagPieces);
 
                 // get the hash
                 string hash = pieces.Last();
-                if (!IsHash(hash))
-                {
-                    continue;
-                }
 
                 yield return new BlobEntry(filePath, name, version, tag, hash);
             }
         }
 
-        private static bool IsHash(string input)
-        {
-            return input.All(c => ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F')));
-        }
-
         private static bool IsVersion(string input)
         {
             return input.Length > 0 && (
-                input == "Version" ||
+                input == "Current" ||
                 (input[0] == '0' && input.Length == 1) ||
                 (input[0] != '0' && input.Skip(1).All(c => c >= '0' && c <= '9')));
         }

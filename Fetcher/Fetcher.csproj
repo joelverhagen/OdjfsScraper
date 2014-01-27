@@ -54,10 +54,12 @@
     <Compile Include="Support\FileSystemBlobStore.cs" />
     <Compile Include="Support\IFileSystemBlobStore.cs" />
     <Compile Include="Support\IFileSystem.cs" />
+    <Compile Include="Support\IHashAlgorithm.cs" />
     <Compile Include="Support\ScraperException.cs" />
     <Compile Include="Fetchers\ChildCareFetcher.cs" />
     <Compile Include="Fetchers\ChildCareStubListFetcher.cs" />
     <Compile Include="Support\ExtensionMethods.cs" />
+    <Compile Include="Support\Sha256HashAlgorithm.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.csproj">

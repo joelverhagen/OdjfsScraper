@@ -49,7 +49,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                     fetcher => fetcher.GetChildCareDocument(childCare),
                     (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
                     Assert.IsNull);
-                Trace.WriteLine("GetChildCareDocument(ChildCare) error matched: {0}", content);
+                Trace.WriteLine(string.Format("GetChildCareDocument(ChildCare) error matched: {0}", content));
 
                 var childCareStub = new LicensedCenterStub { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" };
                 VerifyRequest(
@@ -58,7 +58,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                     fetcher => fetcher.GetChildCareDocument(childCareStub),
                     (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
                     Assert.IsNull);
-                Trace.WriteLine("GetChildCareDocument(ChildCareStub) error matched: {0}", content);
+                Trace.WriteLine(string.Format("GetChildCareDocument(ChildCareStub) error matched: {0}", content));
             }
         }
 
@@ -75,21 +75,21 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                     content,
                     f => f.GetChildCareStubListDocument(new County { Name = "FRANKLIN" }).Wait(),
                     e => Assert.AreEqual(e.Message, expectedMessage));
-                Trace.WriteLine("GetChildCareStubListDocument(County) error matched: {0}", content);
+                Trace.WriteLine(string.Format("GetChildCareStubListDocument(County) error matched: {0}", content));
 
                 VerifyAsyncException<HttpRequestException>(
                     HttpStatusCode.InternalServerError,
                     content,
                     f => f.GetChildCareDocument(new LicensedCenter {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}).Wait(),
                     e => Assert.AreEqual(e.Message, expectedMessage));
-                Trace.WriteLine("GetChildCareDocument(ChildCare) error matched: {0}", content);
+                Trace.WriteLine(string.Format("GetChildCareDocument(ChildCare) error matched: {0}", content));
 
                 VerifyAsyncException<HttpRequestException>(
                     HttpStatusCode.InternalServerError,
                     content,
                     f => f.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}).Wait(),
                     e => Assert.AreEqual(e.Message, expectedMessage));
-                Trace.WriteLine("GetChildCareDocument(ChildCareStub) error matched: {0}", content);
+                Trace.WriteLine(string.Format("GetChildCareDocument(ChildCareStub) error matched: {0}", content));
             }
         }
 
@@ -283,12 +283,16 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             verifyStream(result);
         }
 
-        private static Task<HttpResponseMessage> GetHttpResponseMessage(HttpStatusCode httpStatusCode, string content)
+        protected static Task<HttpResponseMessage> GetHttpResponseMessage(HttpStatusCode httpStatusCode, byte[] bytes)
         {
             var response = new HttpResponseMessage(httpStatusCode);
-            byte[] bytes = Encoding.UTF8.GetBytes(content);
             response.Content = new ByteArrayContent(bytes);
             return Task.FromResult(response);
+        }
+
+        protected static Task<HttpResponseMessage> GetHttpResponseMessage(HttpStatusCode httpStatusCode, string content)
+        {
+            return GetHttpResponseMessage(httpStatusCode, Encoding.UTF8.GetBytes(content));
         }
 
         private static void VerifyCountyRequest(HttpRequestMessage request, string countyName, string userAgent)
