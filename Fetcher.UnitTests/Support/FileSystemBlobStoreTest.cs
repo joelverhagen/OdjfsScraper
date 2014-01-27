@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OdjfsScraper.Fetcher.Support;
+using OdjfsScraper.Fetcher.UnitTests.Support.TestSupport;
 
 namespace OdjfsScraper.Fetcher.UnitTests.Support
 {
@@ -297,14 +298,14 @@ namespace OdjfsScraper.Fetcher.UnitTests.Support
         }
 
         [TestMethod]
-        public void Read_InvalidExtension()
+        public void Read_WrongNumbeOfPieces()
         {
             // ARRANGE
             var test = new Test();
             test.SetupForEmptyDirectory();
             test.SetupDirectory(@"Z:\HTML", new[]
             {
-                "FooName_Current_FooHash.dat"
+                "FooName_FooHash.blob"
             });
 
             // ACT
@@ -317,7 +318,45 @@ namespace OdjfsScraper.Fetcher.UnitTests.Support
         }
 
         [TestMethod]
-        public void Write_CorrectBytes()
+        public void Read_Duplicate()
+        {
+            // ARRANGE
+            var test = new Test();
+            test.SetupForEmptyDirectory();
+            test.SetupDirectory(@"Z:\HTML", new[]
+            {
+                "FooName_0_A_FooHash.blob",
+                "FooName_0_B_FooHash.blob"
+            });
+
+            // ACT, ASSERT
+            VerifyException<ArgumentException>(
+                () => test.FileSystemBlobStore.Read("FooName", -1).Wait(),
+                e => Assert.IsTrue(e.Message.Contains("There must not be multiple files with name")));
+        }
+
+        [TestMethod]
+        public void Read_InvalidVersion()
+        {
+            // ARRANGE
+            var test = new Test();
+            test.SetupForEmptyDirectory();
+            test.SetupDirectory(@"Z:\HTML", new[]
+            {
+                "FooName_BAD_FooHash.blob"
+            });
+
+            // ACT
+            Stream actualStream = test.FileSystemBlobStore.Read("FooName", -1).Result;
+
+            // ASSERT
+            Assert.IsNull(actualStream);
+            test.FileSystemMock
+                .Verify(f => f.FileOpen(It.IsAny<string>(), It.IsAny<FileMode>()), Times.Never);
+        }
+
+        [TestMethod]
+        public void Write_UnseekableStream()
         {
             // ARRANGE
             var outputStream = new MemoryStream();
@@ -326,7 +365,28 @@ namespace OdjfsScraper.Fetcher.UnitTests.Support
             byte[] expectedBytes = Encoding.UTF8.GetBytes("content");
 
             // ACT
-            test.FileSystemBlobStore.Write("FooName", null, new MemoryStream(expectedBytes)).Wait();
+            test.FileSystemBlobStore.Write("FooName", null, new UnseekableStream(expectedBytes)).Wait();
+
+            // ASSERT
+            byte[] actualBytes = outputStream.ToArray();
+            Assert.IsTrue(expectedBytes.SequenceEqual(actualBytes));
+            test.FileSystemMock
+                .Verify(f => f.FileOpen(It.IsAny<string>(), It.IsAny<FileMode>()), Times.Once);
+        }
+
+
+        [TestMethod]
+        public void Write_CorrectBytes()
+        {
+            // ARRANGE
+            var outputStream = new MemoryStream();
+            var test = new Test();
+            test.SetupForWrite(@"Z:\HTML", "FooName_Current_FooHash.blob", outputStream);
+            byte[] expectedBytes = Encoding.UTF8.GetBytes("content");
+            var inputStream = new MemoryStream(expectedBytes);
+
+            // ACT
+            test.FileSystemBlobStore.Write("FooName", null, inputStream).Wait();
 
             // ASSERT
             byte[] actualBytes = outputStream.ToArray();

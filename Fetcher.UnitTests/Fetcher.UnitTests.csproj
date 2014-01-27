@@ -64,6 +64,7 @@
     <Compile Include="Fetchers\BaseHttpStreamFetcherTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\FileSystemBlobStoreTest.cs" />
+    <Compile Include="Support\TestSupport\UnseekableStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using NLog;
 
@@ -12,10 +10,12 @@ namespace OdjfsScraper.Fetcher.Support
 {
     public class FileSystemBlobStore : IFileSystemBlobStore
     {
+        private const string CurrentBlobKeyword = "Current";
+        private const int CurrentBlobValue = int.MaxValue;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IHashAlgorithm _hashAlgorithm;
         private readonly IFileSystem _fileSystem;
+        private readonly IHashAlgorithm _hashAlgorithm;
         private string _directory;
         private string _fieldSeperator;
         private string _fileExtension;
@@ -126,6 +126,33 @@ namespace OdjfsScraper.Fetcher.Support
             return WriteWithoutValidation(name, tag, stream);
         }
 
+        public Task<Stream> Read(string name, int versionIndex)
+        {
+            VerifyDirectory();
+
+            BlobEntry[] blobEntries = GetBlobEntries(name).ToArray();
+            if (blobEntries.Length == 0)
+            {
+                return Task.FromResult((Stream) null);
+            }
+
+            // convert the version index to a real index
+            if (versionIndex < 0)
+            {
+                versionIndex += blobEntries.Length;
+            }
+            if (versionIndex < 0 || versionIndex >= blobEntries.Length)
+            {
+                return Task.FromResult((Stream) null);
+            }
+
+            // get the path
+            string filePath = blobEntries[versionIndex].FilePath;
+
+            // read the file
+            return Task.FromResult(_fileSystem.FileOpen(filePath, FileMode.Open));
+        }
+
         private async Task WriteWithoutValidation(string name, string tag, Stream stream)
         {
             // fully buffer the stream if it is not seekable
@@ -154,7 +181,7 @@ namespace OdjfsScraper.Fetcher.Support
                 .ToArray();
 
             // have there been any changes?
-            if (blobEntries.Length > 0 && blobEntries[0].Version == "Current")
+            if (blobEntries.Length > 0 && blobEntries[0].Version == CurrentBlobValue)
             {
                 if (blobEntries[0].Hash == hash && blobEntries[0].Tag == tag)
                 {
@@ -164,7 +191,7 @@ namespace OdjfsScraper.Fetcher.Support
                 string oldCurrentPath = blobEntries[0].FilePath;
                 string newVersionPath = GetPath(
                     blobEntries[0].Name,
-                    blobEntries.Length == 2 ? (int.Parse(blobEntries[1].Version) + 1).ToString(CultureInfo.InvariantCulture) : "0",
+                    blobEntries.Length == 2 ? (blobEntries[1].Version + 1).ToString(CultureInfo.InvariantCulture) : "0",
                     blobEntries[0].Tag,
                     blobEntries[0].Hash);
 
@@ -172,38 +199,11 @@ namespace OdjfsScraper.Fetcher.Support
             }
 
             // generate the file path
-            string newCurrentPath = GetPath(name, "Current", tag, hash);
+            string newCurrentPath = GetPath(name, CurrentBlobKeyword, tag, hash);
 
             // write the stream
             Stream outputStream = _fileSystem.FileOpen(newCurrentPath, FileMode.Create);
             await stream.CopyToAsync(outputStream);
-        }
-
-        public Task<Stream> Read(string name, int versionIndex)
-        {
-            VerifyDirectory();
-
-            BlobEntry[] blobEntries = GetBlobEntries(name).ToArray();
-            if (blobEntries.Length == 0)
-            {
-                return Task.FromResult((Stream) null);
-            }
-
-            // convert the version index to a real index
-            if (versionIndex < 0)
-            {
-                versionIndex += blobEntries.Length;
-            }
-            if (versionIndex < 0 || versionIndex >= blobEntries.Length)
-            {
-                return Task.FromResult((Stream) null);
-            }
-
-            // get the path
-            string filePath = blobEntries[versionIndex].FilePath;
-
-            // read the file
-            return Task.FromResult(_fileSystem.FileOpen(filePath, FileMode.Open));
         }
 
         private string GetPath(string name, string version, string tag, string hash)
@@ -234,7 +234,7 @@ namespace OdjfsScraper.Fetcher.Support
                 .DirectoryEnumerateFiles(_directory, searchPattern, SearchOption.TopDirectoryOnly)
                 .OrderBy(s => s);
 
-            ISet<string> versions = new HashSet<string>();
+            ISet<int> versions = new HashSet<int>();
             foreach (string filePath in filePaths)
             {
                 // make sure the file extension matches
@@ -258,14 +258,17 @@ namespace OdjfsScraper.Fetcher.Support
                 string name = pieces[0];
 
                 // get the version
-                string version = pieces[1];
-                if (!IsVersion(version))
+                string stringVersion = pieces[1];
+                int version;
+                if (!TryParseVersion(stringVersion, out version))
                 {
                     continue;
                 }
                 if (versions.Contains(version))
                 {
-                    var exception = new ArgumentException("There must not be multiple files with name '{0}' and version '{1}'.");
+                    var exception = new ArgumentException(string.Format("There must not be multiple files with name '{0}' and version '{1}'.",
+                        name,
+                        version));
                     Logger.ErrorException(string.Format("Name: '{0}', Version: '{1}', FilePath: '{2}'", name, version, filePath), exception);
                     throw exception;
                 }
@@ -273,7 +276,7 @@ namespace OdjfsScraper.Fetcher.Support
 
                 // get the tag
                 const int skip = 2;
-                var tagPieces = pieces
+                string[] tagPieces = pieces
                     .Skip(skip)
                     .TakeWhile((s, i) => i < pieces.Length - (skip + 1))
                     .ToArray();
@@ -286,12 +289,18 @@ namespace OdjfsScraper.Fetcher.Support
             }
         }
 
-        private static bool IsVersion(string input)
+        private static bool TryParseVersion(string input, out int output)
         {
-            return input.Length > 0 && (
-                input == "Current" ||
-                (input[0] == '0' && input.Length == 1) ||
-                (input[0] != '0' && input.Skip(1).All(c => c >= '0' && c <= '9')));
+            if (input == CurrentBlobKeyword)
+            {
+                output = CurrentBlobValue;
+                return true;
+            }
+            if (int.TryParse(input, out output))
+            {
+                return true;
+            }
+            return false;
         }
 
         private class BlobEntry
@@ -300,9 +309,9 @@ namespace OdjfsScraper.Fetcher.Support
             private readonly string _hash;
             private readonly string _name;
             private readonly string _tag;
-            private readonly string _version;
+            private readonly int _version;
 
-            public BlobEntry(string filePath, string name, string version, string tag, string hash)
+            public BlobEntry(string filePath, string name, int version, string tag, string hash)
             {
                 _filePath = filePath;
                 _name = name;
@@ -326,7 +335,7 @@ namespace OdjfsScraper.Fetcher.Support
                 get { return _hash; }
             }
 
-            public string Version
+            public int Version
             {
                 get { return _version; }
             }
