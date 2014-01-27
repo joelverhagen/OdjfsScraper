@@ -28,8 +28,6 @@ namespace OdjfsScraper.DataChecker
         {
             try
             {
-                args = new[] {"daemon"};
-
                 IKernel kernel = new StandardKernel();
 
                 // discover... everything
