@@ -165,6 +165,7 @@ namespace OdjfsScraper.Fetcher.Support
                 var memoryStream = new MemoryStream();
                 await stream.CopyToAsync(memoryStream);
                 stream = memoryStream;
+                stream.Position = 0;
             }
 
             // get the hash, and reset the stream
@@ -206,8 +207,10 @@ namespace OdjfsScraper.Fetcher.Support
             string newCurrentPath = GetPath(name, CurrentBlobKeyword, tag, hash);
 
             // write the stream
-            Stream outputStream = _fileSystem.FileOpen(newCurrentPath, FileMode.Create);
-            await stream.CopyToAsync(outputStream);
+            using (Stream outputStream = _fileSystem.FileOpen(newCurrentPath, FileMode.Create))
+            {
+                await stream.CopyToAsync(outputStream);
+            }
         }
 
         private string GetPath(string name, string version, string tag, string hash)

@@ -22,27 +22,31 @@ namespace OdjfsScraper.Fetcher.Fetchers
         public async Task<ChildCare> Fetch(ChildCareStub childCareStub)
         {
             // fetch the stream
-            Stream stream = await _streamFetcher.GetChildCareDocument(childCareStub);
-            if (stream == null)
+            using (Stream stream = await _streamFetcher.GetChildCareDocument(childCareStub))
             {
-                return null;
-            }
+                if (stream == null)
+                {
+                    return null;
+                }
 
-            // extract the child care information
-            return _parser.Parse(childCareStub, await stream.ReadAsByteArrayAsync());
+                // extract the child care information
+                return _parser.Parse(childCareStub, await stream.ReadAsByteArrayAsync());
+            }
         }
 
         public async Task<ChildCare> Fetch(ChildCare childCare)
         {
             // fetch the stream
-            Stream stream = await _streamFetcher.GetChildCareDocument(childCare);
-            if (stream == null)
+            using (Stream stream = await _streamFetcher.GetChildCareDocument(childCare))
             {
-                return null;
-            }
+                if (stream == null)
+                {
+                    return null;
+                }
 
-            // extract the child care information
-            return _parser.Parse(childCare, await stream.ReadAsByteArrayAsync());
+                // extract the child care information
+                return _parser.Parse(childCare, await stream.ReadAsByteArrayAsync());
+            }
         }
     }
 }

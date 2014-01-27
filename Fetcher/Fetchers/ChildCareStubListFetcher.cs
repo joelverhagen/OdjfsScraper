@@ -23,14 +23,16 @@ namespace OdjfsScraper.Fetcher.Fetchers
         public async Task<IEnumerable<ChildCareStub>> Fetch(County county)
         {
             // fetch the stream
-            Stream stream = await _streamFetcher.GetChildCareStubListDocument(county);
-            if (stream == null)
+            using (Stream stream = await _streamFetcher.GetChildCareStubListDocument(county))
             {
-                return null;
-            }
+                if (stream == null)
+                {
+                    return null;
+                }
 
-            // extract the information from the HTML
-            return _parser.Parse(county, await stream.ReadAsByteArrayAsync());
+                // extract the information from the HTML
+                return _parser.Parse(county, await stream.ReadAsByteArrayAsync());
+            }
         }
     }
 }
