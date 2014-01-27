@@ -58,10 +58,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Fetchers\ChildCareStubListFetcherTest.cs" />
+    <Compile Include="Fetchers\ChildCareFetcherTest.cs" />
     <Compile Include="Fetchers\HttpStreamFetcherTest.cs" />
     <Compile Include="Fetchers\DownloadingHttpStreamFetcherTest.cs" />
     <Compile Include="Fetchers\FileSystemStreamFetcherTest.cs" />
-    <Compile Include="Fetchers\BaseHttpStreamFetcherTest.cs" />
+    <Compile Include="Fetchers\TestSupport\BaseHttpStreamFetcherTest.cs" />
+    <Compile Include="Fetchers\TestSupport\BaseEntityFetcherTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\FileSystemBlobStoreTest.cs" />
     <Compile Include="Support\TestSupport\UnseekableStream.cs" />
@@ -78,7 +81,12 @@
       <Project>{711cc508-53a8-4edb-bbca-b911935da4b0}</Project>
       <Name>Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Parser\Parser.csproj">
+      <Project>{c86f6694-1fce-46d3-b9b7-69512d9d722b}</Project>
+      <Name>Parser</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

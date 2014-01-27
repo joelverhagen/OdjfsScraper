@@ -17,7 +17,7 @@ using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
 
-namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
+namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
 {
     public abstract class BaseHttpStreamFetcherTest<TFetcher> where TFetcher : HttpStreamFetcher
     {

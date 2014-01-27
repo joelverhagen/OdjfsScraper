@@ -9,6 +9,7 @@ using Moq;
 using Moq.Protected;
 using OdjfsScraper.Fetcher.Fetchers;
 using OdjfsScraper.Fetcher.Support;
+using OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
