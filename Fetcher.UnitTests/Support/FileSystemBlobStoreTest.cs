@@ -98,7 +98,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Support
         {
             // ARRANGE
             var test = new Test();
-            test.FileSystemBlobStore.SetDirectory(null);
+            test.FileSystemBlobStore.Directory = null;
 
             // ACT, ASSERT
             VerifyException<InvalidOperationException>(
@@ -170,7 +170,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Support
             var test = new Test();
             test.SetupForRead(directory, fileName, new MemoryStream(expectedBytes));
             test.SetupForConstantHash("FooHash");
-            test.SetupDirectory(directory, new []
+            test.SetupDirectory(directory, new[]
             {
                 fileName
             });
@@ -585,10 +585,6 @@ namespace OdjfsScraper.Fetcher.UnitTests.Support
 
         public class Test
         {
-            public Mock<IFileSystem> FileSystemMock { get; private set; }
-            public Mock<IHashAlgorithm> HashAlgorithMock { get; private set; }
-            public FileSystemBlobStore FileSystemBlobStore { get; private set; }
-
             public Test()
             {
                 FileSystemMock = new Mock<IFileSystem>();
@@ -598,13 +594,17 @@ namespace OdjfsScraper.Fetcher.UnitTests.Support
                 SetupDefaults();
             }
 
+            public Mock<IFileSystem> FileSystemMock { get; private set; }
+            public Mock<IHashAlgorithm> HashAlgorithMock { get; private set; }
+            public FileSystemBlobStore FileSystemBlobStore { get; private set; }
+
             public void SetupDefaults()
             {
                 SetupForEmptyDirectory();
                 FileSystemMock
                     .Setup(f => f.FileOpen(It.IsAny<string>(), It.IsAny<FileMode>()))
                     .Returns(() => new MemoryStream());
-                FileSystemBlobStore.SetDirectory(@"Z:\HTML");
+                FileSystemBlobStore.Directory = @"Z:\HTML";
                 SetupForConstantHash("FooHash");
             }
 
@@ -661,13 +661,13 @@ namespace OdjfsScraper.Fetcher.UnitTests.Support
 
             public void SetupDirectory(string directory, IEnumerable<string> fileNames)
             {
-                var filePaths = fileNames
+                string[] filePaths = fileNames
                     .Select(s => Path.Combine(directory, s))
                     .ToArray();
                 FileSystemMock
                     .Setup(f => f.DirectoryEnumerateFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SearchOption>()))
                     .Returns(filePaths);
-                FileSystemBlobStore.SetDirectory(directory);
+                FileSystemBlobStore.Directory = directory;
             }
         }
     }

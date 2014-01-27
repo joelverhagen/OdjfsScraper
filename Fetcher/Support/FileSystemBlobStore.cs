@@ -90,26 +90,30 @@ namespace OdjfsScraper.Fetcher.Support
             }
         }
 
-        public void SetDirectory(string directory)
+        public string Directory
         {
-            if (_directory != directory)
+            get { return _directory; }
+            set
             {
-                _isDirectoryChecked = false;
-                _directory = directory;
+                if (value != _directory)
+                {
+                    _isDirectoryChecked = false;
+                    _directory = value;
+                }
             }
         }
 
         public void VerifyDirectory()
         {
-            if (_directory == null)
+            if (Directory == null)
             {
                 throw new InvalidOperationException("The directory must be set before using the blob store.");
             }
             if (!_isDirectoryChecked)
             {
-                if (!_fileSystem.DirectoryExists(_directory))
+                if (!_fileSystem.DirectoryExists(Directory))
                 {
-                    _fileSystem.DirectoryCreateDirectory(_directory);
+                    _fileSystem.DirectoryCreateDirectory(Directory);
                 }
                 _isDirectoryChecked = true;
             }
@@ -208,7 +212,7 @@ namespace OdjfsScraper.Fetcher.Support
 
         private string GetPath(string name, string version, string tag, string hash)
         {
-            return Path.Combine(_directory, string.Join("", new[]
+            return Path.Combine(Directory, string.Join("", new[]
             {
                 name,
                 FieldSeperator,
@@ -231,7 +235,7 @@ namespace OdjfsScraper.Fetcher.Support
         {
             string searchPattern = string.Format("{0}{1}*", searchName, FieldSeperator);
             IOrderedEnumerable<string> filePaths = _fileSystem
-                .DirectoryEnumerateFiles(_directory, searchPattern, SearchOption.TopDirectoryOnly)
+                .DirectoryEnumerateFiles(Directory, searchPattern, SearchOption.TopDirectoryOnly)
                 .OrderBy(s => s);
 
             ISet<int> versions = new HashSet<int>();

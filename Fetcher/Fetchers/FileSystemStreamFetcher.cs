@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using OdjfsScraper.Fetcher.Support;
@@ -11,14 +10,11 @@ namespace OdjfsScraper.Fetcher.Fetchers
 {
     public class FileSystemStreamFetcher : IFileSystemStreamFetcher
     {
-        private readonly IFileSystem _fileSystem;
-        private IDictionary<string, string> _childCarePaths;
-        private IDictionary<string, string> _countyPaths;
-        private string _directory;
+        private readonly IFileSystemBlobStore _fileSystemBlobStore;
 
-        public FileSystemStreamFetcher(IFileSystem fileSystem)
+        public FileSystemStreamFetcher(IFileSystemBlobStore fileSystemBlobStore)
         {
-            _fileSystem = fileSystem;
+            _fileSystemBlobStore = fileSystemBlobStore;
         }
 
         public Task<Stream> GetChildCareDocument(ChildCareStub childCareStub)
@@ -31,7 +27,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
             {
                 throw new ArgumentNullException("childCareStub.ExternalUrlId");
             }
-            return GetChildCareDocumentWithoutValidation(childCareStub.ExternalUrlId);
+            return GetChildCareDocument(childCareStub.ExternalUrlId);
         }
 
         public Task<Stream> GetChildCareDocument(ChildCare childCare)
@@ -44,7 +40,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
             {
                 throw new ArgumentNullException("childCare.ExternalUrlId");
             }
-            return GetChildCareDocumentWithoutValidation(childCare.ExternalUrlId);
+            return GetChildCareDocument(childCare.ExternalUrlId);
         }
 
         public Task<Stream> GetChildCareStubListDocument(County county)
@@ -57,114 +53,28 @@ namespace OdjfsScraper.Fetcher.Fetchers
             {
                 throw new ArgumentNullException("county.Name");
             }
-            return GetChildCareStubListDocument(county.Name);
+            VerifyDirectory();
+            return _fileSystemBlobStore.Read(string.Format("County-{0}", county.Name.ToUpper()), -1);
         }
 
-        public void SetDirectory(string directory)
+        public string Directory
         {
-            if (directory == null)
-            {
-                throw new ArgumentNullException("directory");
-            }
-
-            _directory = directory;
-            _childCarePaths = null;
-            _countyPaths = null;
+            get { return _fileSystemBlobStore.Directory; }
+            set { _fileSystemBlobStore.Directory = value; }
         }
 
-        private Task<Stream> GetChildCareDocumentWithoutValidation(string externalUrlId)
+        private void VerifyDirectory()
         {
-            ExploreDirectory();
-
-            // get the path
-            string path;
-            if (!_childCarePaths.TryGetValue(externalUrlId.ToUpper(), out path))
-            {
-                return Task.FromResult((Stream)null);
-            }
-
-            return GetFileStream(path);
-        }
-
-        private Task<Stream> GetChildCareStubListDocument(string name)
-        {
-            ExploreDirectory();
-
-            // get the path
-            string path;
-            if (!_countyPaths.TryGetValue(name.ToUpper(), out path))
-            {
-                return Task.FromResult((Stream)null);
-            }
-
-            return GetFileStream(path);
-        }
-
-        private Task<Stream> GetFileStream(string path)
-        {
-            return Task.FromResult(_fileSystem.FileOpen(path, FileMode.Open));
-        }
-
-        private void ExploreDirectory()
-        {
-            if (_childCarePaths != null && _countyPaths != null)
-            {
-                return;
-            }
-
-            if (_directory == null)
+            if (Directory == null)
             {
                 throw new InvalidOperationException("The directory has not been set.");
             }
+        }
 
-            IEnumerable<string> paths = _fileSystem.DirectoryEnumerateFiles(_directory, "*.html", SearchOption.TopDirectoryOnly);
-            IDictionary<string, string> childCarePaths = new Dictionary<string, string>();
-            IDictionary<string, string> countyPaths = new Dictionary<string, string>();
-
-            foreach (string path in paths)
-            {
-                // parse the file name
-                string fileName = Path.GetFileNameWithoutExtension(path);
-                if (fileName == null)
-                {
-                    continue;
-                }
-
-                // split the pieces of the file name
-                string[] tokens = fileName.Split('_');
-                if (tokens.Length != 5)
-                {
-                    continue;
-                }
-
-                // only keeps track of the current version of the document
-                if (tokens[2] != "Current")
-                {
-                    continue;
-                }
-
-                // select the dictionary to load
-                IDictionary<string, string> dictionary;
-                if (tokens[0] == "ChildCare")
-                {
-                    dictionary = childCarePaths;
-                }
-                else if (tokens[0] == "County")
-                {
-                    dictionary = countyPaths;
-                }
-                else
-                {
-                    continue;
-                }
-
-                // load the path
-                dictionary[tokens[1].ToUpper()] = path;
-            }
-
-            // we're done
-            _childCarePaths = childCarePaths;
-            _countyPaths = countyPaths;
+        private Task<Stream> GetChildCareDocument(string externalUrlId)
+        {
+            VerifyDirectory();
+            return _fileSystemBlobStore.Read(string.Format("ChildCare-{0}", externalUrlId.ToUpper()), -1);
         }
     }
 }

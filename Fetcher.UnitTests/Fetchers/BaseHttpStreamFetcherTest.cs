@@ -42,7 +42,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             {
                 string content = string.Join(" ", pattern);
 
-                var childCare = new LicensedCenter { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" };
+                var childCare = new LicensedCenter {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
                 VerifyRequest(
                     HttpStatusCode.InternalServerError,
                     content,
@@ -51,7 +51,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                     Assert.IsNull);
                 Trace.WriteLine(string.Format("GetChildCareDocument(ChildCare) error matched: {0}", content));
 
-                var childCareStub = new LicensedCenterStub { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" };
+                var childCareStub = new LicensedCenterStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
                 VerifyRequest(
                     HttpStatusCode.InternalServerError,
                     content,
@@ -73,7 +73,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                 VerifyAsyncException<HttpRequestException>(
                     HttpStatusCode.InternalServerError,
                     content,
-                    f => f.GetChildCareStubListDocument(new County { Name = "FRANKLIN" }).Wait(),
+                    f => f.GetChildCareStubListDocument(new County {Name = "FRANKLIN"}).Wait(),
                     e => Assert.AreEqual(e.Message, expectedMessage));
                 Trace.WriteLine(string.Format("GetChildCareStubListDocument(County) error matched: {0}", content));
 
@@ -96,7 +96,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         [TestMethod]
         public void GetChildCareStubListDocument_HappyPath()
         {
-            var county = new County { Name = "FRANKLIN" };
+            var county = new County {Name = "FRANKLIN"};
             VerifyRequest(
                 HttpStatusCode.OK,
                 string.Empty,
@@ -262,7 +262,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             Assert.IsTrue(handler.AllowPipelining);
         }
 
-        private static void VerifyRequest(HttpStatusCode httpStatusCode, string content, Func<HttpStreamFetcher, Task<Stream>> getStreamTask, Action<HttpRequestMessage, string> verifyRequest, Action<Stream> verifyStream)
+        private void VerifyRequest(HttpStatusCode httpStatusCode, string content, Func<HttpStreamFetcher, Task<Stream>> getStreamTask, Action<HttpRequestMessage, string> verifyRequest, Action<Stream> verifyStream)
         {
             // ARRANGE
             const string userAgent = "Foo user agent";
@@ -273,7 +273,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                 .Returns(GetHttpResponseMessage(httpStatusCode, content))
                 .Callback<HttpRequestMessage, CancellationToken>((request, ct) => verifyRequest(request, userAgent));
 
-            var fetcher = new HttpStreamFetcher(mock.Object, userAgent);
+            TFetcher fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, userAgent);
 
             // ACT
             Task<Stream> task = getStreamTask(fetcher);

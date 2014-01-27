@@ -2,6 +2,6 @@
 {
     public interface IFileSystemStreamFetcher : IStreamFetcher
     {
-        void SetDirectory(string directory);
+        string Directory { get; set; }
     }
 }
