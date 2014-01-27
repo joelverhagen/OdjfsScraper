@@ -157,6 +157,15 @@ namespace OdjfsScraper.Fetcher.Support
             return Task.FromResult(_fileSystem.FileOpen(filePath, FileMode.Open));
         }
 
+        public Task<IDictionary<string, int>> GetNames()
+        {
+            IDictionary<string, int> entries = GetBlobEntries(null)
+                .GroupBy(b => b.Name)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            return Task.FromResult(entries);
+        }
+
         private async Task WriteWithoutValidation(string name, string tag, Stream stream)
         {
             // fully buffer the stream if it is not seekable
@@ -236,12 +245,12 @@ namespace OdjfsScraper.Fetcher.Support
         /// <returns>A sequence of <see cref="BlobEntry" /> instances.</returns>
         private IEnumerable<BlobEntry> GetBlobEntries(string searchName)
         {
-            string searchPattern = string.Format("{0}{1}*", searchName, FieldSeperator);
+            string searchPattern = searchName == null ? "*" : string.Format("{0}{1}*", searchName, FieldSeperator);
             IOrderedEnumerable<string> filePaths = _fileSystem
                 .DirectoryEnumerateFiles(Directory, searchPattern, SearchOption.TopDirectoryOnly)
                 .OrderBy(s => s);
 
-            ISet<int> versions = new HashSet<int>();
+            IDictionary<string, ISet<int>> allVersions = new Dictionary<string, ISet<int>>();
             foreach (string filePath in filePaths)
             {
                 // make sure the file extension matches
@@ -263,6 +272,12 @@ namespace OdjfsScraper.Fetcher.Support
 
                 // get the name
                 string name = pieces[0];
+                ISet<int> versions;
+                if (!allVersions.TryGetValue(name, out versions))
+                {
+                    versions = new HashSet<int>();
+                    allVersions[name] = versions;
+                }
 
                 // get the version
                 string stringVersion = pieces[1];
