@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using ManyConsole;
 using OdjfsScraper.Database;
-using OdjfsScraper.DataChecker.Options;
-using OdjfsScraper.DataChecker.Support;
+using OdjfsScraper.Tool.Options;
+using OdjfsScraper.Tool.Support;
 
-namespace OdjfsScraper.DataChecker.Commands
+namespace OdjfsScraper.Tool.Commands
 {
     public class GeocodeCommand : DatabaseCommand
     {

@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
 using System.Linq;
 
-namespace OdjfsScraper.DataChecker
+namespace OdjfsScraper.Tool
 {
     public static class Settings
     {

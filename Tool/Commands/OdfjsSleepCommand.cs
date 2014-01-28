@@ -1,6 +1,6 @@
-﻿using OdjfsScraper.DataChecker.Options;
+﻿using OdjfsScraper.Tool.Options;
 
-namespace OdjfsScraper.DataChecker.Commands
+namespace OdjfsScraper.Tool.Commands
 {
     public abstract class OdfjsSleepCommand : DatabaseCommand
     {

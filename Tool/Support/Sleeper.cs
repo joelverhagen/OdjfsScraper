@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace OdjfsScraper.DataChecker.Support
+namespace OdjfsScraper.Tool.Support
 {
     public class Sleeper
     {

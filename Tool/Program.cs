@@ -6,20 +6,19 @@ using System.Reflection;
 using System.Text;
 using ManyConsole;
 using Ninject;
-using Ninject.Activation;
 using Ninject.Extensions.Conventions;
 using NLog;
-using OdjfsScraper.DataChecker.Commands;
 using OdjfsScraper.Exporter.Exporters;
 using OdjfsScraper.Fetcher.Fetchers;
 using OdjfsScraper.Fetcher.Support;
 using OdjfsScraper.Model.Fetchers;
 using OdjfsScraper.Parser.Parsers;
 using OdjfsScraper.Synchronizer.Synchronizers;
+using OdjfsScraper.Tool.Commands;
 using PolyGeocoder.Geocoders;
 using PolyGeocoder.Support;
 
-namespace OdjfsScraper.DataChecker
+namespace OdjfsScraper.Tool
 {
     internal class Program
     {
@@ -84,7 +83,7 @@ namespace OdjfsScraper.DataChecker
             }
             catch (Exception e)
             {
-                Logger.ErrorException("An error occurred during the execution of OdjfsScraper.DataChecker.", e);
+                Logger.ErrorException("An error occurred during the execution of OdjfsScraper.Tool.", e);
                 var sb = new StringBuilder();
                 TraceExceptionMessages(sb, e, 1);
                 Logger.Error(sb.ToString().Trim());

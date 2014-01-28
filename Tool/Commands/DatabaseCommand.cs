@@ -3,7 +3,7 @@ using System.Linq;
 using NLog;
 using OdjfsScraper.Database.Migrations;
 
-namespace OdjfsScraper.DataChecker.Commands
+namespace OdjfsScraper.Tool.Commands
 {
     public abstract class DatabaseCommand : Command
     {

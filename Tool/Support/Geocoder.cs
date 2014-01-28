@@ -9,7 +9,7 @@ using OdjfsScraper.Database;
 using OdjfsScraper.Model.ChildCares;
 using PolyGeocoder.Support;
 
-namespace OdjfsScraper.DataChecker.Support
+namespace OdjfsScraper.Tool.Support
 {
     public class Geocoder : IGeocoder
     {

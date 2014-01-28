@@ -1,7 +1,7 @@
 using System.Linq;
 using OdjfsScraper.Database;
 
-namespace OdjfsScraper.DataChecker.Support
+namespace OdjfsScraper.Tool.Support
 {
     public class DaemonEventLoop
     {

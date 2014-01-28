@@ -1,4 +1,4 @@
-﻿namespace OdjfsScraper.DataChecker.Commands
+﻿namespace OdjfsScraper.Tool.Commands
 {
     public interface ICommand
     {

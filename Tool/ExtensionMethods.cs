@@ -2,9 +2,9 @@
 using System.IO;
 using System.Reflection;
 using ManyConsole;
-using OdjfsScraper.DataChecker.Commands;
+using OdjfsScraper.Tool.Commands;
 
-namespace OdjfsScraper.DataChecker
+namespace OdjfsScraper.Tool
 {
     public static class ExtensionMethods
     {

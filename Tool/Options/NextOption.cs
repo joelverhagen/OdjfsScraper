@@ -1,6 +1,6 @@
 ﻿using ManyConsole;
 
-namespace OdjfsScraper.DataChecker.Options
+namespace OdjfsScraper.Tool.Options
 {
     public class NextOption : IValueOption<int?>
     {

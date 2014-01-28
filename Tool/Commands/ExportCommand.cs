@@ -10,7 +10,7 @@ using OdjfsScraper.Database;
 using OdjfsScraper.Exporter.Exporters;
 using OdjfsScraper.Model.ChildCares;
 
-namespace OdjfsScraper.DataChecker.Commands
+namespace OdjfsScraper.Tool.Commands
 {
     public enum ExportFormat
     {

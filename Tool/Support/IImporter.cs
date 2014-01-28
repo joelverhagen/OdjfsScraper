@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace OdjfsScraper.DataChecker.Support
+namespace OdjfsScraper.Tool.Support
 {
     public interface IImporter
     {

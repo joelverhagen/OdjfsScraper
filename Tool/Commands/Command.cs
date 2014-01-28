@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using ManyConsole;
-using OdjfsScraper.DataChecker.Options;
+using OdjfsScraper.Tool.Options;
 
-namespace OdjfsScraper.DataChecker.Commands
+namespace OdjfsScraper.Tool.Commands
 {
     public abstract class Command : ConsoleCommand, ICommand
     {

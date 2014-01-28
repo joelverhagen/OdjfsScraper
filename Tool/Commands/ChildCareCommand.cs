@@ -1,9 +1,9 @@
 ﻿using ManyConsole;
 using OdjfsScraper.Database;
-using OdjfsScraper.DataChecker.Support;
 using OdjfsScraper.Synchronizer.Synchronizers;
+using OdjfsScraper.Tool.Support;
 
-namespace OdjfsScraper.DataChecker.Commands
+namespace OdjfsScraper.Tool.Commands
 {
     public class ChildCareCommand : OdfjsSleepNextCommand
     {

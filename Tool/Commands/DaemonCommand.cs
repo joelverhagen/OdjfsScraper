@@ -3,11 +3,11 @@ using System.Net.Http;
 using System.Threading;
 using NLog;
 using OdjfsScraper.Database;
-using OdjfsScraper.DataChecker.Options;
-using OdjfsScraper.DataChecker.Support;
 using OdjfsScraper.Synchronizer.Synchronizers;
+using OdjfsScraper.Tool.Options;
+using OdjfsScraper.Tool.Support;
 
-namespace OdjfsScraper.DataChecker.Commands
+namespace OdjfsScraper.Tool.Commands
 {
     public class DaemonCommand : OdfjsSleepCommand
     {
@@ -107,7 +107,7 @@ namespace OdjfsScraper.DataChecker.Commands
                     if (he != null)
                     {
                         Logger.Trace("An unexpected HTTP status code was returned by ODJFS.");
-                        Logger.Trace("OdjfsScraper.DataChecker will now sleep for 10 minutes.");
+                        Logger.Trace("OdjfsScraper.Tool will now sleep for 10 minutes.");
                         Thread.Sleep(10*60*1000);
                     }
                     else

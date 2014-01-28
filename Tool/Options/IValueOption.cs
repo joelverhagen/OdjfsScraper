@@ -1,4 +1,4 @@
-﻿namespace OdjfsScraper.DataChecker.Options
+﻿namespace OdjfsScraper.Tool.Options
 {
     public interface IValueOption<T> : IOption
     {
