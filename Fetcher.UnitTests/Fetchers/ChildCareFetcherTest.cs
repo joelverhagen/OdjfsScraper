@@ -16,14 +16,14 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
     public class ChildCareFetcherTest : BaseEntityFetcherTest
     {
         [TestMethod]
-        public void GetAvailable_HappyPath()
+        public void GetAvailableChildCares_HappyPath()
         {
             // ARRANGE
             var expected = Enumerable.Empty<ChildCare>();
             var fetcher = new ChildCareFetcher(GetStreamFetcherReturningChildCares(expected), null);
 
             // ACT
-            IEnumerable<ChildCare> actual = fetcher.GetAvailable().Result;
+            IEnumerable<ChildCare> actual = fetcher.GetAvailableChildCares().Result;
 
             // ASSERT
             Assert.AreSame(expected, actual);

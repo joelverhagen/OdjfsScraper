@@ -35,7 +35,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
             }
         }
 
-        public Task<IEnumerable<County>> GetAvailable()
+        public Task<IEnumerable<County>> GetAvailableCounties()
         {
             return _streamFetcher.GetAvailableCounties();
         }

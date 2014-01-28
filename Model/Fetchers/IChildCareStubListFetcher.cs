@@ -7,6 +7,6 @@ namespace OdjfsScraper.Model.Fetchers
     public interface IChildCareStubListFetcher
     {
         Task<IEnumerable<ChildCareStub>> Fetch(County county);
-        Task<IEnumerable<County>> GetAvailable();
+        Task<IEnumerable<County>> GetAvailableCounties();
     }
 }
