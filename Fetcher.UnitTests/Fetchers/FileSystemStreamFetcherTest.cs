@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -30,14 +32,14 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         public void GetChildCareDocument_ChildCareStub_CaseInsensitive()
         {
             VerifyGetChildCareDocument(
-                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = externalUrlId}),
+                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCareStub {ExternalUrlId = externalUrlId}),
                 externalUrlId => externalUrlId.ToLower());
         }
 
         [TestMethod]
         public void GetChildCareDocument_ChildCare_CaseInsensitive()
         {
-            VerifyGetChildCareDocument((fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenter {ExternalUrlId = externalUrlId}),
+            VerifyGetChildCareDocument((fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCare {ExternalUrlId = externalUrlId}),
                 externalUrlId => externalUrlId.ToLower());
         }
 
@@ -45,28 +47,28 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         public void GetChildCareDocument_ChildCareStub_HappyPath()
         {
             VerifyGetChildCareDocument(
-                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = externalUrlId}),
+                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCareStub {ExternalUrlId = externalUrlId}),
                 externalUrlId => externalUrlId.ToUpper());
         }
 
         [TestMethod]
         public void GetChildCareDocument_ChildCareStub_Missing()
         {
-            VerifyMissing((fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = externalUrlId}));
+            VerifyMissing((fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCareStub {ExternalUrlId = externalUrlId}));
         }
 
         [TestMethod]
         public void GetChildCareDocument_ChildCare_HappyPath()
         {
             VerifyGetChildCareDocument(
-                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenter {ExternalUrlId = externalUrlId}),
+                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCare {ExternalUrlId = externalUrlId}),
                 externalUrlId => externalUrlId.ToUpper());
         }
 
         [TestMethod]
         public void GetChildCareDocument_ChildCare_Missing()
         {
-            VerifyMissing((fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenter {ExternalUrlId = externalUrlId}));
+            VerifyMissing((fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCare {ExternalUrlId = externalUrlId}));
         }
 
         [TestMethod]
@@ -98,7 +100,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         {
             VerifyException<InvalidOperationException>(
                 false,
-                f => f.GetChildCareDocument(new LicensedCenter {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}),
+                f => f.GetChildCareDocument(new ChildCare {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}),
                 e => Assert.AreEqual(e.Message, "The directory has not been set."));
         }
 
@@ -107,7 +109,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         {
             VerifyException<InvalidOperationException>(
                 false,
-                f => f.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}),
+                f => f.GetChildCareDocument(new ChildCareStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}),
                 e => Assert.AreEqual(e.Message, "The directory has not been set."));
         }
 
@@ -125,7 +127,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         {
             VerifyException<ArgumentNullException>(
                 true,
-                f => f.GetChildCareDocument(new LicensedCenter {ExternalUrlId = null}),
+                f => f.GetChildCareDocument(new ChildCare {ExternalUrlId = null}),
                 e => Assert.AreEqual(e.ParamName, "childCare.ExternalUrlId"));
         }
 
@@ -152,8 +154,38 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         {
             VerifyException<ArgumentNullException>(
                 true,
-                f => f.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = null}),
+                f => f.GetChildCareDocument(new ChildCareStub {ExternalUrlId = null}),
                 e => Assert.AreEqual(e.ParamName, "childCareStub.ExternalUrlId"));
+        }
+
+        [TestMethod]
+        public void GetAllCounties_HappyPath()
+        {
+            VerifyWithNames(
+                new Dictionary<string, int> {{"County-FRANKLIN", 3}, {"County-HAMILTON", 2}, {"ChildCare-AAAAA", 4}, {"ChildCare-BBBBB", 5}},
+                fetcher => fetcher.GetAllCounties(),
+                counties =>
+                {
+                    counties = counties.OrderBy(c => c.Name).ToArray();
+                    Assert.AreEqual(2, counties.Length);
+                    Assert.AreEqual("FRANKLIN", counties[0].Name);
+                    Assert.AreEqual("HAMILTON", counties[1].Name);
+                });
+        }
+
+        [TestMethod]
+        public void GetAllChildCares_HappyPath()
+        {
+            VerifyWithNames(
+                new Dictionary<string, int> {{"County-FRANKLIN", 3}, {"County-HAMILTON", 2}, {"ChildCare-AAAAA", 4}, {"ChildCare-BBBBB", 5}},
+                fetcher => fetcher.GetAllChildCares(),
+                childCares =>
+                {
+                    childCares = childCares.OrderBy(c => c.ExternalUrlId).ToArray();
+                    Assert.AreEqual(2, childCares.Length);
+                    Assert.AreEqual("AAAAA", childCares[0].ExternalUrlId);
+                    Assert.AreEqual("BBBBB", childCares[1].ExternalUrlId);
+                });
         }
 
         private static void VerifyException<T>(bool setDirectory, Action<FileSystemStreamFetcher> act, Action<T> verify) where T : Exception
@@ -195,6 +227,26 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                 "County",
                 "FRANKLIN",
                 getInputCountyName);
+        }
+
+        private static void VerifyWithNames<T>(IDictionary<string, int> names, Func<FileSystemStreamFetcher, Task<IEnumerable<T>>> getEntities, Action<T[]> verifyEntities)
+        {
+            // ARRANGE
+            var mock = new Mock<IFileSystemBlobStore>();
+            mock
+                .SetupProperty(f => f.Directory);
+            mock
+                .Setup(s => s.GetNames())
+                .Returns(Task.FromResult(names));
+            IFileSystemBlobStore store = mock.Object;
+            var fetcher = new FileSystemStreamFetcher(store);
+            fetcher.Directory = @"Z:\HTML";
+
+            // ACT
+            T[] entities = getEntities(fetcher).Result.ToArray();
+
+            // ASSERT
+            verifyEntities(entities);
         }
 
         private static void VerifyMissing(Func<FileSystemStreamFetcher, string, Task<Stream>> getStreamTask)

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using OdjfsScraper.Fetcher.Support;
 using OdjfsScraper.Model;
@@ -61,6 +63,27 @@ namespace OdjfsScraper.Fetcher.Fetchers
         {
             get { return _fileSystemBlobStore.Directory; }
             set { _fileSystemBlobStore.Directory = value; }
+        }
+
+        public Task<IEnumerable<County>> GetAllCounties()
+        {
+            return GetAllEntities("County", countyName => new County {Name = countyName});
+        }
+
+        public Task<IEnumerable<ChildCare>> GetAllChildCares()
+        {
+            return GetAllEntities("ChildCare", externalUrlId => new ChildCare {ExternalUrlId = externalUrlId});
+        }
+
+        private async Task<IEnumerable<T>> GetAllEntities<T>(string prefix, Func<string, T> createEntity)
+        {
+            prefix += "-";
+
+            return (await _fileSystemBlobStore.GetNames())
+                .Select(p => p.Key)
+                .Where(s => s.StartsWith(prefix))
+                .Select(s => s.Substring(prefix.Length))
+                .Select(createEntity);
         }
 
         private void VerifyDirectory()

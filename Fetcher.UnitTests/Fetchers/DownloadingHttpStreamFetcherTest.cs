@@ -25,7 +25,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyCorrectCalls(
                 HttpStatusCode.InternalServerError,
                 "ChildCare",
-                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenter {ExternalUrlId = externalUrlId}).Wait());
+                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCare {ExternalUrlId = externalUrlId}).Wait());
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyCorrectCalls(
                 HttpStatusCode.InternalServerError,
                 "ChildCare",
-                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = externalUrlId}).Wait());
+                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCareStub { ExternalUrlId = externalUrlId }).Wait());
         }
 
         [TestMethod]
@@ -52,7 +52,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyCorrectCalls(
                 HttpStatusCode.OK,
                 "ChildCare",
-                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenter {ExternalUrlId = externalUrlId}).Wait());
+                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCare {ExternalUrlId = externalUrlId}).Wait());
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             VerifyCorrectCalls(
                 HttpStatusCode.OK,
                 "ChildCare",
-                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = externalUrlId}).Wait());
+                (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCareStub { ExternalUrlId = externalUrlId }).Wait());
         }
 
         [TestMethod]

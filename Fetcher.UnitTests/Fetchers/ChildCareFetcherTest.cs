@@ -20,7 +20,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             var fetcher = new ChildCareFetcher(GetStreamFetcherReturningNull(), null);
 
             // ACT
-            ChildCare childCare = fetcher.Fetch(new LicensedCenter()).Result;
+            ChildCare childCare = fetcher.Fetch(new ChildCare()).Result;
 
             // ASSERT
             Assert.IsNull(childCare);
@@ -33,7 +33,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             var fetcher = new ChildCareFetcher(GetStreamFetcherReturningNull(), null);
 
             // ACT
-            ChildCare childCare = fetcher.Fetch(new LicensedCenterStub()).Result;
+            ChildCare childCare = fetcher.Fetch(new ChildCareStub()).Result;
 
             // ASSERT
             Assert.IsNull(childCare);
@@ -43,7 +43,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         public void GetChildCare_ChildCare_NotNull()
         {
             // ARRANGE
-            var expectedChildCare = new LicensedCenter();
+            var expectedChildCare = new ChildCare();
             byte[] expectedBytes = Encoding.UTF8.GetBytes("This is the document");
 
             var parserMock = new Mock<IChildCareParser>();
@@ -55,7 +55,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             var fetcher = new ChildCareFetcher(GetStreamFetcherReturningDocument(expectedBytes), parserMock.Object);
 
             // ACT
-            ChildCare actualChildCare = fetcher.Fetch(new LicensedCenter()).Result;
+            ChildCare actualChildCare = fetcher.Fetch(new ChildCare()).Result;
 
             // ASSERT
             Assert.AreSame(expectedChildCare, actualChildCare);
@@ -65,7 +65,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         public void GetChildCare_ChildCareStub_NotNull()
         {
             // ARRANGE
-            var expectedChildCare = new LicensedCenter();
+            var expectedChildCare = new ChildCare();
             byte[] expectedBytes = Encoding.UTF8.GetBytes("This is the document");
 
             var parserMock = new Mock<IChildCareParser>();
@@ -77,7 +77,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             var fetcher = new ChildCareFetcher(GetStreamFetcherReturningDocument(expectedBytes), parserMock.Object);
 
             // ACT
-            ChildCare actualChildCare = fetcher.Fetch(new LicensedCenterStub()).Result;
+            ChildCare actualChildCare = fetcher.Fetch(new ChildCareStub()).Result;
 
             // ASSERT
             Assert.AreSame(expectedChildCare, actualChildCare);

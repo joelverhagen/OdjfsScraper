@@ -42,7 +42,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             {
                 string content = string.Join(" ", pattern);
 
-                var childCare = new LicensedCenter {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
+                var childCare = new ChildCare { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" };
                 VerifyRequest(
                     HttpStatusCode.InternalServerError,
                     content,
@@ -51,7 +51,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                     Assert.IsNull);
                 Trace.WriteLine(string.Format("GetChildCareDocument(ChildCare) error matched: {0}", content));
 
-                var childCareStub = new LicensedCenterStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
+                var childCareStub = new ChildCareStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
                 VerifyRequest(
                     HttpStatusCode.InternalServerError,
                     content,
@@ -80,14 +80,14 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 VerifyAsyncException<HttpRequestException>(
                     HttpStatusCode.InternalServerError,
                     content,
-                    f => f.GetChildCareDocument(new LicensedCenter {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}).Wait(),
+                    f => f.GetChildCareDocument(new ChildCare {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}).Wait(),
                     e => Assert.AreEqual(e.Message, expectedMessage));
                 Trace.WriteLine(string.Format("GetChildCareDocument(ChildCare) error matched: {0}", content));
 
                 VerifyAsyncException<HttpRequestException>(
                     HttpStatusCode.InternalServerError,
                     content,
-                    f => f.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}).Wait(),
+                    f => f.GetChildCareDocument(new ChildCareStub { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" }).Wait(),
                     e => Assert.AreEqual(e.Message, expectedMessage));
                 Trace.WriteLine(string.Format("GetChildCareDocument(ChildCareStub) error matched: {0}", content));
             }
@@ -131,7 +131,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             VerifyException<ArgumentNullException>(
                 HttpStatusCode.OK,
                 string.Empty,
-                f => f.GetChildCareDocument(new LicensedCenter {ExternalUrlId = null}),
+                f => f.GetChildCareDocument(new ChildCare {ExternalUrlId = null}),
                 e => Assert.AreEqual(e.ParamName, "childCare.ExternalUrlId"));
         }
 
@@ -141,7 +141,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             VerifyException<ArgumentNullException>(
                 HttpStatusCode.OK,
                 string.Empty,
-                f => f.GetChildCareDocument(new LicensedCenterStub {ExternalUrlId = null}),
+                f => f.GetChildCareDocument(new ChildCareStub { ExternalUrlId = null }),
                 e => Assert.AreEqual(e.ParamName, "childCareStub.ExternalUrlId"));
         }
 
@@ -168,7 +168,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         [TestMethod]
         public void GetChildCareDocument_ChildCare_HappyPath()
         {
-            var childCare = new LicensedCenter {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
+            var childCare = new ChildCare {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
             VerifyRequest(
                 HttpStatusCode.OK,
                 string.Empty,
@@ -180,7 +180,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         [TestMethod]
         public void GetChildCareDocument_ChildCareStub_HappyPath()
         {
-            var childCareStub = new LicensedCenterStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
+            var childCareStub = new ChildCareStub { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" };
             VerifyRequest(
                 HttpStatusCode.OK,
                 string.Empty,

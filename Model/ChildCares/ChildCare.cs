@@ -2,7 +2,7 @@
 
 namespace OdjfsScraper.Model.ChildCares
 {
-    public abstract class ChildCare
+    public class ChildCare
     {
         public int Id { get; set; }
         public string ChildCareType { get; set; }
