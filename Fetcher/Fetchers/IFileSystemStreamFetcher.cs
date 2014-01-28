@@ -9,7 +9,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
     public interface IFileSystemStreamFetcher : IStreamFetcher
     {
         string Directory { get; set; }
-        Task<IEnumerable<County>> GetAllCounties();
-        Task<IEnumerable<ChildCare>> GetAllChildCares();
+        Task<IEnumerable<County>> GetAvailableCounties();
+        Task<IEnumerable<ChildCare>> GetAvailableChildCares();
     }
 }

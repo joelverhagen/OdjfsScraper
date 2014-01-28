@@ -65,12 +65,12 @@ namespace OdjfsScraper.Fetcher.Fetchers
             set { _fileSystemBlobStore.Directory = value; }
         }
 
-        public Task<IEnumerable<County>> GetAllCounties()
+        public Task<IEnumerable<County>> GetAvailableCounties()
         {
             return GetAllEntities("County", countyName => new County {Name = countyName});
         }
 
-        public Task<IEnumerable<ChildCare>> GetAllChildCares()
+        public Task<IEnumerable<ChildCare>> GetAvailableChildCares()
         {
             return GetAllEntities("ChildCare", externalUrlId => new ChildCare {ExternalUrlId = externalUrlId});
         }

@@ -159,11 +159,11 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         }
 
         [TestMethod]
-        public void GetAllCounties_HappyPath()
+        public void GetAvailableCounties_HappyPath()
         {
             VerifyWithNames(
                 new Dictionary<string, int> {{"County-FRANKLIN", 3}, {"County-HAMILTON", 2}, {"ChildCare-AAAAA", 4}, {"ChildCare-BBBBB", 5}},
-                fetcher => fetcher.GetAllCounties(),
+                fetcher => fetcher.GetAvailableCounties(),
                 counties =>
                 {
                     counties = counties.OrderBy(c => c.Name).ToArray();
@@ -174,11 +174,11 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         }
 
         [TestMethod]
-        public void GetAllChildCares_HappyPath()
+        public void GetAvailableChildCares_HappyPath()
         {
             VerifyWithNames(
                 new Dictionary<string, int> {{"County-FRANKLIN", 3}, {"County-HAMILTON", 2}, {"ChildCare-AAAAA", 4}, {"ChildCare-BBBBB", 5}},
-                fetcher => fetcher.GetAllChildCares(),
+                fetcher => fetcher.GetAvailableChildCares(),
                 childCares =>
                 {
                     childCares = childCares.OrderBy(c => c.ExternalUrlId).ToArray();
