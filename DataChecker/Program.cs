@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using ManyConsole;
 using Ninject;
+using Ninject.Activation;
 using Ninject.Extensions.Conventions;
 using NLog;
 using OdjfsScraper.DataChecker.Commands;
@@ -74,10 +75,31 @@ namespace OdjfsScraper.DataChecker
                     .WithConstructorArgument("endpoint", MapQuestGeocoder.LicensedEndpoint)
                     .WithConstructorArgument("key", Settings.MapQuestKey);
 
+                // make sure the import command gets the file system stream fetcher
+                // TODO: ew? there must be a better way
+                kernel.Bind<IStreamFetcher>()
+                    .To<FileSystemStreamFetcher>()
+                    .When(r =>
+                    {
+                        IRequest request = r;
+                        while (request != null)
+                        {
+                            if (request.Service == typeof (IImportCommand))
+                            {
+                                return true;
+                            }
+                            request = request.ParentRequest;
+                        }
+                        return false;
+                    });
+
                 // activate all commands
-                IEnumerable<ConsoleCommand> commands = kernel
-                    .GetAll<ICommand>()
-                    .OfType<ConsoleCommand>();
+                IEnumerable<ConsoleCommand> commands = Enumerable.Empty<ICommand>()
+                    .Concat(kernel.GetAll<IImportCommand>())
+                    .Concat(kernel.GetAll<ICommand>())
+                    .OfType<ConsoleCommand>()
+                    .GroupBy(c => c.GetType())
+                    .Select(c => c.First());
 
                 return ConsoleCommandDispatcher.DispatchCommand(commands, args, Console.Out);
             }

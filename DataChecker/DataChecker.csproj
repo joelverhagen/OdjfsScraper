@@ -74,6 +74,7 @@
     <Compile Include="Commands\DatabaseCommand.cs" />
     <Compile Include="Commands\ExportCommand.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\IImportCommand.cs" />
     <Compile Include="Commands\ImportCommand.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Settings.cs" />

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using ManyConsole;
 using NLog;
+using OdjfsScraper.Database;
 using OdjfsScraper.Synchronizer.Synchronizers;
 
 namespace OdjfsScraper.DataChecker.Commands
@@ -11,11 +12,10 @@ namespace OdjfsScraper.DataChecker.Commands
     public enum ImportFormat
     {
         HtmlDir,
-        HtmlZip,
         Bak,
     };
 
-    public class ImportCommand : DatabaseCommand
+    public class ImportCommand : DatabaseCommand, IImportCommand
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -27,7 +27,6 @@ namespace OdjfsScraper.DataChecker.Commands
 
         private static readonly IDictionary<ImportFormat, ISet<string>> FormatFileExtensions = new Dictionary<ImportFormat, ISet<string>>
         {
-            {ImportFormat.HtmlZip, new HashSet<string> {".zip"}},
             {ImportFormat.Bak, new HashSet<string> {".bak"}}
         };
 
@@ -101,6 +100,13 @@ namespace OdjfsScraper.DataChecker.Commands
 
             switch (Format)
             {
+                case ImportFormat.HtmlDir:
+                    using (var ctx = new Entities())
+                    {
+                        _countySynchronizer.UpdateAvailableCounties(ctx).Wait();
+                        _childCareSynchronizer.UpdateAvailableChildCares(ctx).Wait();
+                    }
+                    break;
                 default:
                     throw new NotImplementedException(string.Format("Woops! The '{0}' import format is not yet implemented.", FormatName));
             }
