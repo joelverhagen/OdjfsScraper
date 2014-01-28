@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using ManyConsole;
 using NLog;
-using OdjfsScraper.DataChecker.Support;
+using OdjfsScraper.Synchronizer.Synchronizers;
 
 namespace OdjfsScraper.DataChecker.Commands
 {
@@ -31,11 +31,13 @@ namespace OdjfsScraper.DataChecker.Commands
             {ImportFormat.Bak, new HashSet<string> {".bak"}}
         };
 
-        private readonly IHtmlDirectoryImporter _htmlDirectoryImporter;
+        private readonly IChildCareSynchronizer _childCareSynchronizer;
+        private readonly ICountySynchronizer _countySynchronizer;
 
-        public ImportCommand(IHtmlDirectoryImporter htmlDirectoryImporter)
+        public ImportCommand(ICountySynchronizer countySynchronizer, IChildCareSynchronizer childCareSynchronizer)
         {
-            _htmlDirectoryImporter = htmlDirectoryImporter;
+            _countySynchronizer = countySynchronizer;
+            _childCareSynchronizer = childCareSynchronizer;
 
             IsCommand("import", "import data into the ODJFS database");
             HasRequiredOption("format=", string.Format("the import format; acceptable formats: {0}", FormatNames), v => Format = ParseFormat(v));
@@ -99,9 +101,6 @@ namespace OdjfsScraper.DataChecker.Commands
 
             switch (Format)
             {
-                case ImportFormat.HtmlDir:
-                    _htmlDirectoryImporter.Import(fullPath).Wait();
-                    break;
                 default:
                     throw new NotImplementedException(string.Format("Woops! The '{0}' import format is not yet implemented.", FormatName));
             }
