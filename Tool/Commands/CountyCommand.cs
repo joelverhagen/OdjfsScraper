@@ -9,7 +9,7 @@ namespace OdjfsScraper.Tool.Commands
     {
         private readonly ICountySynchronizer _countySynchronizer;
 
-        public CountyCommand(ICountySynchronizer countySynchronizer) : base(0, 1000, "scrape", "counties")
+        public CountyCommand(ICountySynchronizer countySynchronizer) : base(0, 500, "scrape", "counties")
         {
             _countySynchronizer = countySynchronizer;
             IsCommand("county", "scrape a county listing page");

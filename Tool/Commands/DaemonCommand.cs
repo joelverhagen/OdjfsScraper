@@ -19,7 +19,7 @@ namespace OdjfsScraper.Tool.Commands
         private readonly IGeocoder _geocoder;
 
         public DaemonCommand(ICountySynchronizer countySynchronizer, IChildCareSynchronizer childCareSynchronizer, IGeocoder geocoder)
-            : base(0, 2000)
+            : base(0, 500)
         {
             _countySynchronizer = countySynchronizer;
             _childCareSynchronizer = childCareSynchronizer;
