@@ -75,31 +75,10 @@ namespace OdjfsScraper.DataChecker
                     .WithConstructorArgument("endpoint", MapQuestGeocoder.LicensedEndpoint)
                     .WithConstructorArgument("key", Settings.MapQuestKey);
 
-                // make sure the import command gets the file system stream fetcher
-                // TODO: ew? there must be a better way
-                kernel.Bind<IStreamFetcher>()
-                    .To<FileSystemStreamFetcher>()
-                    .When(r =>
-                    {
-                        IRequest request = r;
-                        while (request != null)
-                        {
-                            if (request.Service == typeof (IImportCommand))
-                            {
-                                return true;
-                            }
-                            request = request.ParentRequest;
-                        }
-                        return false;
-                    });
-
                 // activate all commands
-                IEnumerable<ConsoleCommand> commands = Enumerable.Empty<ICommand>()
-                    .Concat(kernel.GetAll<IImportCommand>())
-                    .Concat(kernel.GetAll<ICommand>())
-                    .OfType<ConsoleCommand>()
-                    .GroupBy(c => c.GetType())
-                    .Select(c => c.First());
+                IEnumerable<ConsoleCommand> commands = kernel
+                    .GetAll<ICommand>()
+                    .OfType<ConsoleCommand>();
 
                 return ConsoleCommandDispatcher.DispatchCommand(commands, args, Console.Out);
             }
