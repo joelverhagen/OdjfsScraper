@@ -15,7 +15,7 @@ namespace OdjfsScraper.DataChecker.Commands
         public GeocodeCommand(IGeocoder geocoder)
         {
             _geocoder = geocoder;
-            _geocodeSleepOption = new SleepOption("geocode", 1000);
+            _geocodeSleepOption = new SleepOption("geocode", 0, 1000);
             _nextOption = new NextOption("geocode", "child cares");
 
             IsCommand("geocode", "geocode child care locations using the MapQuest API");

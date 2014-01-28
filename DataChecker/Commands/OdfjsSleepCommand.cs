@@ -6,9 +6,9 @@ namespace OdjfsScraper.DataChecker.Commands
     {
         private readonly SleepOption _odjfsSleepOption;
 
-        protected OdfjsSleepCommand(int minimumSleep)
+        protected OdfjsSleepCommand(int minimumSleep, int defaultSleep)
         {
-            _odjfsSleepOption = new SleepOption("ODJFS", minimumSleep);
+            _odjfsSleepOption = new SleepOption("ODJFS", minimumSleep, defaultSleep);
             HasOption(_odjfsSleepOption);
         }
 

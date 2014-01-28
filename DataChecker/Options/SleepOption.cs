@@ -7,11 +7,11 @@ namespace OdjfsScraper.DataChecker.Options
         private readonly int _minimum;
         private readonly string _requestName;
 
-        public SleepOption(string requestName, int minimum)
+        public SleepOption(string requestName, int minimum, int defaultSleep)
         {
             _requestName = requestName;
             _minimum = minimum;
-            Value = minimum;
+            Value = defaultSleep;
         }
 
         public string Prototype

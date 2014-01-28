@@ -19,12 +19,12 @@ namespace OdjfsScraper.DataChecker.Commands
         private readonly IGeocoder _geocoder;
 
         public DaemonCommand(ICountySynchronizer countySynchronizer, IChildCareSynchronizer childCareSynchronizer, IGeocoder geocoder)
-            : base(2000)
+            : base(0, 2000)
         {
             _countySynchronizer = countySynchronizer;
             _childCareSynchronizer = childCareSynchronizer;
             _geocoder = geocoder;
-            _geocodeSleepOption = new SleepOption("geocode", 0);
+            _geocodeSleepOption = new SleepOption("geocode", 0, 1000);
             Geocode = false;
 
             IsCommand("daemon", "continuously scrape country listing pages and child cares");

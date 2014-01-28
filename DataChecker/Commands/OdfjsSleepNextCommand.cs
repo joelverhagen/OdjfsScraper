@@ -6,7 +6,7 @@ namespace OdjfsScraper.DataChecker.Commands
     {
         private readonly NextOption _nextOption;
 
-        protected OdfjsSleepNextCommand(int minimumSleep, string nextAction, string pluralEntityName) : base(minimumSleep)
+        protected OdfjsSleepNextCommand(int minimumSleep, int defaultSleep, string nextAction, string pluralEntityName) : base(minimumSleep, defaultSleep)
         {
             _nextOption = new NextOption(nextAction, pluralEntityName);
             HasOption(_nextOption);

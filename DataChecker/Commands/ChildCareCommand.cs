@@ -9,7 +9,7 @@ namespace OdjfsScraper.DataChecker.Commands
     {
         private readonly IChildCareSynchronizer _childCareSynchronizer;
 
-        public ChildCareCommand(IChildCareSynchronizer childCareSynchronizer) : base(2000, "scrape", "child cares")
+        public ChildCareCommand(IChildCareSynchronizer childCareSynchronizer) : base(0, 1000, "scrape", "child cares")
         {
             _childCareSynchronizer = childCareSynchronizer;
             IsCommand("childcare", "scrape a child care page");
