@@ -11,7 +11,7 @@ namespace OdjfsScraper.Tool.Support
         {
             _ctx = ctx;
             UpdateCounts();
-            CurrentStep = 0;
+            CurrentStep = -1;
             IsRunning = true;
         }
 
@@ -57,7 +57,7 @@ namespace OdjfsScraper.Tool.Support
         private void UpdateCounts()
         {
             CountyCount = _ctx.Counties.Count();
-            ChildCareCount = _ctx.ChildCares.Count();
+            ChildCareCount = _ctx.ChildCares.Count() + _ctx.ChildCareStubs.Count();
         }
 
         public bool NextStep()
