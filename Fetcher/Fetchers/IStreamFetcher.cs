@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
@@ -11,5 +12,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
         Task<Stream> GetChildCareDocument(ChildCareStub childCareStub);
         Task<Stream> GetChildCareDocument(ChildCare childCare);
         Task<Stream> GetChildCareStubListDocument(County county);
+        Task<IEnumerable<County>> GetAvailableCounties();
+        Task<IEnumerable<ChildCare>> GetAvailableChildCares();
     }
 }

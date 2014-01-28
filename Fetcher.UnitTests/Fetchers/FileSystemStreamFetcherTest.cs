@@ -161,7 +161,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         [TestMethod]
         public void GetAvailableCounties_HappyPath()
         {
-            VerifyWithNames(
+            VerifyGetAvailable(
                 new Dictionary<string, int> {{"County-FRANKLIN", 3}, {"County-HAMILTON", 2}, {"ChildCare-AAAAA", 4}, {"ChildCare-BBBBB", 5}},
                 fetcher => fetcher.GetAvailableCounties(),
                 counties =>
@@ -176,7 +176,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         [TestMethod]
         public void GetAvailableChildCares_HappyPath()
         {
-            VerifyWithNames(
+            VerifyGetAvailable(
                 new Dictionary<string, int> {{"County-FRANKLIN", 3}, {"County-HAMILTON", 2}, {"ChildCare-AAAAA", 4}, {"ChildCare-BBBBB", 5}},
                 fetcher => fetcher.GetAvailableChildCares(),
                 childCares =>
@@ -229,7 +229,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                 getInputCountyName);
         }
 
-        private static void VerifyWithNames<T>(IDictionary<string, int> names, Func<FileSystemStreamFetcher, Task<IEnumerable<T>>> getEntities, Action<T[]> verifyEntities)
+        private static void VerifyGetAvailable<T>(IDictionary<string, int> names, Func<FileSystemStreamFetcher, Task<IEnumerable<T>>> getEntities, Action<T[]> verifyEntities)
         {
             // ARRANGE
             var mock = new Mock<IFileSystemBlobStore>();

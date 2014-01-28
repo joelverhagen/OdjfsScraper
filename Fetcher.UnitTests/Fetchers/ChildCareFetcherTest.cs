@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -13,6 +15,20 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
     [TestClass]
     public class ChildCareFetcherTest : BaseEntityFetcherTest
     {
+        [TestMethod]
+        public void GetAvailable_HappyPath()
+        {
+            // ARRANGE
+            var expected = Enumerable.Empty<ChildCare>();
+            var fetcher = new ChildCareFetcher(GetStreamFetcherReturningChildCares(expected), null);
+
+            // ACT
+            IEnumerable<ChildCare> actual = fetcher.GetAvailable().Result;
+
+            // ASSERT
+            Assert.AreSame(expected, actual);
+        }
+
         [TestMethod]
         public void GetChildCare_ChildCare_Null()
         {

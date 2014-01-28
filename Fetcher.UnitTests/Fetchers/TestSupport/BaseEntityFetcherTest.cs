@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Moq;
 using OdjfsScraper.Fetcher.Fetchers;
@@ -37,6 +39,24 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             mock
                 .Setup(s => s.GetChildCareStubListDocument(It.IsAny<County>()))
                 .Returns(Task.FromResult((Stream) null));
+            return mock.Object;
+        }
+
+        protected static IStreamFetcher GetStreamFetcherReturningCounties(IEnumerable<County> counties)
+        {
+            var mock = new Mock<IStreamFetcher>();
+            mock
+                .Setup(s => s.GetAvailableCounties())
+                .Returns(Task.FromResult(counties));
+            return mock.Object;
+        }
+
+        protected static IStreamFetcher GetStreamFetcherReturningChildCares(IEnumerable<ChildCare> childCares)
+        {
+            var mock = new Mock<IStreamFetcher>();
+            mock
+                .Setup(s => s.GetAvailableChildCares())
+                .Returns(Task.FromResult(childCares));
             return mock.Object;
         }
     }

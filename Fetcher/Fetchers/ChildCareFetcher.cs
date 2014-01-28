@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using OdjfsScraper.Fetcher.Support;
 using OdjfsScraper.Model.ChildCares;
@@ -32,6 +33,11 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 // extract the child care information
                 return _parser.Parse(childCareStub, await stream.ReadAsByteArrayAsync());
             }
+        }
+
+        public Task<IEnumerable<ChildCare>> GetAvailable()
+        {
+            return _streamFetcher.GetAvailableChildCares();
         }
 
         public async Task<ChildCare> Fetch(ChildCare childCare)

@@ -98,6 +98,16 @@ namespace OdjfsScraper.Fetcher.Fetchers
             return GetChildCareStubListDocumentWithoutValidation(county);
         }
 
+        public Task<IEnumerable<County>> GetAvailableCounties()
+        {
+            return Task.FromResult(Enumerable.Empty<County>());
+        }
+
+        public Task<IEnumerable<ChildCare>> GetAvailableChildCares()
+        {
+            return Task.FromResult(Enumerable.Empty<ChildCare>());
+        }
+
         private async Task<Stream> GetChildCareStubListDocumentWithoutValidation(County county)
         {
             // create the URL

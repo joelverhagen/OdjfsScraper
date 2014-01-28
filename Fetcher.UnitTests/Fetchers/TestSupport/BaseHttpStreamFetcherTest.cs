@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
@@ -189,7 +190,38 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 Assert.IsNotNull);
         }
 
-        private static void VerifyException<T>(HttpStatusCode httpStatusCode, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
+        [TestMethod]
+        public void GetAvailableChildCares_HappyPath()
+        {
+            VerifyGetAvailable(f => f.GetAvailableChildCares());
+        }
+
+        [TestMethod]
+        public void GetAvailableCounties_HappyPath()
+        {
+            VerifyGetAvailable(f => f.GetAvailableCounties());
+        }
+
+        private void VerifyGetAvailable<TEntity>(Func<TFetcher, Task<IEnumerable<TEntity>>> getEntities)
+        {
+            // ARRANGE
+            var mock = new Mock<HttpMessageHandler>();
+            mock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns(GetHttpResponseMessage(HttpStatusCode.OK, string.Empty));
+
+            var fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
+
+            // ACT
+            TEntity[] entities = getEntities(fetcher).Result.ToArray();
+
+            // ASSERT
+            Assert.IsNotNull(entities);
+            Assert.AreEqual(0, entities.Length);
+        }
+
+        private void VerifyException<T>(HttpStatusCode httpStatusCode, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
         {
             // ARRANGE
             var mock = new Mock<HttpMessageHandler>();
@@ -198,7 +230,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .Returns(GetHttpResponseMessage(httpStatusCode, content));
 
-            var fetcher = new HttpStreamFetcher(mock.Object, "Foo user agent");
+            var fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
 
             // ACT
             try
@@ -213,7 +245,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             }
         }
 
-        private static void VerifyAsyncException<T>(HttpStatusCode httpStatusCode, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
+        private void VerifyAsyncException<T>(HttpStatusCode httpStatusCode, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
         {
             // ARRANGE
             var mock = new Mock<HttpMessageHandler>();
@@ -222,7 +254,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .Returns(GetHttpResponseMessage(httpStatusCode, content));
 
-            var fetcher = new HttpStreamFetcher(mock.Object, "Foo user agent");
+            var fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
 
             // ACT
             try
@@ -243,12 +275,12 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             }
         }
 
-        private static void VerifyHttpMessageHandler(HttpMessageHandler handler)
+        private void VerifyHttpMessageHandler(HttpMessageHandler handler)
         {
-            var fetcher = new HttpStreamFetcher(handler, "Foo");
+            var fetcher = GetFetcherForHttpStreamFetcherTests(handler, "Foo");
         }
 
-        private static void VerifyHttpMessageHandler(HttpClientHandler handler)
+        private void VerifyHttpMessageHandler(HttpClientHandler handler)
         {
             VerifyHttpMessageHandler((HttpMessageHandler) handler);
             Assert.IsFalse(handler.AllowAutoRedirect);
@@ -256,7 +288,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             Assert.IsFalse(handler.UseCookies);
         }
 
-        private static void VerifyHttpMessageHandler(WebRequestHandler handler)
+        private void VerifyHttpMessageHandler(WebRequestHandler handler)
         {
             VerifyHttpMessageHandler((HttpClientHandler) handler);
             Assert.IsTrue(handler.AllowPipelining);
