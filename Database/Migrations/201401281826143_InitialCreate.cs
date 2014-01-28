@@ -7,16 +7,6 @@ namespace OdjfsScraper.Database.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.County",
-                c => new
-                {
-                    CountyId = c.Int(false, true),
-                    Name = c.String(false, 10),
-                    LastScrapedOn = c.DateTime(),
-                })
-                .PrimaryKey(t => t.CountyId);
-
-            CreateTable(
                 "dbo.ChildCare",
                 c => new
                 {
@@ -41,6 +31,16 @@ namespace OdjfsScraper.Database.Migrations
                 .Index(t => t.CountyId);
 
             CreateTable(
+                "dbo.County",
+                c => new
+                {
+                    CountyId = c.Int(false, true),
+                    Name = c.String(false, 10),
+                    LastScrapedOn = c.DateTime(),
+                })
+                .PrimaryKey(t => t.CountyId);
+
+            CreateTable(
                 "dbo.ChildCareStub",
                 c => new
                 {
@@ -51,7 +51,7 @@ namespace OdjfsScraper.Database.Migrations
                     Name = c.String(),
                     Address = c.String(),
                     City = c.String(),
-                    ChildCareType = c.String(false, 128),
+                    ChildCareType = c.String(maxLength: 128),
                 })
                 .PrimaryKey(t => t.ChildCareStubId)
                 .ForeignKey("dbo.County", t => t.CountyId)
@@ -190,8 +190,8 @@ namespace OdjfsScraper.Database.Migrations
             DropTable("dbo.DetailedChildCare");
             DropTable("dbo.DayCamp");
             DropTable("dbo.ChildCareStub");
-            DropTable("dbo.ChildCare");
             DropTable("dbo.County");
+            DropTable("dbo.ChildCare");
         }
     }
 }
