@@ -26,25 +26,6 @@ namespace OdjfsScraper.Database
             modelBuilder.Entity<County>()
                 .Property(c => c.Name).IsRequired().HasMaxLength(10);
 
-            // inheritance
-            modelBuilder.Entity<ChildCareStub>()
-                .Map<TypeAHomeStub>(x => x.Requires("ChildCareType").HasValue(TypeAHomeStub.Discriminator))
-                .Map<TypeBHomeStub>(x => x.Requires("ChildCareType").HasValue(TypeBHomeStub.Discriminator))
-                .Map<LicensedCenterStub>(x => x.Requires("ChildCareType").HasValue(LicensedCenterStub.Discriminator))
-                .Map<DayCampStub>(x => x.Requires("ChildCareType").HasValue(DayCampStub.Discriminator));
-
-            // inheritance
-            modelBuilder.Entity<DetailedChildCare>()
-                .Ignore(e => e.DetailedChildCareType)
-                .Map<TypeAHome>(x => x.Requires("DetailedChildCareType").HasValue(TypeAHome.DetailedDiscriminator))
-                .Map<LicensedCenter>(x => x.Requires("DetailedChildCareType").HasValue(LicensedCenter.DetailedDiscriminator));
-
-            // inheritance
-            modelBuilder.Entity<ChildCare>()
-                .Map<TypeBHome>(x => x.Requires("ChildCareType").HasValue(TypeBHome.Discriminator))
-                .Map<DayCamp>(x => x.Requires("ChildCareType").HasValue(DayCamp.Discriminator))
-                .Map<DetailedChildCare>(x => x.Requires("ChildCareType").HasValue(DetailedChildCare.Discriminator));
-
             // name the identity columns in a sane fashion
             modelBuilder.Entity<County>().Property(c => c.Id).HasColumnName("CountyId");
             modelBuilder.Entity<ChildCare>().Property(c => c.Id).HasColumnName("ChildCareId");

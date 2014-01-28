@@ -11,7 +11,6 @@ namespace OdjfsScraper.Database.Migrations
                 c => new
                 {
                     ChildCareId = c.Int(false, true),
-                    ChildCareType = c.String(),
                     LastScrapedOn = c.DateTime(false),
                     Latitude = c.Double(),
                     Longitude = c.Double(),
@@ -51,7 +50,7 @@ namespace OdjfsScraper.Database.Migrations
                     Name = c.String(),
                     Address = c.String(),
                     City = c.String(),
-                    ChildCareType = c.String(maxLength: 128),
+                    Discriminator = c.String(false, 128),
                 })
                 .PrimaryKey(t => t.ChildCareStubId)
                 .ForeignKey("dbo.County", t => t.CountyId)
@@ -66,7 +65,6 @@ namespace OdjfsScraper.Database.Migrations
                     RegistrationStatus = c.String(),
                     RegistrationBeginDate = c.String(),
                     RegistrationEndDate = c.String(),
-                    ChildCareType = c.String(false, 128),
                 })
                 .PrimaryKey(t => t.ChildCareId)
                 .ForeignKey("dbo.ChildCare", t => t.ChildCareId)
@@ -127,7 +125,6 @@ namespace OdjfsScraper.Database.Migrations
                 c => new
                 {
                     ChildCareId = c.Int(false),
-                    DetailedChildCareType = c.String(false, 128),
                 })
                 .PrimaryKey(t => t.ChildCareId)
                 .ForeignKey("dbo.DetailedChildCare", t => t.ChildCareId)
@@ -138,7 +135,6 @@ namespace OdjfsScraper.Database.Migrations
                 c => new
                 {
                     ChildCareId = c.Int(false),
-                    DetailedChildCareType = c.String(false, 128),
                 })
                 .PrimaryKey(t => t.ChildCareId)
                 .ForeignKey("dbo.DetailedChildCare", t => t.ChildCareId)
@@ -151,25 +147,14 @@ namespace OdjfsScraper.Database.Migrations
                     ChildCareId = c.Int(false),
                     CertificationBeginDate = c.String(),
                     CertificationExpirationDate = c.String(),
-                    ChildCareType = c.String(false, 128),
                 })
                 .PrimaryKey(t => t.ChildCareId)
                 .ForeignKey("dbo.ChildCare", t => t.ChildCareId)
                 .Index(t => t.ChildCareId);
-
-            // add some unique constraints
-            CreateIndex("dbo.County", new[] {"Name"}, true);
-            CreateIndex("dbo.ChildCare", new[] {"ExternalUrlId"}, true);
-            CreateIndex("dbo.ChildCareStub", new[] {"ExternalUrlId"}, true);
         }
 
         public override void Down()
         {
-            // drop some unique constraints
-            DropIndex("dbo.ChildCareStub", new[] {"ExternalUrlId"});
-            DropIndex("dbo.ChildCare", new[] {"ExternalUrlId"});
-            DropIndex("dbo.County", new[] {"Name"});
-
             DropForeignKey("dbo.TypeBHome", "ChildCareId", "dbo.ChildCare");
             DropForeignKey("dbo.TypeAHome", "ChildCareId", "dbo.DetailedChildCare");
             DropForeignKey("dbo.LicensedCenter", "ChildCareId", "dbo.DetailedChildCare");

@@ -4,15 +4,6 @@ namespace OdjfsScraper.Model.ChildCares
 {
     public abstract class DetailedChildCare : ChildCare
     {
-        public const string Discriminator = "DetailedChildCare";
-
-        protected DetailedChildCare()
-        {
-            ChildCareType = Discriminator;
-        }
-
-        public string DetailedChildCareType { get; set; }
-
         #region HTML
 
         public string ProviderAgreement { get; set; }

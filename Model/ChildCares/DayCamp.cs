@@ -2,13 +2,6 @@
 {
     public class DayCamp : ChildCare
     {
-        public const string Discriminator = "DayCamp";
-
-        public DayCamp()
-        {
-            ChildCareType = Discriminator;
-        }
-
         #region HTML
 
         public string Owner { get; set; }

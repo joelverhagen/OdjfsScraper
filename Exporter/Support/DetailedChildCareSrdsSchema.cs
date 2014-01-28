@@ -9,6 +9,7 @@ namespace OdjfsScraper.Exporter.Support
         private static readonly IEnumerable<SrdsAttribute<DetailedChildCare>> Properties = new List<SrdsAttribute<DetailedChildCare>>
         {
             // ChildCare
+            new SrdsAttribute<DetailedChildCare>("ChildCareType", "System.String", c => c.GetType().Name),
             new SrdsAttribute<DetailedChildCare>("CountyName", "System.String", c => c.County.Name),
             new SrdsAttribute<DetailedChildCare>("ExternalId", "System.String", c => c.ExternalId),
             new SrdsAttribute<DetailedChildCare>("ExternalUrlId", "System.String", c => c.ExternalUrlId),
@@ -18,7 +19,6 @@ namespace OdjfsScraper.Exporter.Support
             new SrdsAttribute<DetailedChildCare>("ZipCode", "System.Int32", c => c.ZipCode),
             new SrdsAttribute<DetailedChildCare>("PhoneNumber", "System.String", c => c.PhoneNumber),
             // DetailedChildCare
-            new SrdsAttribute<DetailedChildCare>("DetailedChildCareType", "System.String", c => c.DetailedChildCareType),
             new SrdsAttribute<DetailedChildCare>("ProviderAgreement", "System.String", c => c.ProviderAgreement),
             new SrdsAttribute<DetailedChildCare>("Administrators", "System.String", c => c.Administrators),
             new SrdsAttribute<DetailedChildCare>("CenterStatus", "System.String", c => c.CenterStatus),
