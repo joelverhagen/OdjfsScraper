@@ -12,9 +12,7 @@ namespace OdjfsScraper.Database
             base.OnModelCreating(modelBuilder);
 
             // name all tables
-            modelBuilder.Types()
-                .Where(t => !typeof (ChildCareStub).IsAssignableFrom(t) || t == typeof (ChildCareStub))
-                .Configure(c => c.ToTable(c.ClrType.Name));
+            modelBuilder.Types().Configure(c => c.ToTable(c.ClrType.Name));
 
             // set up some columns to have unique constraints
             modelBuilder.Entity<ChildCare>()

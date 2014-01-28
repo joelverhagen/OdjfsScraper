@@ -5,12 +5,6 @@ namespace OdjfsScraper.Model.ChildCareStubs
     public class ChildCareStub
     {
         public int Id { get; set; }
-
-        public virtual string ChildCareType
-        {
-            get { return null; }
-        }
-
         public virtual int? CountyId { get; set; }
         public virtual County County { get; set; }
         public DateTime? LastScrapedOn { get; set; }
