@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -37,61 +36,84 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         }
 
         [TestMethod]
-        public void PermanentErrors()
+        public void PermanentError_NonNumeric()
         {
-            foreach (var pattern in HttpStreamFetcher.PermanentErrorPatterns)
-            {
-                string content = string.Join(" ", pattern);
-
-                var childCare = new ChildCare { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" };
-                VerifyRequest(
-                    HttpStatusCode.InternalServerError,
-                    content,
-                    fetcher => fetcher.GetChildCareDocument(childCare),
-                    (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
-                    Assert.IsNull);
-                Trace.WriteLine(string.Format("GetChildCareDocument(ChildCare) error matched: {0}", content));
-
-                var childCareStub = new ChildCareStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
-                VerifyRequest(
-                    HttpStatusCode.InternalServerError,
-                    content,
-                    fetcher => fetcher.GetChildCareDocument(childCareStub),
-                    (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
-                    Assert.IsNull);
-                Trace.WriteLine(string.Format("GetChildCareDocument(ChildCareStub) error matched: {0}", content));
-            }
+            VerifyPermanentError(
+                HttpStatusCode.InternalServerError,
+                null,
+                "OraOLEDB error '80040e14' ORA-01858: a non-numeric character was found where a numeric was expected");
         }
 
         [TestMethod]
-        public void TemporaryErrors()
+        public void PermanentError_InvalidHour()
         {
-            foreach (var pattern in HttpStreamFetcher.TemporaryErrorPatterns)
-            {
-                string content = string.Join(" ", pattern);
-                const string expectedMessage = "The response body has indicated that the document is temporarily unavailable.";
+            VerifyPermanentError(
+                HttpStatusCode.InternalServerError,
+                null,
+                "OraOLEDB error '80040e14' ORA-01850: hour must be between 0 and 23");
+        }
 
-                VerifyAsyncException<HttpRequestException>(
-                    HttpStatusCode.InternalServerError,
-                    content,
-                    f => f.GetChildCareStubListDocument(new County {Name = "FRANKLIN"}).Wait(),
-                    e => Assert.AreEqual(e.Message, expectedMessage));
-                Trace.WriteLine(string.Format("GetChildCareStubListDocument(County) error matched: {0}", content));
+        [TestMethod]
+        public void PermanentError_DeletedRecord()
+        {
+            VerifyPermanentError(
+                HttpStatusCode.InternalServerError,
+                null,
+                "ADODB.Field error '800a0bcd' Either BOF or EOF is True, or the current record has been deleted. Requested operation requires a current record.");
+        }
 
-                VerifyAsyncException<HttpRequestException>(
-                    HttpStatusCode.InternalServerError,
-                    content,
-                    f => f.GetChildCareDocument(new ChildCare {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"}).Wait(),
-                    e => Assert.AreEqual(e.Message, expectedMessage));
-                Trace.WriteLine(string.Format("GetChildCareDocument(ChildCare) error matched: {0}", content));
+        [TestMethod]
+        public void TemporaryError_Unspecified()
+        {
+            VerifyTemporaryError(
+                HttpStatusCode.InternalServerError,
+                null,
+                "Provider error '80004005' Unspecified error");
+        }
 
-                VerifyAsyncException<HttpRequestException>(
-                    HttpStatusCode.InternalServerError,
-                    content,
-                    f => f.GetChildCareDocument(new ChildCareStub { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" }).Wait(),
-                    e => Assert.AreEqual(e.Message, expectedMessage));
-                Trace.WriteLine(string.Format("GetChildCareDocument(ChildCareStub) error matched: {0}", content));
-            }
+        [TestMethod]
+        public void TemporaryError_OracleNotConnected()
+        {
+            VerifyTemporaryError(
+                HttpStatusCode.InternalServerError,
+                null,
+                "OraOLEDB error '80040e14' ORA-03114: not connected to ORACLE");
+        }
+
+        [TestMethod]
+        public void TemporaryError_OracleNotAvailable()
+        {
+            VerifyTemporaryError(
+                HttpStatusCode.InternalServerError,
+                null,
+                "OraOLEDB error '80004005' ORA-01034: ORACLE not available ORA-27101: shared memory realm does not exist IBM AIX RISC System/6000 Error: 2: No such file or directory");
+        }
+
+        [TestMethod]
+        public void TemporaryError_ImmediateShutdown()
+        {
+            VerifyTemporaryError(
+                HttpStatusCode.InternalServerError,
+                null,
+                "OraOLEDB error '80004005' ORA-01089: immediate shutdown in progress - no operations are permitted");
+        }
+
+        [TestMethod]
+        public void TemporaryError_OracleShutdown()
+        {
+            VerifyTemporaryError(
+                HttpStatusCode.InternalServerError,
+                null,
+                "OraOLEDB error '80004005' ORA-01033: ORACLE initialization or shutdown in progress");
+        }
+
+        [TestMethod]
+        public void TemporaryError_Redirect()
+        {
+            VerifyTemporaryError(
+                HttpStatusCode.Redirect,
+                new Dictionary<string, string> {{"Location", "http://www.odjfs.state.oh.us/maintenance/"}},
+                string.Empty);
         }
 
         [TestMethod]
@@ -100,6 +122,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             var county = new County {Name = "FRANKLIN"};
             VerifyRequest(
                 HttpStatusCode.OK,
+                null,
                 string.Empty,
                 fetcher => fetcher.GetChildCareStubListDocument(county),
                 (request, userAgent) => VerifyCountyRequest(request, county.Name, userAgent),
@@ -111,6 +134,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         {
             VerifyException<ArgumentNullException>(
                 HttpStatusCode.OK,
+                null,
                 string.Empty,
                 f => f.GetChildCareStubListDocument(null),
                 e => Assert.AreEqual(e.ParamName, "county"));
@@ -121,6 +145,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         {
             VerifyException<ArgumentNullException>(
                 HttpStatusCode.OK,
+                null,
                 string.Empty,
                 f => f.GetChildCareStubListDocument(new County {Name = null}),
                 e => Assert.AreEqual(e.ParamName, "county.Name"));
@@ -131,6 +156,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         {
             VerifyException<ArgumentNullException>(
                 HttpStatusCode.OK,
+                null,
                 string.Empty,
                 f => f.GetChildCareDocument(new ChildCare {ExternalUrlId = null}),
                 e => Assert.AreEqual(e.ParamName, "childCare.ExternalUrlId"));
@@ -141,8 +167,9 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         {
             VerifyException<ArgumentNullException>(
                 HttpStatusCode.OK,
+                null,
                 string.Empty,
-                f => f.GetChildCareDocument(new ChildCareStub { ExternalUrlId = null }),
+                f => f.GetChildCareDocument(new ChildCareStub {ExternalUrlId = null}),
                 e => Assert.AreEqual(e.ParamName, "childCareStub.ExternalUrlId"));
         }
 
@@ -151,6 +178,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         {
             VerifyException<ArgumentNullException>(
                 HttpStatusCode.OK,
+                null,
                 string.Empty,
                 f => f.GetChildCareDocument((ChildCare) null),
                 e => Assert.AreEqual(e.ParamName, "childCare"));
@@ -161,6 +189,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         {
             VerifyException<ArgumentNullException>(
                 HttpStatusCode.OK,
+                null,
                 string.Empty,
                 f => f.GetChildCareDocument((ChildCareStub) null),
                 e => Assert.AreEqual(e.ParamName, "childCareStub"));
@@ -172,6 +201,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             var childCare = new ChildCare {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
             VerifyRequest(
                 HttpStatusCode.OK,
+                null,
                 string.Empty,
                 fetcher => fetcher.GetChildCareDocument(childCare),
                 (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
@@ -181,9 +211,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         [TestMethod]
         public void GetChildCareDocument_ChildCareStub_HappyPath()
         {
-            var childCareStub = new ChildCareStub { ExternalUrlId = "CCCCCCCCCCCCCCCCCC" };
+            var childCareStub = new ChildCareStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
             VerifyRequest(
                 HttpStatusCode.OK,
+                null,
                 string.Empty,
                 fetcher => fetcher.GetChildCareDocument(childCareStub),
                 (request, userAgent) => VerifyChildCareRequest(request, childCareStub.ExternalUrlId, userAgent),
@@ -209,9 +240,9 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             mock
                 .Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .Returns(GetHttpResponseMessage(HttpStatusCode.OK, string.Empty));
+                .Returns(GetHttpResponseMessage(HttpStatusCode.OK, null, string.Empty));
 
-            var fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
+            TFetcher fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
 
             // ACT
             TEntity[] entities = getEntities(fetcher).Result.ToArray();
@@ -221,16 +252,16 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             Assert.AreEqual(0, entities.Length);
         }
 
-        private void VerifyException<T>(HttpStatusCode httpStatusCode, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
+        private void VerifyException<T>(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
         {
             // ARRANGE
             var mock = new Mock<HttpMessageHandler>();
             mock
                 .Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .Returns(GetHttpResponseMessage(httpStatusCode, content));
+                .Returns(GetHttpResponseMessage(httpStatusCode, headers, content));
 
-            var fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
+            TFetcher fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
 
             // ACT
             try
@@ -245,16 +276,16 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             }
         }
 
-        private void VerifyAsyncException<T>(HttpStatusCode httpStatusCode, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
+        private void VerifyAsyncException<T>(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
         {
             // ARRANGE
             var mock = new Mock<HttpMessageHandler>();
             mock
                 .Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .Returns(GetHttpResponseMessage(httpStatusCode, content));
+                .Returns(GetHttpResponseMessage(httpStatusCode, headers, content));
 
-            var fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
+            TFetcher fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
 
             // ACT
             try
@@ -277,7 +308,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
 
         private void VerifyHttpMessageHandler(HttpMessageHandler handler)
         {
-            var fetcher = GetFetcherForHttpStreamFetcherTests(handler, "Foo");
+            GetFetcherForHttpStreamFetcherTests(handler, "Foo");
         }
 
         private void VerifyHttpMessageHandler(HttpClientHandler handler)
@@ -294,7 +325,30 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             Assert.IsTrue(handler.AllowPipelining);
         }
 
-        private void VerifyRequest(HttpStatusCode httpStatusCode, string content, Func<HttpStreamFetcher, Task<Stream>> getStreamTask, Action<HttpRequestMessage, string> verifyRequest, Action<Stream> verifyStream)
+        private void VerifyPermanentError(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content)
+        {
+            var childCare = new ChildCare {ExternalUrlId = "AAAAAAAAAAAAAAAAAA"};
+            VerifyRequest(
+                httpStatusCode,
+                headers,
+                content,
+                fetcher => fetcher.GetChildCareDocument(childCare),
+                (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
+                Assert.IsNull);
+        }
+
+        private void VerifyTemporaryError(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content)
+        {
+            var childCare = new ChildCare { ExternalUrlId = "AAAAAAAAAAAAAAAAAA" };
+            VerifyAsyncException<HttpRequestException>(
+                httpStatusCode,
+                headers,
+                content,
+                f => f.GetChildCareDocument(childCare).Wait(),
+                e => Assert.AreEqual(e.Message, "The response body has indicated that the document is temporarily unavailable."));
+        }
+
+        private void VerifyRequest(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content, Func<HttpStreamFetcher, Task<Stream>> getStreamTask, Action<HttpRequestMessage, string> verifyRequest, Action<Stream> verifyStream)
         {
             // ARRANGE
             const string userAgent = "Foo user agent";
@@ -302,7 +356,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             mock
                 .Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .Returns(GetHttpResponseMessage(httpStatusCode, content))
+                .Returns(GetHttpResponseMessage(httpStatusCode, headers, content))
                 .Callback<HttpRequestMessage, CancellationToken>((request, ct) => verifyRequest(request, userAgent));
 
             TFetcher fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, userAgent);
@@ -315,16 +369,23 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             verifyStream(result);
         }
 
-        protected static Task<HttpResponseMessage> GetHttpResponseMessage(HttpStatusCode httpStatusCode, byte[] bytes)
+        protected static Task<HttpResponseMessage> GetHttpResponseMessage(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, byte[] bytes)
         {
             var response = new HttpResponseMessage(httpStatusCode);
             response.Content = new ByteArrayContent(bytes);
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                {
+                    response.Headers.Add(header.Key, header.Value);
+                }
+            }
             return Task.FromResult(response);
         }
 
-        protected static Task<HttpResponseMessage> GetHttpResponseMessage(HttpStatusCode httpStatusCode, string content)
+        protected static Task<HttpResponseMessage> GetHttpResponseMessage(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content)
         {
-            return GetHttpResponseMessage(httpStatusCode, Encoding.UTF8.GetBytes(content));
+            return GetHttpResponseMessage(httpStatusCode, headers, Encoding.UTF8.GetBytes(content));
         }
 
         private static void VerifyCountyRequest(HttpRequestMessage request, string countyName, string userAgent)

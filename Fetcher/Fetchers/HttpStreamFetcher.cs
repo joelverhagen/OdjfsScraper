@@ -18,20 +18,31 @@ namespace OdjfsScraper.Fetcher.Fetchers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public static readonly IEnumerable<IEnumerable<string>> PermanentErrorPatterns = new[]
+        private static readonly string[] NonNumericPattern = {"OraOLEDB", "error '80040e14'", "ORA-01858: a non-numeric character was found where a numeric was expected"};
+        private static readonly string[] InvalidHourPattern = {"OraOLEDB", "error '80040e14'", "ORA-01850: hour must be between 0 and 23"};
+        private static readonly string[] DeletedRecordPattern = {"ADODB.Field", "error '800a0bcd'", "Either BOF or EOF is True, or the current record has been deleted. Requested operation requires a current record."};
+
+        private static readonly string[] UnspecifiedError = {"Provider", "error '80004005'", "Unspecified error"};
+        private static readonly string[] OracleNotConnectedError = {"OraOLEDB", "error '80040e14'", "ORA-03114: not connected to ORACLE"};
+        private static readonly string[] OracleNotAvailableError = {"OraOLEDB", "error '80004005'", "ORA-01034: ORACLE not available", "ORA-27101: shared memory realm does not exist", "IBM AIX RISC System/6000 Error: 2: No such file or directory"};
+        private static readonly string[] ImmediateShutdownError = {"OraOLEDB", "error '80004005'", "ORA-01089: immediate shutdown in progress - no operations are permitted"};
+        private static readonly string[] OracleShutdownError = {"OraOLEDB", "error '80004005'", "ORA-01033: ORACLE initialization or shutdown in progress"};
+
+        public static readonly IEnumerable<Func<HttpResponseMessage, string, bool>> PermanentErrorTests = new Func<HttpResponseMessage, string, bool>[]
         {
-            new[] {"OraOLEDB", "error '80040e14'", "ORA-01850: hour must be between 0 and 23"},
-            new[] {"OraOLEDB", "error '80040e14'", "ORA-01858: a non-numeric character was found where a numeric was expected"},
-            new[] {"ADODB.Field", "error '800a0bcd'", "Either BOF or EOF is True, or the current record has been deleted. Requested operation requires a current record."}
+            (r, s) => MatchesPattern(InvalidHourPattern, s),
+            (r, s) => MatchesPattern(NonNumericPattern, s),
+            (r, s) => MatchesPattern(DeletedRecordPattern, s)
         }.ToList().AsReadOnly();
 
-        public static readonly IEnumerable<IEnumerable<string>> TemporaryErrorPatterns = new[]
+        public static readonly IEnumerable<Func<HttpResponseMessage, string, bool>> TemporaryErrorTests = new Func<HttpResponseMessage, string, bool>[]
         {
-            new[] {"Provider", "error '80004005'", "Unspecified error"},
-            new[] {"OraOLEDB", "error '80040e14'", "ORA-03114: not connected to ORACLE"},
-            new[] {"OraOLEDB", "error '80004005'", "ORA-01034: ORACLE not available", "ORA-27101: shared memory realm does not exist", "IBM AIX RISC System/6000 Error: 2: No such file or directory"},
-            new[] {"OraOLEDB", "error '80004005'", "ORA-01089: immediate shutdown in progress - no operations are permitted"},
-            new[] {"OraOLEDB", "error '80004005'", "ORA-01033: ORACLE initialization or shutdown in progress"}
+            (r, s) => MatchesPattern(UnspecifiedError, s),
+            (r, s) => MatchesPattern(OracleNotConnectedError, s),
+            (r, s) => MatchesPattern(OracleNotAvailableError, s),
+            (r, s) => MatchesPattern(ImmediateShutdownError, s),
+            (r, s) => MatchesPattern(OracleShutdownError, s),
+            (r, s) => r.StatusCode == HttpStatusCode.Redirect && r.Headers.Location == new Uri("http://www.odjfs.state.oh.us/maintenance/")
         }.ToList().AsReadOnly();
 
         private readonly HttpClient _httpClient;
@@ -171,17 +182,22 @@ namespace OdjfsScraper.Fetcher.Fetchers
 
         private static bool HasPermanentError(HttpResponseMessage response, string responseString)
         {
-            return MatchesAnyPattern(PermanentErrorPatterns, responseString);
+            return MatchesAnyTest(PermanentErrorTests, response, responseString);
         }
 
         private static bool HasTemporaryError(HttpResponseMessage response, string responseString)
         {
-            return MatchesAnyPattern(TemporaryErrorPatterns, responseString);
+            return MatchesAnyTest(TemporaryErrorTests, response, responseString);
         }
 
-        private static bool MatchesAnyPattern(IEnumerable<IEnumerable<string>> patterns, string responseString)
+        private static bool MatchesAnyTest(IEnumerable<Func<HttpResponseMessage, string, bool>> tests, HttpResponseMessage response, string responseString)
         {
-            return patterns.Any(p => p.All(responseString.Contains));
+            return tests.Any(t => t(response, responseString));
+        }
+
+        private static bool MatchesPattern(IEnumerable<string> pattern, string responseString)
+        {
+            return pattern.All(responseString.Contains);
         }
 
         protected virtual Task<Stream> GetChildCareDocumentStream(HttpResponseMessage response, ChildCare childCare)
@@ -208,7 +224,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
 
         private static void ThrowScraperException(Uri requestUri, HttpResponseMessage response)
         {
-            var exception = new ScraperException("The response body or status code was expected.");
+            var exception = new ScraperException("The response body or status code was unexpected.");
             Logger.ErrorException(string.Format("RequestUri: '{0}', StatusCode: '{1}', Headers: {2}",
                 requestUri,
                 response.StatusCode,

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -76,7 +77,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         private void VerifyCorrectCalls(HttpStatusCode httpStatusCode, string prefix, Action<DownloadingHttpStreamFetcher, string> action)
         {
             // ARRANGE
-            HttpMessageHandler handler = GetHandler(httpStatusCode, new byte[0]);
+            HttpMessageHandler handler = GetHandler(httpStatusCode, null, new byte[0]);
             Mock<IFileSystemBlobStore> storeMock = GetFileSystemBlobStoreMock();
             var fetcher = new DownloadingHttpStreamFetcher(handler, null, storeMock.Object);
 
@@ -96,13 +97,13 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             storeMock.Verify(s => s.Read(name, -1), Times.Once);
         }
 
-        private static HttpMessageHandler GetHandler(HttpStatusCode httpStatusCode, byte[] content)
+        private static HttpMessageHandler GetHandler(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, byte[] content)
         {
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
                 .Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .Returns(GetHttpResponseMessage(httpStatusCode, content));
+                .Returns(GetHttpResponseMessage(httpStatusCode, headers, content));
 
             return handlerMock.Object;
         }
