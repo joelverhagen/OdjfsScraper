@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using NLog;
 using OdjfsScraper.Database;
@@ -112,7 +113,7 @@ namespace OdjfsScraper.Tool.Commands
                     }
                     else
                     {
-                        throw;
+                        ExceptionDispatchInfo.Capture(ae).Throw();
                     }
                 }
             }

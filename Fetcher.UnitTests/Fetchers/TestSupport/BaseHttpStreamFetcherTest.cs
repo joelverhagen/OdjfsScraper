@@ -13,9 +13,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using OdjfsScraper.Fetcher.Fetchers;
+using OdjfsScraper.Fetcher.Support;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
+using OdjfsScraper.Parser.Support;
 
 namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
 {
@@ -33,6 +35,18 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         public void Constructor_WebRequestHandler()
         {
             VerifyHttpMessageHandler(new WebRequestHandler());
+        }
+
+        [TestMethod]
+        public void UnknownError()
+        {
+            var childCare = new ChildCare { ExternalUrlId = "AAAAAAAAAAAAAAAAAA" };
+            VerifyAsyncException<ScraperException>(
+                HttpStatusCode.InternalServerError, 
+                null,
+                string.Empty,
+                f => f.GetChildCareDocument(childCare).Wait(),
+                e => Assert.AreEqual(e.Message, "The response body or status code was unexpected."));
         }
 
         [TestMethod]
