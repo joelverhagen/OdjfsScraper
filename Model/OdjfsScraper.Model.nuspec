@@ -16,6 +16,6 @@
     <releaseNotes>Initial release.</releaseNotes>
   </metadata>
   <files>
-    <file src="$id$.dll" target="" />
+    <file src="$id$.dll" target="lib\net45\" />
   </files>
 </package>

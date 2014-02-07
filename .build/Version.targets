@@ -5,9 +5,13 @@
   </PropertyGroup>
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
   <Target Name="Version">
-    <PropertyGroup>
-      <Major>1</Major>
+    <PropertyGroup Condition="'$(Major)' == ''">
+      <Major>0</Major>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Minor)' == ''">
       <Minor>0</Minor>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Patch)' == ''">
       <Patch>0</Patch>
     </PropertyGroup>
     <GitVersion LocalPath="$(SolutionDir)">
