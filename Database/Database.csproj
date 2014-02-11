@@ -75,7 +75,7 @@
   <PropertyGroup>
     <Major>1</Major>
     <Minor>0</Minor>
-    <Patch>1</Patch>
+    <Patch>3</Patch>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.build\Version.targets" />
 </Project>
