@@ -1,4 +1,7 @@
-﻿using System.Data.Entity;
+﻿using System.Data.Common;
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
@@ -7,6 +10,34 @@ namespace OdjfsScraper.Database
 {
     public class Entities : DbContext
     {
+        public Entities(string nameOrConnectionString) : base(nameOrConnectionString)
+        {
+        }
+
+        public Entities(ObjectContext objectContext, bool dbContextOwnsObjectContext) : base(objectContext, dbContextOwnsObjectContext)
+        {
+        }
+
+        public Entities(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection) : base(existingConnection, model, contextOwnsConnection)
+        {
+        }
+
+        public Entities(DbConnection existingConnection, bool contextOwnsConnection) : base(existingConnection, contextOwnsConnection)
+        {
+        }
+
+        public Entities(string nameOrConnectionString, DbCompiledModel model) : base(nameOrConnectionString, model)
+        {
+        }
+
+        public Entities(DbCompiledModel model) : base(model)
+        {
+        }
+
+        public Entities()
+        {
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
