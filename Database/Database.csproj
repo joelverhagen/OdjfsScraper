@@ -73,9 +73,10 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>
+    <CLSCompliant>true</CLSCompliant>
     <Major>1</Major>
     <Minor>0</Minor>
-    <Patch>3</Patch>
+    <Patch>4</Patch>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.build\Version.targets" />
 </Project>
