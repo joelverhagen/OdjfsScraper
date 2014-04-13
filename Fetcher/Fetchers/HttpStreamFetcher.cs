@@ -42,7 +42,9 @@ namespace OdjfsScraper.Fetcher.Fetchers
             (r, s) => MatchesPattern(OracleNotAvailableError, s),
             (r, s) => MatchesPattern(ImmediateShutdownError, s),
             (r, s) => MatchesPattern(OracleShutdownError, s),
-            (r, s) => r.StatusCode == HttpStatusCode.Redirect && r.Headers.Location == new Uri("http://www.odjfs.state.oh.us/maintenance/")
+            (r, s) => r.StatusCode == HttpStatusCode.Redirect && (
+                r.Headers.Location == new Uri("http://www.odjfs.state.oh.us/maintenance/") ||
+                r.Headers.Location == new Uri("http://videos.jfs.ohio.gov/maintenance/"))
         }.ToList().AsReadOnly();
 
         private readonly HttpClient _httpClient;
