@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using CsQuery;
 using NLog;
 using OdjfsScraper.Model.ChildCares;
@@ -17,29 +18,55 @@ namespace OdjfsScraper.Parser.Parsers
         protected override IEnumerable<KeyValuePair<string, string>> GetDetailKeyValuePairs(CQ document)
         {
             // get the key value pairs from the first table
-            IEnumerable<KeyValuePair<string, string>> keyValuePairs = base.GetDetailKeyValuePairs(document);
+            IEnumerable<KeyValuePair<string, string>> basicPairs = base.GetDetailKeyValuePairs(document);
 
             // get the table
-            IDomElement table = document["#providerinfo"].FirstElement();
-            if (table == null)
+            IDomElement info = document["#providerReportedInfo"].FirstElement();
+            if (info == null)
             {
-                return Enumerable.Empty<KeyValuePair<string, string>>();
+                return basicPairs;
             }
 
             // replace all of the images with text
-            ReplaceImagesWithText(table, new Dictionary<string, string>
+            ReplaceImagesWithText(info, new Dictionary<string, string>
             {
                 {"Images/EmptyBox.jpg", "false"},
                 {"Images/GreenMark.jpg", "true"},
             });
 
-            // get the useful rows in the table                     
-            return keyValuePairs.Concat(table
-                .GetDescendentElements() //                                                   1. get all descendent elements
-                .Where(e => e.NodeName == "TR") //                                            2. exclude non-row elements
-                .Select(row => row.ChildElements.Where(e => e.NodeName == "TD").ToArray()) // 3. get all child cells
-                .Where(cells => cells.Length == 6) //                                         4. exclude rows without 6 cells
-                .SelectMany(GetTokensFromCells)); //                                          5. re-arrange the text in the cells
+            var additionalPairs = new List<KeyValuePair<string, string>>();
+
+            foreach (var column in document["#providerReportedInfo .reportedInfoColumn"])
+            {
+                var columnCq = CQ.Create(column);
+
+                var header = columnCq[".reportedInfoHeader"].FirstElement().GetCollapsedInnerText();
+                var keyThenValue = header == "Hours Of Operation";                
+
+                var spans = columnCq["span"].Elements.ToArray();
+                if (spans.Length % 2 != 0)
+                {
+                    var exception = new ParserException("There should be an even number of spans in the provider reported info element.");
+                    throw exception;
+                }
+
+                for (int i = 0; i < spans.Length; i += 2)
+                {
+                    var key = spans[i].GetCollapsedInnerText().ToNullIfEmpty();
+                    var value = spans[i + 1].GetCollapsedInnerText().ToNullIfEmpty();
+
+                    if (!keyThenValue)
+                    {
+                        var temp = key;
+                        key = value;
+                        value = temp;
+                    }
+
+                    additionalPairs.Add(new KeyValuePair<string, string>(key, value));
+                }
+            }
+
+            return basicPairs.Concat(additionalPairs);
         }
 
         protected override void PopulateFields(T childCare, IDictionary<string, string> details)
@@ -59,13 +86,14 @@ namespace OdjfsScraper.Parser.Parsers
             }
 
             // program details table
-            childCare.CenterStatus = GetDetailString(details, "Center Status");
+            childCare.CenterStatus = GetDetailString(details, "Program Status");
             childCare.Administrators = GetDetailString(details, "Administrator", "Administrators");
-            childCare.ProviderAgreement = GetDetailString(details, "Provider Agreement");
-            childCare.InitialApplicationDate = GetDetailString(details, "Initial Application Date");
             childCare.LicenseBeginDate = GetDetailString(details, "License Begin Date");
             childCare.LicenseExpirationDate = GetDetailString(details, "License Expiration Date");
-            childCare.PhoneNumber = GetDetailString(details, "Phone");
+
+            // TODO: determine if these fields ever appear.
+            // childCare.ProviderAgreement = GetDetailString(details, "Provider Agreement");
+            // childCare.InitialApplicationDate = GetDetailString(details, "Initial Application Date");
 
             string sutqRating = GetDetailString(details, "SUTQ Rating");
             if (sutqRating != null && Regex.Match(sutqRating, @"[^\*]").Success)
@@ -82,7 +110,7 @@ namespace OdjfsScraper.Parser.Parsers
             childCare.OlderToddlers = GetDetailBool(details, "Older Toddler");
             childCare.Preschoolers = GetDetailBool(details, "Preschool");
             childCare.Gradeschoolers = GetDetailBool(details, "School Age");
-            childCare.ChildCareFoodProgram = GetDetailBool(details, "Child Care");
+            childCare.ChildCareFoodProgram = GetDetailBool(details, "Child Care Food Program");
 
             // accreditations column
             childCare.Naeyc = GetDetailBool(details, "NAEYC");
@@ -137,26 +165,6 @@ namespace OdjfsScraper.Parser.Parsers
 
         #region Helpers
 
-        private static IEnumerable<KeyValuePair<string, string>> GetTokensFromCells(IDomElement[] cells)
-        {
-            // get the text from each cell
-            string[] tokens = cells
-                .Select(c => c.GetCollapsedInnerText())
-                .Select(s => s.ToNullIfEmpty())
-                .ToArray();
-
-            // trim the colon off the hours of operation day label
-            tokens[4] = tokens[4].Trim();
-
-            // arrange the tokens as key value pairs
-            return new[]
-            {
-                new KeyValuePair<string, string>(tokens[1], tokens[0]),
-                new KeyValuePair<string, string>(tokens[3], tokens[2]),
-                new KeyValuePair<string, string>(tokens[4], tokens[5])
-            };
-        }
-
         private static Tuple<bool, DateTime?, DateTime?> GetHoursOfOperation(IDictionary<string, string> details, string key)
         {
             string value = GetDetailString(details, key);
@@ -170,7 +178,7 @@ namespace OdjfsScraper.Parser.Parsers
             }
 
             // parse the string
-            Match match = Regex.Match(value, @"^(?<Begin>\d{2}:\d{2} (?:AM|PM)) to (?<End>\d{2}:\d{2} (?:AM|PM))$");
+            Match match = Regex.Match(value, @"^(?<Begin>(\d{2}:\d{2} (?:AM|PM))|MIDNIGHT) to (?<End>\d{2}:\d{2} (?:AM|PM))$");
             if (!match.Success)
             {
                 var exception = new ParserException("An hours of operation string was not in an expected format.");
@@ -180,6 +188,11 @@ namespace OdjfsScraper.Parser.Parsers
 
             string beginTimeString = match.Groups["Begin"].Value;
             string endTimeString = match.Groups["End"].Value;
+
+            if (beginTimeString == "MIDNIGHT")
+            {
+                beginTimeString = "12:00 AM";
+            }
 
             // sometimes "12:00 AM" is listed as the end time... we assume this means midnight of the next day
             string endDayString = "01";

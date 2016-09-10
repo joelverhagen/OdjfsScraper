@@ -49,10 +49,10 @@ namespace OdjfsScraper.Parser.Parsers
         {
             // get all of the cells
             IDomElement[] cells = element.ChildElements.ToArray();
-            if (cells.Length != 24)
+            if (cells.Length != 21)
             {
-                var exception = new ParserException("Exactly 24 cells in each search result row is expected.");
-                Logger.ErrorException(string.Format("Expected: 24, Actual: {0}, HTML:\n{1}", cells.Length, element.OuterHTML), exception);
+                var exception = new ParserException("Exactly 21 cells in each search result row is expected.");
+                Logger.ErrorException(string.Format("Expected: 21, Actual: {0}, HTML:\n{1}", cells.Length, element.OuterHTML), exception);
                 throw exception;
             }
 

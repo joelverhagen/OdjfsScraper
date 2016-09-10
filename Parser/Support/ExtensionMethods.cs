@@ -12,16 +12,21 @@ namespace OdjfsScraper.Parser.Support
             return input == string.Empty ? null : input;
         }
 
-        public static string GetCollapsedInnerText(this IDomElement e)
+        public static string DecodeAndCollapse(this string text)
         {
-            // get the text content
-            string text = e.TextContent;
-
             // decode the entities
             text = WebUtility.HtmlDecode(text);
 
             // collapse the whitespace
             return Regex.Replace(text, @"\s+", " ").Trim();
+        }
+
+        public static string GetCollapsedInnerText(this IDomElement e)
+        {
+            // get the text content
+            string text = e.TextContent;
+
+            return text.DecodeAndCollapse();
         }
 
         public static IEnumerable<IDomElement> GetDescendentElements(this IDomObject e)

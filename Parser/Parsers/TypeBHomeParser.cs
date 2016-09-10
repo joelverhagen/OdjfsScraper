@@ -15,7 +15,7 @@ namespace OdjfsScraper.Parser.Parsers
             base.PopulateFields(childCare, details);
 
             // type B homes do not have their address exposed
-            if (childCare.Address != "Contact County CDJFS")
+            if (childCare.Address != "Contact County Agency")
             {
                 var exception = new ParserException("A type B home does not have the expected address placeholder.");
                 Logger.ErrorException(string.Format("Address: '{0}', ExternalUrlId: '{1}'", childCare.Address, childCare.ExternalUrlId), exception);
@@ -23,8 +23,8 @@ namespace OdjfsScraper.Parser.Parsers
             }
             childCare.Address = null;
 
-            childCare.CertificationBeginDate = GetDetailString(details, "Certification Begin Date");
-            childCare.CertificationExpirationDate = GetDetailString(details, "Certification Expiration Date");
+            childCare.CertificationBeginDate = GetDetailString(details, "License Begin Date");
+            childCare.CertificationExpirationDate = GetDetailString(details, "License Expiration Date");
         }
     }
 }

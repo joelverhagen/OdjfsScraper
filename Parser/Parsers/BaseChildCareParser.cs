@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using CsQuery;
 using NLog;
@@ -15,9 +16,9 @@ namespace OdjfsScraper.Parser.Parsers
 
         private static readonly IDictionary<Type, string> TypeNames = new Dictionary<Type, string>
         {
-            {typeof (TypeAHome), "Type A Family Child Care Homes"},
-            {typeof (TypeBHome), "Type B Family Child Care Homes"},
-            {typeof (LicensedCenter), "Licensed Center"},
+            {typeof (TypeAHome), "Licensed Type A Family Child Care Home"},
+            {typeof (TypeBHome), "Licensed Type B Family Child Care Home"},
+            {typeof (LicensedCenter), "Licensed Child Care Center"},
             {typeof (DayCamp), "Registered Day Camp"},
         };
 
@@ -33,35 +34,45 @@ namespace OdjfsScraper.Parser.Parsers
 
         protected override IEnumerable<KeyValuePair<string, string>> GetDetailKeyValuePairs(CQ document)
         {
-            // get the table
-            IDomElement table = document["#PageContent table:first"].FirstElement();
-            if (table == null)
+            // get the first two divs, which contain the basic information
+            var divs = document["#PageContent div"].Elements.Take(2).ToArray();
+            if (divs.Length != 2)
             {
-                var exception = new ParserException("No Program Details table was found.");
+                var exception = new ParserException("The basic detail divs were not found.");
                 Logger.ErrorException(string.Format("Type: '{0}'", typeof (T).Name), exception);
                 throw exception;
             }
 
+            // get all of the text fields in divs
+            var pairs = divs
+                .SelectMany(GetDetailKeyValuePairs)
+                .ToArray();
+
+            return pairs;
+        }
+
+        private IEnumerable<KeyValuePair<string, string>> GetDetailKeyValuePairs(IDomElement element)
+        {
             // replace all of the images with text
-            ReplaceImagesWithText(table, new Dictionary<string, string>
+            ReplaceImagesWithText(element, new Dictionary<string, string>
             {
-                {"smallredstar2.gif", "*"},
-                {"http://jfs.ohio.gov/_assets/images/web_graphics/common/spacer.gif", string.Empty},
+                {"Images/smallredstar2.gif", "*"}
             });
 
-            // get all of the text fields in the first details table
-            return table
-                .GetDescendentElements() //                                                    1. get all descendent elements
-                .Where(e => e.NodeName == "TR") //                                             2. exclude non-row elements
-                .Where(r => r.GetDescendentElements().All(child => child.NodeName != "TR")) // 3. exclude elements that do not themselves have child TR elements
-                .Select(r => r.GetCollapsedInnerText()) //                                     4. extract all of the text from the row
-                .Select(ParseColonSeperatedString); //                                         5. Parse the colon seperated strings
+            using (var stringReader = new StringReader(element.InnerText))
+            {
+                string line;
+                while ((line = stringReader.ReadLine()) != null)
+                {
+                    yield return ParseColonSeperatedString(line);
+                }
+            }
         }
 
         protected override void PopulateFields(T childCare, IDictionary<string, string> details)
         {
             // verify the Type detail
-            string actualTypeName = GetDetailString(details, "Type");
+            string actualTypeName = GetDetailString(details, "Program Type");
             string expectedTypeName = TypeNames[typeof (T)];
             if (expectedTypeName != actualTypeName)
             {
@@ -107,11 +118,8 @@ namespace OdjfsScraper.Parser.Parsers
 
             // split by the colon
             string[] tokens = input.Split(':');
-            string key = tokens[0].Trim();
-            string value = tokens[1].Trim();
-
-            // coalesce empty strings to null
-            value = value == string.Empty ? null : value;
+            string key = tokens[0].DecodeAndCollapse();
+            string value = tokens[1].DecodeAndCollapse().ToNullIfEmpty();
 
             return new KeyValuePair<string, string>(key, value);
         }

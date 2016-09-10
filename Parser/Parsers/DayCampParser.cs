@@ -12,9 +12,11 @@ namespace OdjfsScraper.Parser.Parsers
 
             childCare.Address = GetDetailString(details, "Address");
             childCare.RegistrationStatus = GetDetailString(details, "Registration Status");
-            childCare.Owner = GetDetailString(details, "Owner");
             childCare.RegistrationBeginDate = GetDetailString(details, "Registration Begin Date");
             childCare.RegistrationEndDate = GetDetailString(details, "Registration End Date");
+
+            // TODO: determine if these fields ever appear.
+            // childCare.Owner = GetDetailString(details, "Owner");
         }
     }
 }
