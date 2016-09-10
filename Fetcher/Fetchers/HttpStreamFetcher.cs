@@ -242,7 +242,10 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 request.Headers.Add("User-Agent", _userAgent);
             }
 
+            Logger.Info($"  {request.Method} {request.RequestUri}");
             HttpResponseMessage response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            Logger.Info($"  {response.StatusCode} {request.RequestUri}");
+
             return response;
         }
     }
