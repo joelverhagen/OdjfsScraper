@@ -32,8 +32,4 @@
     </PropertyGroup>
     <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\AssemblyInfo.cs" AssemblyTitle="$(RootNamespace)" AssemblyDescription="" AssemblyCompany="$(Author)" AssemblyProduct="$(RootNamespace)" AssemblyCopyright="$(Copyright)" ComVisible="false" CLSCompliant="$(CLSCompliant)" AssemblyInformationalVersion="$(Version)-$(Revision)" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" />
   </Target>
-  <Target Name="NuGet">
-    <NuGetPack File="$(RootNamespace).nuspec" Symbols="false" BasePath="$(OutputPath)" OutputDirectory="$(OutputPath)" Version="$(Version)" Properties="id=$(RootNamespace);author=$(Author);copyright=$(Copyright);licenseUrl=$(LicenseUrl);projectUrl=$(ProjectUrl)">
-    </NuGetPack>
-  </Target>
 </Project>
