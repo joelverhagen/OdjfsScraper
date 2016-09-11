@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{DBEC3A27-93F9-4277-A689-2FC29B64EA4A}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,8 +23,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{1E30E5FD-25B1-4F18-A2C2-5F8AC2B80683}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csproj", "{C86F6694-1FCE-46D3-B9B7-69512D9D722B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.UnitTests", "Parser.UnitTests\Parser.UnitTests.csproj", "{CC50EB03-A13A-4551-A2F9-E433E3F6CB18}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fetcher", "Fetcher\Fetcher.csproj", "{393F1B81-3F51-45DC-976C-3BD31D2A71DE}"
 EndProject
@@ -54,10 +52,6 @@ Global
 		{C86F6694-1FCE-46D3-B9B7-69512D9D722B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C86F6694-1FCE-46D3-B9B7-69512D9D722B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C86F6694-1FCE-46D3-B9B7-69512D9D722B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC50EB03-A13A-4551-A2F9-E433E3F6CB18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC50EB03-A13A-4551-A2F9-E433E3F6CB18}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC50EB03-A13A-4551-A2F9-E433E3F6CB18}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC50EB03-A13A-4551-A2F9-E433E3F6CB18}.Release|Any CPU.Build.0 = Release|Any CPU
 		{393F1B81-3F51-45DC-976C-3BD31D2A71DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{393F1B81-3F51-45DC-976C-3BD31D2A71DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{393F1B81-3F51-45DC-976C-3BD31D2A71DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
