@@ -178,37 +178,47 @@ namespace OdjfsScraper.Parser.Parsers
             }
 
             // parse the string
-            Match match = Regex.Match(value, @"^(?<Begin>(\d{2}:\d{2} (?:AM|PM))|MIDNIGHT) to (?<End>\d{2}:\d{2} (?:AM|PM))$");
+            Match match = Regex.Match(value, @"^(?<Begin>(\d{2}:\d{2} (?:AM|PM))|MIDNIGHT)\s*?to\s*?(?<End>\d{2}:\d{2} (?:AM|PM))?$");
             if (!match.Success)
             {
                 var exception = new ParserException("An hours of operation string was not in an expected format.");
                 Logger.ErrorException(string.Format("Key: '{0}', Value: '{1}'", key, value), exception);
                 throw exception;
             }
+            DateTime? beginTime = null;
+            DateTime? endTime = null;
 
+            // parse the begin time
             string beginTimeString = match.Groups["Begin"].Value;
+            if (string.IsNullOrEmpty(beginTimeString))
+            {
+                if (beginTimeString == "MIDNIGHT")
+                {
+                    beginTimeString = "12:00 AM";
+                }
+
+                beginTime = DateTime.ParseExact(string.Format("1970-01-01 {0}", beginTimeString), "yyyy-MM-dd hh:mm tt", CultureInfo.InvariantCulture);
+            }
+
+            // parse the end time
             string endTimeString = match.Groups["End"].Value;
-
-            if (beginTimeString == "MIDNIGHT")
+            if (!string.IsNullOrEmpty(endTimeString))
             {
-                beginTimeString = "12:00 AM";
-            }
+                // sometimes "12:00 AM" is listed as the end time... we assume this means midnight of the next day
+                string endDayString = "01";
+                if (endTimeString == "12:00 AM")
+                {
+                    endDayString = "02";
+                }
 
-            // sometimes "12:00 AM" is listed as the end time... we assume this means midnight of the next day
-            string endDayString = "01";
-            if (endTimeString == "12:00 AM")
-            {
-                endDayString = "02";
-            }
+                endTime = DateTime.ParseExact(string.Format("1970-01-{0} {1}", endDayString, endTimeString), "yyyy-MM-dd hh:mm tt", CultureInfo.InvariantCulture);
 
-            DateTime beginTime = DateTime.ParseExact(string.Format("1970-01-01 {0}", beginTimeString), "yyyy-MM-dd hh:mm tt", CultureInfo.InvariantCulture);
-            DateTime endTime = DateTime.ParseExact(string.Format("1970-01-{0} {1}", endDayString, endTimeString), "yyyy-MM-dd hh:mm tt", CultureInfo.InvariantCulture);
-
-            if (beginTime >= endTime)
-            {
-                var exception = new ParserException("An hours of operation string has a begin time equal to or after an end time.");
-                Logger.ErrorException(string.Format("Key: '{0}', Value: '{1}', BeginTime: '{2}', EndTime: '{3}'", key, value, beginTime, endTime), exception);
-                throw exception;
+                if (beginTime >= endTime)
+                {
+                    var exception = new ParserException("An hours of operation string has a begin time equal to or after an end time.");
+                    Logger.ErrorException(string.Format("Key: '{0}', Value: '{1}', BeginTime: '{2}', EndTime: '{3}'", key, value, beginTime, endTime), exception);
+                    throw exception;
+                }
             }
 
             return new Tuple<bool, DateTime?, DateTime?>(true, beginTime, endTime);
