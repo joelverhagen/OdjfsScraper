@@ -49,12 +49,10 @@
     <Compile Include="Parsers\BaseDetailedChildCareParser.cs" />
     <Compile Include="Parsers\ChildCareParser.cs" />
     <Compile Include="Parsers\ChildCareStubListParser.cs" />
-    <Compile Include="Parsers\CsvStreamParser.cs" />
     <Compile Include="Parsers\DayCampParser.cs" />
     <Compile Include="Parsers\IChildCareParser.cs" />
     <Compile Include="Parsers\IChildCareParserT.cs" />
     <Compile Include="Parsers\IChildCareStubListParser.cs" />
-    <Compile Include="Parsers\ICsvStreamParser.cs" />
     <Compile Include="Parsers\LicensedCenterParser.cs" />
     <Compile Include="Parsers\TypeAHomeParser.cs" />
     <Compile Include="Parsers\TypeBHomeParser.cs" />

@@ -56,7 +56,6 @@
     <Compile Include="Entities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="OdjfsScraper.Database.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
