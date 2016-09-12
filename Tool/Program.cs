@@ -84,6 +84,7 @@ namespace OdjfsScraper.Tool
             catch (Exception e)
             {
                 Logger.ErrorException("An error occurred during the execution of OdjfsScraper.Tool.", e);
+                Logger.Error(e.ToString());
                 return 1;
             }
         }
