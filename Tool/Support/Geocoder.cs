@@ -4,10 +4,10 @@ using System.Data.Entity.Migrations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Knapcode.PolyGeocoder;
 using NLog;
 using OdjfsScraper.Database;
 using OdjfsScraper.Model.ChildCares;
-using PolyGeocoder.Support;
 
 namespace OdjfsScraper.Tool.Support
 {

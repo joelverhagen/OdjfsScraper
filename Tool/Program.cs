@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Text;
+using Knapcode.PolyGeocoder;
 using ManyConsole;
 using Ninject;
 using Ninject.Extensions.Conventions;
@@ -15,8 +15,6 @@ using OdjfsScraper.Model.Fetchers;
 using OdjfsScraper.Parser.Parsers;
 using OdjfsScraper.Synchronizer.Synchronizers;
 using OdjfsScraper.Tool.Commands;
-using PolyGeocoder.Geocoders;
-using PolyGeocoder.Support;
 
 namespace OdjfsScraper.Tool
 {
