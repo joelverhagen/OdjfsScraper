@@ -44,7 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fetchers\DownloadingHttpStreamFetcher.cs" />
-    <Compile Include="Fetchers\FileSystemStreamFetcher.cs" />
     <Compile Include="Fetchers\HttpStreamFetcher.cs" />
     <Compile Include="Fetchers\IFileSystemStreamFetcher.cs" />
     <Compile Include="Fetchers\IHttpStreamFetcher.cs" />

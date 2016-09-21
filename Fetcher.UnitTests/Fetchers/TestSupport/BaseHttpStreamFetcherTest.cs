@@ -235,37 +235,6 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 Assert.IsNotNull);
         }
 
-        [TestMethod]
-        public void GetAvailableChildCares_HappyPath()
-        {
-            VerifyGetAvailable(f => f.GetAvailableChildCares());
-        }
-
-        [TestMethod]
-        public void GetAvailableCounties_HappyPath()
-        {
-            VerifyGetAvailable(f => f.GetAvailableCounties());
-        }
-
-        private void VerifyGetAvailable<TEntity>(Func<TFetcher, Task<IEnumerable<TEntity>>> getEntities)
-        {
-            // ARRANGE
-            var mock = new Mock<HttpMessageHandler>();
-            mock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .Returns(GetHttpResponseMessage(HttpStatusCode.OK, null, string.Empty));
-
-            TFetcher fetcher = GetFetcherForHttpStreamFetcherTests(mock.Object, "Foo user agent");
-
-            // ACT
-            TEntity[] entities = getEntities(fetcher).Result.ToArray();
-
-            // ASSERT
-            Assert.IsNotNull(entities);
-            Assert.AreEqual(0, entities.Length);
-        }
-
         private void VerifyException<T>(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
         {
             // ARRANGE

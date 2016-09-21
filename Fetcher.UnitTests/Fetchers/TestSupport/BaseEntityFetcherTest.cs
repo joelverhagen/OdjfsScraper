@@ -41,23 +41,5 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 .Returns(Task.FromResult((Stream) null));
             return mock.Object;
         }
-
-        protected static IStreamFetcher GetStreamFetcherReturningCounties(IEnumerable<County> counties)
-        {
-            var mock = new Mock<IStreamFetcher>();
-            mock
-                .Setup(s => s.GetAvailableCounties())
-                .Returns(Task.FromResult(counties));
-            return mock.Object;
-        }
-
-        protected static IStreamFetcher GetStreamFetcherReturningChildCares(IEnumerable<ChildCare> childCares)
-        {
-            var mock = new Mock<IStreamFetcher>();
-            mock
-                .Setup(s => s.GetAvailableChildCares())
-                .Returns(Task.FromResult(childCares));
-            return mock.Object;
-        }
     }
 }

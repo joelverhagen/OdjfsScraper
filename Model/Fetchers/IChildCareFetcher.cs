@@ -9,6 +9,5 @@ namespace OdjfsScraper.Model.Fetchers
     {
         Task<ChildCare> Fetch(ChildCare childCare);
         Task<ChildCare> Fetch(ChildCareStub childCareStub);
-        Task<IEnumerable<ChildCare>> GetAvailableChildCares();
     }
 }

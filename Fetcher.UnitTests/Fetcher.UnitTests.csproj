@@ -62,7 +62,6 @@
     <Compile Include="Fetchers\ChildCareFetcherTest.cs" />
     <Compile Include="Fetchers\HttpStreamFetcherTest.cs" />
     <Compile Include="Fetchers\DownloadingHttpStreamFetcherTest.cs" />
-    <Compile Include="Fetchers\FileSystemStreamFetcherTest.cs" />
     <Compile Include="Fetchers\TestSupport\BaseHttpStreamFetcherTest.cs" />
     <Compile Include="Fetchers\TestSupport\BaseEntityFetcherTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

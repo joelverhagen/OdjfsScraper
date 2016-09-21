@@ -45,17 +45,6 @@ namespace OdjfsScraper.Synchronizer.Synchronizers
                     .FirstOrDefaultAsync(c => c.Name.ToUpper() == name.ToUpper()));
         }
 
-        public async Task UpdateAvailableCounties(Entities ctx)
-        {
-            Logger.Trace("Getting all available counties.");
-            County[] counties = (await _listFetcher.GetAvailableCounties()).ToArray();
-            Logger.Trace("{0} counties are available.", counties.Length);
-            foreach (County county in counties)
-            {
-                await UpdateCounty(ctx, county.Name);
-            }
-        }
-
         private async Task UpdateCounty(Entities ctx, Func<IDbSet<County>, Task<County>> countySelector)
         {
             Logger.Trace("Getting the next County to scrape.");

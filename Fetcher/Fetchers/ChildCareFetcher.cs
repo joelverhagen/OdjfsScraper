@@ -35,11 +35,6 @@ namespace OdjfsScraper.Fetcher.Fetchers
             }
         }
 
-        public Task<IEnumerable<ChildCare>> GetAvailableChildCares()
-        {
-            return _streamFetcher.GetAvailableChildCares();
-        }
-
         public async Task<ChildCare> Fetch(ChildCare childCare)
         {
             // fetch the stream

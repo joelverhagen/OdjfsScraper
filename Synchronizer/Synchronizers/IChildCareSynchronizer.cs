@@ -7,6 +7,5 @@ namespace OdjfsScraper.Synchronizer.Synchronizers
     {
         Task UpdateNextChildCare(Entities ctx);
         Task UpdateChildCare(Entities ctx, string externalUrlId);
-        Task UpdateAvailableChildCares(Entities ctx);
     }
 }

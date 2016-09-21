@@ -5,8 +5,6 @@ namespace OdjfsScraper.Fetcher.Support
 {
     public class FileSystem : IFileSystem
     {
-        #region Directory
-
         public IEnumerable<string> DirectoryEnumerateFiles(string path, string searchPattern, SearchOption searchOption)
         {
             return Directory.EnumerateFiles(path, searchPattern, searchOption);
@@ -22,10 +20,6 @@ namespace OdjfsScraper.Fetcher.Support
             return Directory.Exists(path);
         }
 
-        #endregion
-
-        #region File
-
         public bool FileExists(string path)
         {
             return File.Exists(path);
@@ -40,7 +34,5 @@ namespace OdjfsScraper.Fetcher.Support
         {
             return File.Open(path, mode);
         }
-
-        #endregion
     }
 }

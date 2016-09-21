@@ -157,15 +157,6 @@ namespace OdjfsScraper.Fetcher.Support
             return Task.FromResult(_fileSystem.FileOpen(filePath, FileMode.Open));
         }
 
-        public Task<IDictionary<string, int>> GetNames()
-        {
-            IDictionary<string, int> entries = GetBlobEntries(null)
-                .GroupBy(b => b.Name)
-                .ToDictionary(g => g.Key, g => g.Count());
-
-            return Task.FromResult(entries);
-        }
-
         private async Task WriteWithoutValidation(string name, string tag, Stream stream)
         {
             // fully buffer the stream if it is not seekable

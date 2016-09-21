@@ -15,20 +15,6 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
     public class ChildCareStubListFetcherTest : BaseEntityFetcherTest
     {
         [TestMethod]
-        public void GetAvailableCounties_HappyPath()
-        {
-            // ARRANGE
-            var expected = Enumerable.Empty<County>();
-            var fetcher = new ChildCareStubListFetcher(GetStreamFetcherReturningCounties(expected), null);
-
-            // ACT
-            IEnumerable<County> actual = fetcher.GetAvailableCounties().Result;
-
-            // ASSERT
-            Assert.AreSame(expected, actual);
-        }
-
-        [TestMethod]
         public void GetChildCareStubList_Null()
         {
             // ARRANGE

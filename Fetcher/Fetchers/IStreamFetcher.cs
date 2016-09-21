@@ -12,7 +12,5 @@ namespace OdjfsScraper.Fetcher.Fetchers
         Task<Stream> GetChildCareDocument(ChildCareStub childCareStub);
         Task<Stream> GetChildCareDocument(ChildCare childCare);
         Task<Stream> GetChildCareStubListDocument(County county);
-        Task<IEnumerable<County>> GetAvailableCounties();
-        Task<IEnumerable<ChildCare>> GetAvailableChildCares();
     }
 }

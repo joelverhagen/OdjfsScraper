@@ -356,36 +356,6 @@ namespace OdjfsScraper.Fetcher.UnitTests.Support
         }
 
         [TestMethod]
-        public void GetNames_HappyPath()
-        {
-            // ARRANGE
-            var test = new Test();
-            test.SetupDirectory(@"Z:\HTML", new []
-            {
-                "A_Current_Hash.blob",
-                "A_11_Hash.blob",
-                "A_10_Hash.blob",
-                "A_9_Hash.blob",
-                "B_Current_Hash.blob",
-                "B_0_Hash.blob",
-                "C_99_Hash.blob",
-                "GARBAGE"
-            });
-
-            // ACT
-            IDictionary<string, int> names = test.FileSystemBlobStore.GetNames().Result;
-
-            // ASSERT
-            Assert.AreEqual(3, names.Count);
-            Assert.IsTrue(names.ContainsKey("A"));
-            Assert.IsTrue(names.ContainsKey("B"));
-            Assert.IsTrue(names.ContainsKey("C"));
-            Assert.AreEqual(4, names["A"]);
-            Assert.AreEqual(2, names["B"]);
-            Assert.AreEqual(1, names["C"]);
-        }
-
-        [TestMethod]
         public void Write_UnseekableStream()
         {
             // ARRANGE

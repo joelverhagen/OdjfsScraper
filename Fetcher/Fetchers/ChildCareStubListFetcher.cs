@@ -34,10 +34,5 @@ namespace OdjfsScraper.Fetcher.Fetchers
                 return _parser.Parse(county, await stream.ReadAsByteArrayAsync());
             }
         }
-
-        public Task<IEnumerable<County>> GetAvailableCounties()
-        {
-            return _streamFetcher.GetAvailableCounties();
-        }
     }
 }

@@ -47,17 +47,6 @@ namespace OdjfsScraper.Synchronizer.Synchronizers
                     .FirstOrDefaultAsync(c => c.ExternalUrlId == externalUrlId));
         }
 
-        public async Task UpdateAvailableChildCares(Entities ctx)
-        {
-            Logger.Trace("Getting all available child cares.");
-            ChildCare[] childCares = (await _childCareFetcher.GetAvailableChildCares()).ToArray();
-            Logger.Trace("{0} child cares are available.", childCares.Length);
-            foreach (ChildCare childCare in childCares)
-            {
-                await UpdateChildCare(ctx, childCare.ExternalUrlId);
-            }
-        }
-
         private async Task SetAttachedCountyAsync(Entities ctx, ChildCare childCare)
         {
             if (childCare.County != null && childCare.County.Id == 0)

@@ -7,6 +7,5 @@ namespace OdjfsScraper.Synchronizer.Synchronizers
     {
         Task UpdateNextCounty(Entities ctx);
         Task UpdateCounty(Entities ctx, string name);
-        Task UpdateAvailableCounties(Entities ctx);
     }
 }
