@@ -7,11 +7,11 @@ namespace OdjfsScraper.Fetcher.Support
 {
     public static class ExtensionMethods
     {
-        public static string GetSha256Hash(this byte[] bytes)
+        public static byte[] ReadAsByteArray(this Stream stream)
         {
-            var sha = new SHA256Managed();
-            byte[] hashBytes = sha.ComputeHash(bytes);
-            return BitConverter.ToString(hashBytes).Replace("-", "");
+            var outputStream = new MemoryStream();
+            stream.CopyTo(outputStream);
+            return outputStream.ToArray();
         }
 
         public static async Task<byte[]> ReadAsByteArrayAsync(this Stream stream)

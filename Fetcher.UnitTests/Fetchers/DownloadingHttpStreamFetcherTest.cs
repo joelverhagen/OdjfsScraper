@@ -78,7 +78,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
         {
             // ARRANGE
             HttpMessageHandler handler = GetHandler(httpStatusCode, null, new byte[0]);
-            Mock<IFileSystemBlobStore> storeMock = GetFileSystemBlobStoreMock();
+            Mock<IBlobStore> storeMock = GetFileSystemBlobStoreMock();
             var fetcher = new DownloadingHttpStreamFetcher(handler, null, storeMock.Object);
 
             // ACT
@@ -90,11 +90,9 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             {
             }
 
-
             // ASSERT
-            string name = string.Format("{0}-{1}", prefix, "Foo");
-            storeMock.Verify(s => s.Write(name, httpStatusCode.ToString(), It.IsAny<Stream>()), Times.Once);
-            storeMock.Verify(s => s.Read(name, -1), Times.Once);
+            string name = string.Format("{0}/{1}", prefix, "Foo");
+            storeMock.Verify(s => s.WriteAsync(name, httpStatusCode.ToString(), It.IsAny<Stream>()), Times.Once);
         }
 
         private static HttpMessageHandler GetHandler(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, byte[] content)
@@ -108,21 +106,13 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             return handlerMock.Object;
         }
 
-        private static Mock<IFileSystemBlobStore> GetFileSystemBlobStoreMock()
+        private static Mock<IBlobStore> GetFileSystemBlobStoreMock()
         {
-            var mock = new Mock<IFileSystemBlobStore>();
-
-            Stream lastStream = null;
+            var mock = new Mock<IBlobStore>();
+            
             mock
-                .SetupProperty(f => f.Directory);
-            mock
-                .Setup(f => f.Read(It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(() => Task.FromResult(lastStream));
-            mock
-                .Setup(f => f.Write(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>()))
-                .Returns(Task.FromResult(0))
-                .Callback<string, string, Stream>((name, tag, stream) => lastStream = new MemoryStream(stream.ReadAsByteArrayAsync().Result));
-            mock.Object.Directory = @"Z:\HTML";
+                .Setup(f => f.WriteAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>()))
+                .Returns<string, string, Stream>((_, __, stream) => Task.FromResult<Stream>(new MemoryStream(stream.ReadAsByteArray())));
 
             return mock;
         }

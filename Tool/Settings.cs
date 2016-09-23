@@ -15,9 +15,14 @@ namespace OdjfsScraper.Tool
             get { return GetAppSettingOrNull("LogsDirectory"); }
         }
 
-        public static string HtmlDirectory
+        public static string AzureBlobStorageConnectionString
         {
-            get { return GetAppSettingOrNull("HtmlDirectory"); }
+            get { return GetAppSettingOrNull("AzureBlobStorageConnectionString"); }
+        }
+
+        public static string AzureBlobStorageContainer
+        {
+            get { return GetAppSettingOrNull("AzureBlobStorageContainer"); }
         }
 
         private static string GetAppSettingOrNull(string key)

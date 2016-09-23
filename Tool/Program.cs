@@ -15,6 +15,7 @@ using OdjfsScraper.Model.Fetchers;
 using OdjfsScraper.Parser.Parsers;
 using OdjfsScraper.Synchronizer.Synchronizers;
 using OdjfsScraper.Tool.Commands;
+using IToStorageClient = Knapcode.ToStorage.Core.AzureBlobStorage.IClient;
 
 namespace OdjfsScraper.Tool
 {
@@ -37,7 +38,8 @@ namespace OdjfsScraper.Tool
                         typeof (SrdsExporter<>),
                         typeof (IChildCareParser),
                         typeof (IHttpStreamFetcher),
-                        typeof (IChildCareSynchronizer)
+                        typeof (IChildCareSynchronizer),
+                        typeof (IToStorageClient)
                     })
                     .SelectAllClasses()
                     .BindAllInterfaces());
@@ -50,11 +52,11 @@ namespace OdjfsScraper.Tool
                     .WithConstructorArgument("userAgent", GetUserAgent());
 
                 // configure the file system blob store
-                kernel.Unbind<IFileSystemBlobStore>();
-                kernel.Bind<IFileSystemBlobStore>()
-                    .To<FileSystemBlobStore>()
-                    .WithPropertyValue("Directory", Settings.HtmlDirectory)
-                    .WithPropertyValue("FileExtension", ".html");
+                kernel.Unbind<IBlobStore>();
+                kernel.Bind<IBlobStore>()
+                    .To<ToStorageBlobStore>()
+                    .WithConstructorArgument("connectionString", Settings.AzureBlobStorageConnectionString)
+                    .WithConstructorArgument("container", Settings.AzureBlobStorageContainer);
 
                 // specify the logs directory
                 GlobalDiagnosticsContext.Set("LogsDirectory", Settings.LogsDirectory);

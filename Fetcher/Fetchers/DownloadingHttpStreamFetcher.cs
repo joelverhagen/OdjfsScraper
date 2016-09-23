@@ -12,11 +12,11 @@ namespace OdjfsScraper.Fetcher.Fetchers
 {
     public class DownloadingHttpStreamFetcher : HttpStreamFetcher
     {
-        private readonly IFileSystemBlobStore _fileSystemBlobStore;
+        private readonly IBlobStore _blobStore;
 
-        public DownloadingHttpStreamFetcher(HttpMessageHandler httpMessageHandler, string userAgent, IFileSystemBlobStore fileSystemBlobStore) : base(httpMessageHandler, userAgent)
+        public DownloadingHttpStreamFetcher(HttpMessageHandler httpMessageHandler, string userAgent, IBlobStore blobStore) : base(httpMessageHandler, userAgent)
         {
-            _fileSystemBlobStore = fileSystemBlobStore;
+            _blobStore = blobStore;
         }
 
         protected override Task<Stream> GetChildCareDocumentStream(HttpResponseMessage response, ChildCare childCare)
@@ -35,7 +35,7 @@ namespace OdjfsScraper.Fetcher.Fetchers
             Stream stream = await getStream();
 
             // write the stream to disk and read then read from disk
-            return await WriteAndGetStream(string.Format("ChildCare-{0}", externalUrlId), httpStatusCode, stream);
+            return await WriteAndGetStream(string.Format("ChildCare/{0}", externalUrlId), httpStatusCode, stream);
         }
 
         protected override async Task<Stream> GetChildCareStubListDocumentStream(HttpResponseMessage response, County county)
@@ -44,16 +44,14 @@ namespace OdjfsScraper.Fetcher.Fetchers
             Stream stream = await base.GetChildCareStubListDocumentStream(response, county);
 
             // write the stream to disk and read then read from disk
-            return await WriteAndGetStream(string.Format("County-{0}", county.Name), response.StatusCode, stream);
+            return await WriteAndGetStream(string.Format("County/{0}", county.Name), response.StatusCode, stream);
         }
 
         private async Task<Stream> WriteAndGetStream(string name, HttpStatusCode httpStatusCode, Stream stream)
         {
-            // write the blob
-            await _fileSystemBlobStore.Write(name, httpStatusCode.ToString(), stream);
+            var tag = httpStatusCode.ToString();
 
-            // get the blob back
-            return await _fileSystemBlobStore.Read(name, -1);
+            return await _blobStore.WriteAsync(name, tag, stream);
         }
     }
 }
