@@ -30,10 +30,22 @@ namespace OdjfsScraper.Synchronizer.Synchronizers
             Logger.Trace("Fetching the next county to scrape.");
             await UpdateCounty(
                 ctx,
-                counties => counties
-                    .OrderBy(c => c.LastScrapedOn.HasValue)
-                    .ThenBy(c => c.LastScrapedOn)
-                    .FirstOrDefaultAsync());
+                async counties =>
+                {
+                    var notScraped = await counties
+                        .Where(c => !c.LastScrapedOn.HasValue)
+                        .FirstOrDefaultAsync();
+
+                    if (notScraped != null)
+                    {
+                        return notScraped;
+                    }
+
+                    return await counties
+                       .Where(c => c.LastScrapedOn.HasValue)
+                       .OrderBy(c => c.LastScrapedOn)
+                       .FirstOrDefaultAsync();
+                });
         }
 
         public async Task UpdateCounty(Entities ctx, string name)

@@ -27,10 +27,22 @@ namespace OdjfsScraper.Synchronizer.Synchronizers
             Logger.Trace("Fetching the next stub or child care to scrape.");
             await UpdateChildCareOrStub(
                 ctx,
-                childCareStubs => childCareStubs
-                    .OrderBy(c => c.LastScrapedOn.HasValue)
-                    .ThenBy(c => c.LastScrapedOn)
-                    .FirstOrDefaultAsync(),
+                async childCareStubs =>
+                {
+                    var notScraped = await childCareStubs
+                        .Where(c => !c.LastScrapedOn.HasValue)
+                        .FirstOrDefaultAsync();
+
+                    if (notScraped != null)
+                    {
+                        return notScraped;
+                    }
+
+                    return await childCareStubs
+                       .Where(c => c.LastScrapedOn.HasValue)
+                       .OrderBy(c => c.LastScrapedOn)
+                       .FirstOrDefaultAsync();
+                },
                 childCares => childCares
                     .OrderBy(c => c.LastScrapedOn)
                     .FirstOrDefaultAsync());

@@ -27,7 +27,8 @@ namespace OdjfsScraper.Database.Migrations
                 })
                 .PrimaryKey(t => t.ChildCareId)
                 .ForeignKey("dbo.County", t => t.CountyId, true)
-                .Index(t => t.CountyId);
+                .Index(t => t.CountyId)
+                .Index(t => t.LastScrapedOn);
 
             CreateTable(
                 "dbo.County",
@@ -37,7 +38,8 @@ namespace OdjfsScraper.Database.Migrations
                     Name = c.String(false, 10),
                     LastScrapedOn = c.DateTime(),
                 })
-                .PrimaryKey(t => t.CountyId);
+                .PrimaryKey(t => t.CountyId)
+                .Index(t => t.LastScrapedOn);
 
             CreateTable(
                 "dbo.ChildCareStub",
@@ -53,7 +55,8 @@ namespace OdjfsScraper.Database.Migrations
                 })
                 .PrimaryKey(t => t.ChildCareStubId)
                 .ForeignKey("dbo.County", t => t.CountyId)
-                .Index(t => t.CountyId);
+                .Index(t => t.CountyId)
+                .Index(t => t.LastScrapedOn);
 
             CreateTable(
                 "dbo.DayCamp",
