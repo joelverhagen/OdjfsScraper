@@ -1,0 +1,13 @@
+﻿{
+  "dependencies": {
+    "CsvHelper": "2.5.0",
+    "DotNetZip": "1.9.2",
+    "NLog": "2.1.0"
+  },
+  "frameworks": {
+    "net45": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}
