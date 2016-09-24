@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using OdjfsScraper.Fetcher.Fetchers;
@@ -17,7 +16,7 @@ using OdjfsScraper.Fetcher.Support;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
-using OdjfsScraper.Parser.Support;
+using Xunit;
 
 namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
 {
@@ -25,19 +24,19 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
     {
         protected abstract TFetcher GetFetcherForHttpStreamFetcherTests(HttpMessageHandler handler, string userAgent);
 
-        [TestMethod]
+        [Fact]
         public void Constructor_HttpClientHandler()
         {
             VerifyHttpMessageHandler(new HttpClientHandler());
         }
 
-        [TestMethod]
+        [Fact]
         public void Constructor_WebRequestHandler()
         {
             VerifyHttpMessageHandler(new WebRequestHandler());
         }
 
-        [TestMethod]
+        [Fact]
         public void UnknownError()
         {
             var childCare = new ChildCare { ExternalUrlId = "AAAAAAAAAAAAAAAAAA" };
@@ -46,10 +45,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 null,
                 string.Empty,
                 f => f.GetChildCareDocument(childCare).Wait(),
-                e => Assert.AreEqual(e.Message, "The response body or status code was unexpected."));
+                e => Assert.Equal(e.Message, "The response body or status code was unexpected."));
         }
 
-        [TestMethod]
+        [Fact]
         public void PermanentError_NonNumeric()
         {
             VerifyPermanentError(
@@ -58,7 +57,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 "OraOLEDB error '80040e14' ORA-01858: a non-numeric character was found where a numeric was expected");
         }
 
-        [TestMethod]
+        [Fact]
         public void PermanentError_InvalidHour()
         {
             VerifyPermanentError(
@@ -67,7 +66,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 "OraOLEDB error '80040e14' ORA-01850: hour must be between 0 and 23");
         }
 
-        [TestMethod]
+        [Fact]
         public void PermanentError_DeletedRecord()
         {
             VerifyPermanentError(
@@ -76,7 +75,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 "ADODB.Field error '800a0bcd' Either BOF or EOF is True, or the current record has been deleted. Requested operation requires a current record.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TemporaryError_Unspecified()
         {
             VerifyTemporaryError(
@@ -85,7 +84,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 "Provider error '80004005' Unspecified error");
         }
 
-        [TestMethod]
+        [Fact]
         public void TemporaryError_OracleNotConnected()
         {
             VerifyTemporaryError(
@@ -94,7 +93,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 "OraOLEDB error '80040e14' ORA-03114: not connected to ORACLE");
         }
 
-        [TestMethod]
+        [Fact]
         public void TemporaryError_OracleNotAvailable()
         {
             VerifyTemporaryError(
@@ -103,7 +102,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 "OraOLEDB error '80004005' ORA-01034: ORACLE not available ORA-27101: shared memory realm does not exist IBM AIX RISC System/6000 Error: 2: No such file or directory");
         }
 
-        [TestMethod]
+        [Fact]
         public void TemporaryError_ImmediateShutdown()
         {
             VerifyTemporaryError(
@@ -112,7 +111,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 "OraOLEDB error '80004005' ORA-01089: immediate shutdown in progress - no operations are permitted");
         }
 
-        [TestMethod]
+        [Fact]
         public void TemporaryError_OracleShutdown()
         {
             VerifyTemporaryError(
@@ -121,7 +120,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 "OraOLEDB error '80004005' ORA-01033: ORACLE initialization or shutdown in progress");
         }
 
-        [TestMethod]
+        [Fact]
         public void TemporaryError_Redirect()
         {
             VerifyTemporaryError(
@@ -130,7 +129,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 string.Empty);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareStubListDocument_HappyPath()
         {
             var county = new County {Name = "FRANKLIN"};
@@ -140,10 +139,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 string.Empty,
                 fetcher => fetcher.GetChildCareStubListDocument(county),
                 (request, userAgent) => VerifyCountyRequest(request, county.Name, userAgent),
-                Assert.IsNotNull);
+                Assert.NotNull);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareStubListDocument_NullCounty()
         {
             VerifyException<ArgumentNullException>(
@@ -151,10 +150,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 null,
                 string.Empty,
                 f => f.GetChildCareStubListDocument(null),
-                e => Assert.AreEqual(e.ParamName, "county"));
+                e => Assert.Equal(e.ParamName, "county"));
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareStubListDocument_NullCountyName()
         {
             VerifyException<ArgumentNullException>(
@@ -162,10 +161,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 null,
                 string.Empty,
                 f => f.GetChildCareStubListDocument(new County {Name = null}),
-                e => Assert.AreEqual(e.ParamName, "county.Name"));
+                e => Assert.Equal(e.ParamName, "county.Name"));
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCare_NullExternalUrlId()
         {
             VerifyException<ArgumentNullException>(
@@ -173,10 +172,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 null,
                 string.Empty,
                 f => f.GetChildCareDocument(new ChildCare {ExternalUrlId = null}),
-                e => Assert.AreEqual(e.ParamName, "childCare.ExternalUrlId"));
+                e => Assert.Equal(e.ParamName, "childCare.ExternalUrlId"));
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCareStub_NullExternalUrlId()
         {
             VerifyException<ArgumentNullException>(
@@ -184,10 +183,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 null,
                 string.Empty,
                 f => f.GetChildCareDocument(new ChildCareStub {ExternalUrlId = null}),
-                e => Assert.AreEqual(e.ParamName, "childCareStub.ExternalUrlId"));
+                e => Assert.Equal(e.ParamName, "childCareStub.ExternalUrlId"));
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCare_NullChildCare()
         {
             VerifyException<ArgumentNullException>(
@@ -195,10 +194,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 null,
                 string.Empty,
                 f => f.GetChildCareDocument((ChildCare) null),
-                e => Assert.AreEqual(e.ParamName, "childCare"));
+                e => Assert.Equal(e.ParamName, "childCare"));
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCareStub_NullChildCareStub()
         {
             VerifyException<ArgumentNullException>(
@@ -206,10 +205,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 null,
                 string.Empty,
                 f => f.GetChildCareDocument((ChildCareStub) null),
-                e => Assert.AreEqual(e.ParamName, "childCareStub"));
+                e => Assert.Equal(e.ParamName, "childCareStub"));
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCare_HappyPath()
         {
             var childCare = new ChildCare {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
@@ -219,10 +218,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 string.Empty,
                 fetcher => fetcher.GetChildCareDocument(childCare),
                 (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
-                Assert.IsNotNull);
+                Assert.NotNull);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCareStub_HappyPath()
         {
             var childCareStub = new ChildCareStub {ExternalUrlId = "CCCCCCCCCCCCCCCCCC"};
@@ -232,7 +231,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 string.Empty,
                 fetcher => fetcher.GetChildCareDocument(childCareStub),
                 (request, userAgent) => VerifyChildCareRequest(request, childCareStub.ExternalUrlId, userAgent),
-                Assert.IsNotNull);
+                Assert.NotNull);
         }
 
         private void VerifyException<T>(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content, Action<HttpStreamFetcher> act, Action<T> verify) where T : Exception
@@ -250,7 +249,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             try
             {
                 act(fetcher);
-                Assert.Fail();
+                Assert.True(false);
             }
             catch (T e)
             {
@@ -274,14 +273,14 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             try
             {
                 act(fetcher);
-                Assert.Fail();
+                Assert.True(false);
             }
             catch (AggregateException ae)
             {
                 T e = ae.Flatten().InnerExceptions.Take(1).OfType<T>().FirstOrDefault();
                 if (e == null)
                 {
-                    Assert.Fail();
+                    Assert.True(false);
                 }
 
                 // ASSERT
@@ -297,15 +296,15 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
         private void VerifyHttpMessageHandler(HttpClientHandler handler)
         {
             VerifyHttpMessageHandler((HttpMessageHandler) handler);
-            Assert.IsFalse(handler.AllowAutoRedirect);
-            Assert.AreEqual(handler.AutomaticDecompression, DecompressionMethods.GZip | DecompressionMethods.Deflate);
-            Assert.IsFalse(handler.UseCookies);
+            Assert.False(handler.AllowAutoRedirect);
+            Assert.Equal(handler.AutomaticDecompression, DecompressionMethods.GZip | DecompressionMethods.Deflate);
+            Assert.False(handler.UseCookies);
         }
 
         private void VerifyHttpMessageHandler(WebRequestHandler handler)
         {
             VerifyHttpMessageHandler((HttpClientHandler) handler);
-            Assert.IsTrue(handler.AllowPipelining);
+            Assert.True(handler.AllowPipelining);
         }
 
         private void VerifyPermanentError(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content)
@@ -317,7 +316,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 content,
                 fetcher => fetcher.GetChildCareDocument(childCare),
                 (request, userAgent) => VerifyChildCareRequest(request, childCare.ExternalUrlId, userAgent),
-                Assert.IsNull);
+                Assert.Null);
         }
 
         private void VerifyTemporaryError(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content)
@@ -328,7 +327,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
                 headers,
                 content,
                 f => f.GetChildCareDocument(childCare).Wait(),
-                e => Assert.AreEqual(e.Message, "The response body has indicated that the document is temporarily unavailable."));
+                e => Assert.Equal(e.Message, "The response body has indicated that the document is temporarily unavailable."));
         }
 
         private void VerifyRequest(HttpStatusCode httpStatusCode, IDictionary<string, string> headers, string content, Func<HttpStreamFetcher, Task<Stream>> getStreamTask, Action<HttpRequestMessage, string> verifyRequest, Action<Stream> verifyStream)
@@ -378,11 +377,11 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             // parse the query
             NameValueCollection query = HttpUtility.ParseQueryString(request.RequestUri.Query);
 
-            Assert.AreEqual(request.RequestUri.AbsolutePath, "/cdc/results1.asp");
-            Assert.AreEqual(query["county"], countyName);
-            Assert.AreEqual(query["rating"], "ALL");
-            Assert.AreEqual(query["Printable"], "Y");
-            Assert.AreEqual(query["ShowAllPages"], "Y");
+            Assert.Equal(request.RequestUri.AbsolutePath, "/cdc/results1.asp");
+            Assert.Equal(query["county"], countyName);
+            Assert.Equal(query["rating"], "ALL");
+            Assert.Equal(query["Printable"], "Y");
+            Assert.Equal(query["ShowAllPages"], "Y");
         }
 
         private static void VerifyChildCareRequest(HttpRequestMessage request, string externalUrlId, string userAgent)
@@ -392,17 +391,17 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport
             // parse the query
             NameValueCollection query = HttpUtility.ParseQueryString(request.RequestUri.Query);
 
-            Assert.AreEqual(request.RequestUri.AbsolutePath, "/cdc/results2.asp");
-            Assert.AreEqual(query["provider_number"], externalUrlId);
-            Assert.AreEqual(query["Printable"], "Y");
+            Assert.Equal(request.RequestUri.AbsolutePath, "/cdc/results2.asp");
+            Assert.Equal(query["provider_number"], externalUrlId);
+            Assert.Equal(query["Printable"], "Y");
         }
 
         private static void VerifyRequest(HttpRequestMessage request, string userAgent)
         {
-            Assert.AreEqual(request.RequestUri.Scheme, "http");
-            Assert.AreEqual(request.RequestUri.Host, "www.odjfs.state.oh.us");
-            Assert.AreEqual(request.Headers.UserAgent.ToString(), userAgent);
-            Assert.AreEqual(request.Method, HttpMethod.Get);
+            Assert.Equal(request.RequestUri.Scheme, "http");
+            Assert.Equal(request.RequestUri.Host, "www.odjfs.state.oh.us");
+            Assert.Equal(request.Headers.UserAgent.ToString(), userAgent);
+            Assert.Equal(request.Method, HttpMethod.Get);
         }
     }
 }

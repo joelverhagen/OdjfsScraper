@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OdjfsScraper.Fetcher.Fetchers;
 using OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCareStubs;
 using OdjfsScraper.Parser.Parsers;
+using Xunit;
 
 namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
 {
-    [TestClass]
     public class ChildCareStubListFetcherTest : BaseEntityFetcherTest
     {
-        [TestMethod]
+        [Fact]
         public void GetChildCareStubList_Null()
         {
             // ARRANGE
@@ -24,10 +23,10 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             IEnumerable<ChildCareStub> actualStubs = fetcher.Fetch(new County()).Result;
 
             // ASSERT
-            Assert.IsNull(actualStubs);
+            Assert.Null(actualStubs);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareStubList_NotNull()
         {
             // ARRANGE
@@ -38,7 +37,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             parserMock
                 .Setup(c => c.Parse(It.IsAny<County>(), It.IsAny<byte[]>()))
                 .Returns(expectedStubs)
-                .Callback<County, byte[]>((stub, actualBytes) => Assert.IsTrue(expectedBytes.SequenceEqual(actualBytes)));
+                .Callback<County, byte[]>((stub, actualBytes) => Assert.True(expectedBytes.SequenceEqual(actualBytes)));
 
             var fetcher = new ChildCareStubListFetcher(GetStreamFetcherReturningDocument(expectedBytes), parserMock.Object);
 
@@ -46,7 +45,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
             IEnumerable<ChildCareStub> actualStubs = fetcher.Fetch(new County()).Result;
 
             // ASSERT
-            Assert.AreSame(expectedStubs, actualStubs);
+            Assert.Same(expectedStubs, actualStubs);
         }
     }
 }

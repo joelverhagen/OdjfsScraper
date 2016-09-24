@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using OdjfsScraper.Fetcher.Fetchers;
@@ -14,13 +13,13 @@ using OdjfsScraper.Fetcher.UnitTests.Fetchers.TestSupport;
 using OdjfsScraper.Model;
 using OdjfsScraper.Model.ChildCares;
 using OdjfsScraper.Model.ChildCareStubs;
+using Xunit;
 
 namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
 {
-    [TestClass]
     public class DownloadingHttpStreamFetcherTest : BaseHttpStreamFetcherTest<DownloadingHttpStreamFetcher>
     {
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCare_CorrectStoreCallsWithInvalidResponse()
         {
             VerifyCorrectCalls(
@@ -29,7 +28,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                 (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCare {ExternalUrlId = externalUrlId}).Wait());
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCareStub_CorrectStoreCallsWithInvalidResponse()
         {
             VerifyCorrectCalls(
@@ -38,7 +37,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                 (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCareStub { ExternalUrlId = externalUrlId }).Wait());
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareStubListDocument_CorrectStoreCallsWithInvalidResponse()
         {
             VerifyCorrectCalls(
@@ -47,7 +46,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                 (fetcher, countyName) => fetcher.GetChildCareStubListDocument(new County {Name = countyName}).Wait());
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCare_CorrectStoreCallsWithValidResponse()
         {
             VerifyCorrectCalls(
@@ -56,7 +55,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                 (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCare {ExternalUrlId = externalUrlId}).Wait());
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareDocument_ChildCareStub_CorrectStoreCallsWithValidResponse()
         {
             VerifyCorrectCalls(
@@ -65,7 +64,7 @@ namespace OdjfsScraper.Fetcher.UnitTests.Fetchers
                 (fetcher, externalUrlId) => fetcher.GetChildCareDocument(new ChildCareStub { ExternalUrlId = externalUrlId }).Wait());
         }
 
-        [TestMethod]
+        [Fact]
         public void GetChildCareStubListDocument_CorrectStoreCallsWithValidResponse()
         {
             VerifyCorrectCalls(
