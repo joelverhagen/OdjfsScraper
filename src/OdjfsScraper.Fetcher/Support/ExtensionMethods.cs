@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Security.Cryptography;
+﻿using System.IO;
 using System.Threading.Tasks;
 
 namespace OdjfsScraper.Fetcher.Support

@@ -14,7 +14,7 @@ using OdjfsScraper.Model.ChildCareStubs;
 
 namespace OdjfsScraper.Fetcher.Fetchers
 {
-    public class HttpStreamFetcher : IHttpStreamFetcher
+    public class HttpStreamFetcher : IStreamFetcher
     {
         private static readonly string[] NonNumericPattern = {"OraOLEDB", "error '80040e14'", "ORA-01858: a non-numeric character was found where a numeric was expected"};
         private static readonly string[] InvalidHourPattern = {"OraOLEDB", "error '80040e14'", "ORA-01850: hour must be between 0 and 23"};

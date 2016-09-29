@@ -1,8 +1,7 @@
 {
   "profiles": {
     "OdjfsScraper.Tool": {
-      "commandName": "Project",
-      "commandLineArgs": "daemon"
+      "commandName": "Project"
     }
   }
 }
