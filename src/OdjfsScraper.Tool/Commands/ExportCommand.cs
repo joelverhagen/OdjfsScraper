@@ -5,8 +5,8 @@ using System.Linq;
 using ManyConsole;
 using Microsoft.Extensions.Logging;
 using OdjfsScraper.Database;
-using OdjfsScraper.Exporter.Exporters;
-using OdjfsScraper.Model.ChildCares;
+using OdjfsScraper.Exporters;
+using OdjfsScraper.Models;
 
 namespace OdjfsScraper.Tool.Commands
 {
@@ -97,7 +97,7 @@ namespace OdjfsScraper.Tool.Commands
             switch (Format)
             {
                 case ExportFormat.Srds:
-                    using (var ctx = new Entities())
+                    using (var ctx = new OdjfsContext())
                     {
                         IEnumerable<DetailedChildCare> childCares = ctx
                             .DetailedChildCares.Where(d => d.Latitude.HasValue && d.Longitude.HasValue);

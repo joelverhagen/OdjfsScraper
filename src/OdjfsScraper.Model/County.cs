@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OdjfsScraper.Model
+namespace OdjfsScraper.Models
 {
     public class County
     {

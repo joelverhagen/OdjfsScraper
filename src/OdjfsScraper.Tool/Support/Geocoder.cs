@@ -6,7 +6,7 @@ using Knapcode.PolyGeocoder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OdjfsScraper.Database;
-using OdjfsScraper.Model.ChildCares;
+using OdjfsScraper.Models;
 
 namespace OdjfsScraper.Tool.Support
 {
@@ -21,7 +21,7 @@ namespace OdjfsScraper.Tool.Support
             _simpleGeocoder = simpleGeocoder;
         }
 
-        public async Task<bool> NeedsGeocoding(Entities ctx)
+        public async Task<bool> NeedsGeocoding(OdjfsContext ctx)
         {
             int count = await ctx
                 .ChildCares
@@ -30,7 +30,7 @@ namespace OdjfsScraper.Tool.Support
             return count > 0;
         }
 
-        public async Task GeocodeChildCare(Entities ctx, string externalUrlId, string mapQuestKey)
+        public async Task GeocodeChildCare(OdjfsContext ctx, string externalUrlId, string mapQuestKey)
         {
             // get the child care in question
             _logger.LogInformation("Fetching child care with ExternalUrlId '{externalUrlId}' to geocode.", externalUrlId);
@@ -48,7 +48,7 @@ namespace OdjfsScraper.Tool.Support
             await GeocodeChildCare(ctx, childCare, mapQuestKey);
         }
 
-        public async Task GeocodeNextChildCare(Entities ctx, string mapQuestKey)
+        public async Task GeocodeNextChildCare(OdjfsContext ctx, string mapQuestKey)
         {
             ChildCare childCare = await ctx
                 .ChildCares
@@ -63,7 +63,7 @@ namespace OdjfsScraper.Tool.Support
             await GeocodeChildCare(ctx, childCare, mapQuestKey);
         }
 
-        private async Task GeocodeChildCare(Entities ctx, ChildCare childCare, string mapQuestKey)
+        private async Task GeocodeChildCare(OdjfsContext ctx, ChildCare childCare, string mapQuestKey)
         {
             if (string.IsNullOrWhiteSpace(mapQuestKey))
             {

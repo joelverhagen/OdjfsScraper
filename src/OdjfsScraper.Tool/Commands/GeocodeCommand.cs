@@ -65,14 +65,14 @@ namespace OdjfsScraper.Tool.Commands
             // execute the command
             if (ExternalUrlId != null)
             {
-                using (var ctx = new Entities())
+                using (var ctx = new OdjfsContext())
                 {
                     _geocoder.GeocodeChildCare(ctx, ExternalUrlId, mapQuestKey).Wait();
                 }
             }
             else
             {
-                using (var ctx = new Entities())
+                using (var ctx = new OdjfsContext())
                 {
                     int i = 0;
                     var sleeper = new Sleeper(GeocodeSleep.Value);

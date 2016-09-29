@@ -7,7 +7,7 @@ using OdjfsScraper.Database;
 
 namespace OdjfsScraper.Database.Migrations
 {
-    [DbContext(typeof(Entities))]
+    [DbContext(typeof(OdjfsContext))]
     [Migration("20160925164907_InitialCreate")]
     partial class InitialCreate
     {
@@ -16,7 +16,7 @@ namespace OdjfsScraper.Database.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCares.ChildCare", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.ChildCare", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -62,7 +62,7 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("ChildCare");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCareStubs.ChildCareStub", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.ChildCareStub", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -111,9 +111,9 @@ namespace OdjfsScraper.Database.Migrations
                     b.ToTable("Counties");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCares.DayCamp", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.DayCamp", b =>
                 {
-                    b.HasBaseType("OdjfsScraper.Model.ChildCares.ChildCare");
+                    b.HasBaseType("OdjfsScraper.Models.ChildCare");
 
                     b.Property<string>("Owner");
 
@@ -128,9 +128,9 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator().HasValue("DayCamp");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCares.DetailedChildCare", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.DetailedChildCare", b =>
                 {
-                    b.HasBaseType("OdjfsScraper.Model.ChildCares.ChildCare");
+                    b.HasBaseType("OdjfsScraper.Models.ChildCare");
 
                     b.Property<bool>("Acsi");
 
@@ -217,9 +217,9 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator().HasValue("DetailedChildCare");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCares.TypeBHome", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.TypeBHome", b =>
                 {
-                    b.HasBaseType("OdjfsScraper.Model.ChildCares.ChildCare");
+                    b.HasBaseType("OdjfsScraper.Models.ChildCare");
 
                     b.Property<string>("CertificationBeginDate");
 
@@ -230,9 +230,9 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator().HasValue("TypeBHome");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCareStubs.DayCampStub", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.DayCampStub", b =>
                 {
-                    b.HasBaseType("OdjfsScraper.Model.ChildCareStubs.ChildCareStub");
+                    b.HasBaseType("OdjfsScraper.Models.ChildCareStub");
 
 
                     b.ToTable("DayCampStub");
@@ -240,9 +240,9 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator().HasValue("DayCampStub");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCareStubs.LicensedCenterStub", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.LicensedCenterStub", b =>
                 {
-                    b.HasBaseType("OdjfsScraper.Model.ChildCareStubs.ChildCareStub");
+                    b.HasBaseType("OdjfsScraper.Models.ChildCareStub");
 
 
                     b.ToTable("LicensedCenterStub");
@@ -250,9 +250,9 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator().HasValue("LicensedCenterStub");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCareStubs.TypeAHomeStub", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.TypeAHomeStub", b =>
                 {
-                    b.HasBaseType("OdjfsScraper.Model.ChildCareStubs.ChildCareStub");
+                    b.HasBaseType("OdjfsScraper.Models.ChildCareStub");
 
 
                     b.ToTable("TypeAHomeStub");
@@ -260,9 +260,9 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator().HasValue("TypeAHomeStub");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCareStubs.TypeBHomeStub", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.TypeBHomeStub", b =>
                 {
-                    b.HasBaseType("OdjfsScraper.Model.ChildCareStubs.ChildCareStub");
+                    b.HasBaseType("OdjfsScraper.Models.ChildCareStub");
 
 
                     b.ToTable("TypeBHomeStub");
@@ -270,9 +270,9 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator().HasValue("TypeBHomeStub");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCares.LicensedCenter", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.LicensedCenter", b =>
                 {
-                    b.HasBaseType("OdjfsScraper.Model.ChildCares.DetailedChildCare");
+                    b.HasBaseType("OdjfsScraper.Models.DetailedChildCare");
 
 
                     b.ToTable("LicensedCenter");
@@ -280,9 +280,9 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator().HasValue("LicensedCenter");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCares.TypeAHome", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.TypeAHome", b =>
                 {
-                    b.HasBaseType("OdjfsScraper.Model.ChildCares.DetailedChildCare");
+                    b.HasBaseType("OdjfsScraper.Models.DetailedChildCare");
 
 
                     b.ToTable("TypeAHome");
@@ -290,7 +290,7 @@ namespace OdjfsScraper.Database.Migrations
                     b.HasDiscriminator().HasValue("TypeAHome");
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCares.ChildCare", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.ChildCare", b =>
                 {
                     b.HasOne("OdjfsScraper.Model.County", "County")
                         .WithMany()
@@ -298,7 +298,7 @@ namespace OdjfsScraper.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("OdjfsScraper.Model.ChildCareStubs.ChildCareStub", b =>
+            modelBuilder.Entity("OdjfsScraper.Models.ChildCareStub", b =>
                 {
                     b.HasOne("OdjfsScraper.Model.County", "County")
                         .WithMany()

@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Logging;
-using OdjfsScraper.Model;
+using OdjfsScraper.Models;
 
 namespace OdjfsScraper.Database
 {
@@ -33,14 +33,14 @@ namespace OdjfsScraper.Database
 
         public void Migrate()
         {
-            using (var context = new Entities())
+            using (var context = new OdjfsContext())
             {
                 ApplyMigrations(context);
                 SeedData(context);
             }
         }
 
-        private void ApplyMigrations(Entities context)
+        private void ApplyMigrations(OdjfsContext context)
         {
             var historyRepository = context.Database.GetService<IHistoryRepository>();
             var appliedMigrations = historyRepository
@@ -76,7 +76,7 @@ namespace OdjfsScraper.Database
             }
         }
 
-        private void SeedData(Entities context)
+        private void SeedData(OdjfsContext context)
         {
             var existingCounties = context
                 .Counties

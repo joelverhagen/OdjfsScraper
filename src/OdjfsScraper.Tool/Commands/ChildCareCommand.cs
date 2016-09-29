@@ -1,6 +1,6 @@
 ﻿using ManyConsole;
 using OdjfsScraper.Database;
-using OdjfsScraper.Synchronizer.Synchronizers;
+using OdjfsScraper.Synchronizers;
 using OdjfsScraper.Tool.Support;
 
 namespace OdjfsScraper.Tool.Commands
@@ -39,14 +39,14 @@ namespace OdjfsScraper.Tool.Commands
         {
             if (ExternalUrlId != null)
             {
-                using (var ctx = new Entities())
+                using (var ctx = new OdjfsContext())
                 {
                     _childCareSynchronizer.UpdateChildCare(ctx, ExternalUrlId).Wait();
                 }
             }
             else
             {
-                using (var ctx = new Entities())
+                using (var ctx = new OdjfsContext())
                 {
                     var sleeper = new Sleeper(OdjfsSleep.Value);
                     for (int i = 0; i < Next; i++)

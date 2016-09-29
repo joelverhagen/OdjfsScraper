@@ -4,7 +4,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using OdjfsScraper.Database;
-using OdjfsScraper.Synchronizer.Synchronizers;
+using OdjfsScraper.Synchronizers;
 using OdjfsScraper.Tool.Options;
 using OdjfsScraper.Tool.Support;
 
@@ -60,7 +60,7 @@ namespace OdjfsScraper.Tool.Commands
                 mapQuestKey = this.GetMapQuestKey();
             }
 
-            using (var ctx = new Entities())
+            using (var ctx = new OdjfsContext())
             {
                 var state = new DaemonEventLoop(ctx);
                 if (state.CountyCount == 0)

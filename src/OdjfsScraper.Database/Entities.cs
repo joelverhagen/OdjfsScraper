@@ -1,18 +1,16 @@
 ﻿using System.IO;
 using Microsoft.EntityFrameworkCore;
-using OdjfsScraper.Model;
-using OdjfsScraper.Model.ChildCares;
-using OdjfsScraper.Model.ChildCareStubs;
+using OdjfsScraper.Models;
 
 namespace OdjfsScraper.Database
 {
-    public class Entities : DbContext
+    public class OdjfsContext : DbContext
     {
-        public Entities(DbContextOptions<Entities> options) : base(options)
+        public OdjfsContext(DbContextOptions<OdjfsContext> options) : base(options)
         {
         }
 
-        public Entities()
+        public OdjfsContext()
         {
         }
 

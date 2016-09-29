@@ -5,9 +5,9 @@ namespace OdjfsScraper.Tool.Support
 {
     public class DaemonEventLoop
     {
-        private readonly Entities _ctx;
+        private readonly OdjfsContext _ctx;
 
-        public DaemonEventLoop(Entities ctx)
+        public DaemonEventLoop(OdjfsContext ctx)
         {
             _ctx = ctx;
             UpdateCounts();

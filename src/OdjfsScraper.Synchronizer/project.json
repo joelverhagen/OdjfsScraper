@@ -6,6 +6,9 @@
   "dependencies": {
     "OdjfsScraper.Database": {
       "target": "project"
+    },
+    "OdjfsScraper.Fetcher": {
+      "target": "project"
     }
   },
   "frameworks": {
