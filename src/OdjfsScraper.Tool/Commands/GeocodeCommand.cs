@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ManyConsole;
 using OdjfsScraper.Database;
+using OdjfsScraper.Geocode;
 using OdjfsScraper.Tool.Options;
 using OdjfsScraper.Tool.Support;
 

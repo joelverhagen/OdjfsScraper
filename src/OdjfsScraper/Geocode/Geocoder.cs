@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using OdjfsScraper.Database;
 using OdjfsScraper.Models;
 
-namespace OdjfsScraper.Tool.Support
+namespace OdjfsScraper.Geocode
 {
     public class Geocoder : IGeocoder
     {

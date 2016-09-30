@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using OdjfsScraper.Database;
 
-namespace OdjfsScraper.Tool.Support
+namespace OdjfsScraper.Geocode
 {
     public interface IGeocoder
     {

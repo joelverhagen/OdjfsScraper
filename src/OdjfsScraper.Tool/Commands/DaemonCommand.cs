@@ -4,6 +4,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using OdjfsScraper.Database;
+using OdjfsScraper.Geocode;
 using OdjfsScraper.Synchronizers;
 using OdjfsScraper.Tool.Options;
 using OdjfsScraper.Tool.Support;
