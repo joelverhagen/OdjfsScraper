@@ -5,7 +5,7 @@ using System.Linq;
 using ManyConsole;
 using Microsoft.Extensions.Logging;
 using OdjfsScraper.Database;
-using OdjfsScraper.Exporters;
+using OdjfsScraper.Export;
 using OdjfsScraper.Models;
 
 namespace OdjfsScraper.Tool.Commands

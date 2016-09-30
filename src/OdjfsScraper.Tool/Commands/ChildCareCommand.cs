@@ -1,6 +1,6 @@
 ﻿using ManyConsole;
 using OdjfsScraper.Database;
-using OdjfsScraper.Synchronizers;
+using OdjfsScraper.Synchronize;
 using OdjfsScraper.Tool.Support;
 
 namespace OdjfsScraper.Tool.Commands

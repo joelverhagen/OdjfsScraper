@@ -5,7 +5,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using OdjfsScraper.Database;
 using OdjfsScraper.Geocode;
-using OdjfsScraper.Synchronizers;
+using OdjfsScraper.Synchronize;
 using OdjfsScraper.Tool.Options;
 using OdjfsScraper.Tool.Support;
 
