@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
-using OdjfsScraper.Fetchers.Test.TestSupport;
+using OdjfsScraper.Test.Fetchers;
+using OdjfsScraper.Fetchers;
 using OdjfsScraper.Models;
 using Xunit;
 
-namespace OdjfsScraper.Fetchers.Test
+namespace OdjfsScraper.Test.Fetchers
 {
     public class DownloadingHttpStreamFetcherTest : BaseHttpStreamFetcherTest<DownloadingHttpStreamFetcher>
     {

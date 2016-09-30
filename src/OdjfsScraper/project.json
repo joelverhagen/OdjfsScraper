@@ -4,16 +4,14 @@
     "debugType": "portable"
   },
   "dependencies": {
+    "CsvHelper": "2.5.0",
+    "CsQuery": "1.3.5-beta5",
+    "DotNetZip": "1.9.2",
     "Knapcode.ToStorage.Core": "0.11.0",
-    "OdjfsScraper.Model": {
-      "target": "project"
-    },
-    "OdjfsScraper.Parser": {
-      "target": "project"
-    }
+    "Microsoft.EntityFrameworkCore.Sqlite": "1.0.0"
   },
   "frameworks": {
-    "net45": {
+    "net451": {
       "frameworkAssemblies": {
         "System.Net.Http": {},
         "System.Net.Http.WebRequest": {},

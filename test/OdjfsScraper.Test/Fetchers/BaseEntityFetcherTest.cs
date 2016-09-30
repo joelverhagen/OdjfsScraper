@@ -1,9 +1,10 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Moq;
+using OdjfsScraper.Fetchers;
 using OdjfsScraper.Models;
 
-namespace OdjfsScraper.Fetchers.Test.TestSupport
+namespace OdjfsScraper.Test.Fetchers
 {
     public abstract class BaseEntityFetcherTest
     {

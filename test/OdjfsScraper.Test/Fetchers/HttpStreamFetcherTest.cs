@@ -1,9 +1,10 @@
 ﻿using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OdjfsScraper.Fetchers.Test.TestSupport;
+using OdjfsScraper.Fetchers;
+using OdjfsScraper.Test.Fetchers;
 
-namespace OdjfsScraper.Fetchers.Test
+namespace OdjfsScraper.Test.Fetchers
 {
     public class HttpStreamFetcherTest : BaseHttpStreamFetcherTest<HttpStreamFetcher>
     {

@@ -4,13 +4,14 @@
     "debugType": "portable"
   },
   "dependencies": {
-    "OdjfsScraper.Database": {
-      "target": "project"
-    },
-    "OdjfsScraper.Fetcher": {
+    "xunit": "2.1.0",
+    "dotnet-test-xunit": "1.0.0-rc2-build10025",
+    "Moq": "4.2.1402.2112",
+    "OdjfsScraper": {
       "target": "project"
     }
   },
+  "testRunner": "xunit",
   "frameworks": {
     "net451": {}
   }

@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Text;
 using Moq;
-using OdjfsScraper.Fetchers.Test.TestSupport;
+using OdjfsScraper.Test.Fetchers;
+using OdjfsScraper.Fetchers;
 using OdjfsScraper.Models;
 using OdjfsScraper.Parsers;
 using Xunit;
 
-namespace OdjfsScraper.Fetchers.Test
+namespace OdjfsScraper.Test.Fetchers
 {
     public class ChildCareStubListFetcherTest : BaseEntityFetcherTest
     {

@@ -11,10 +11,11 @@ using System.Threading.Tasks;
 using System.Web;
 using Moq;
 using Moq.Protected;
+using OdjfsScraper.Fetchers;
 using OdjfsScraper.Models;
 using Xunit;
 
-namespace OdjfsScraper.Fetchers.Test.TestSupport
+namespace OdjfsScraper.Test.Fetchers
 {
     public abstract class BaseHttpStreamFetcherTest<TFetcher> where TFetcher : HttpStreamFetcher
     {
